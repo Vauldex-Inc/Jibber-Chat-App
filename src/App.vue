@@ -1,5 +1,7 @@
 <template>
-  <RouterView />
+  <main class="bg-blue-50 dark:bg-slate-950 text-gray-600 dark:text-gray-400">
+    <RouterView />
+  </main>
 </template>
 
 

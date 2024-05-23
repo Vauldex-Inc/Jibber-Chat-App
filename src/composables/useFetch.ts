@@ -3,7 +3,9 @@ interface Option {
 	body?: string
 }
 
-const useFetch =  async (url: string, option?: Option) => {
+const baseUrl = import.meta.env.VITE_JIBBER_BASE_URL
+
+const useFetch =  async (uri: string, option?: Option) => {
 
 	try {
 		const defaultOption = {
@@ -16,10 +18,9 @@ const useFetch =  async (url: string, option?: Option) => {
 				credentials: "include"
 			}
 
-		const response = option ? await fetch(url, { ...defaultOption, ...option })
-														: await fetch(url, defaultOption)
-		const data = await response.json()
-		return data
+		const response = option ? await fetch(`${baseUrl}${uri}`, { ...defaultOption, ...option })
+														: await fetch(`${baseUrl}${uri}`, defaultOption)
+		return response
 	} catch(e) {
 		if(e instanceof Error) {
 			throw new Error(e)

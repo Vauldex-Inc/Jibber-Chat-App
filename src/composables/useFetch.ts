@@ -3,7 +3,7 @@ interface Option {
 	body?: string
 }
 
-const useFetch = (url: string, option?: Option) => {
+const useFetch =  async (url: string, option?: Option) => {
 
 	try {
 		const defaultOption = {
@@ -16,7 +16,8 @@ const useFetch = (url: string, option?: Option) => {
 				credentials: "include"
 			}
 
-		const response = option ? fetch(url, { ...defaultOption, ...option }) : fetch(url, defaultOption)
+		const response = option ? await fetch(url, { ...defaultOption, ...option })
+														: await fetch(url, defaultOption)
 		const data = await response.json()
 		return data
 	} catch(e) {

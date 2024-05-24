@@ -46,7 +46,6 @@ import { useFetch } from '@/composables/useFetch.ts'
 import { useUser } from "@/composables/useUser.ts"
 import VButton from "@/components/atoms/VButton.vue"
 import VInput from "@/components/atoms/VInput.vue"
-import VToast from "@/components/molecules/VToast.vue"
 
 const error = ref<string>("")
 const user = useUser()

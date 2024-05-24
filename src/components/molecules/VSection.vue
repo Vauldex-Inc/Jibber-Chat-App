@@ -5,7 +5,7 @@
 			<VButton 
 				size="sm"
 				@click="emits('click')" 
-				class="capitalize text-indigo-600 dark:text-indigo-500 font-semibold hover:bg-indigo-100 rounded-md" 
+				class="capitalize text-indigo-600 dark:text-indigo-500 font-semibold hover:bg-indigo-100 dark:hover:bg-slate-900 rounded-md" 
 				v-if="actionButton">
 				{{ actionButton }}
 			</VButton>

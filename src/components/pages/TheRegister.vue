@@ -6,15 +6,42 @@
 				<p>It's quick and easy</p>
 			</div>
 			<form @submit.prevent class="bg-white w-[500px] max-w-full p-8 rounded-lg flex flex-col justify-center gap-3 shadow-md">
-				<p class="text-center text-black text-3xl">Register</p>
+				<p class="text-center text-3xl font-medium">Register</p>
 				<p v-if="error" class="text-red-500 text-center text-sm border border-red-600 bg-red-500/10 p-3 rounded-md">{{ error }}</p>
 				<label for="username" class="font-semibold">Username</label>
-				<input id="username" type="text" class="bg-gray-50 px-5 py-3 rounded-md border-2 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600" v-model="formData.username" required />
+				<VInput
+					type="text"
+					size="lg"
+					v-model="formData.username"
+					id="username" 
+					class="bg-gray-50 rounded-md border-2 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600"
+					required
+				/>
 				<label for="password" class="font-semibold">Password</label>
-				<input id="password" type="password" class="bg-gray-50 px-5 py-3 rounded-md border-2 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600" v-model="formData.password" required />
+				<VInput
+					type="password"
+					size="lg"
+					v-model="formData.password"
+					id="password" 
+					class="bg-gray-50 rounded-md border-2 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600"
+					required
+				/>
 				<label for="confirm" class="font-semibold">Confirm Password</label>
-				<input id="confirm" type="password" class="bg-gray-50 px-5 py-3 rounded-md border-2 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600" v-model="formData.confirmation" required />
-				<button type="submit" class="bg-indigo-600 text-md px-5 py-3 text-white rounded-md mt-4" @click="register">Register</button>
+				<VInput
+					type="password"
+					size="lg"
+					v-model="formData.confirmation"
+					id="confirm" 
+					class="bg-gray-50 rounded-md border-2 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600"
+					required
+				/>
+				<VButton 
+					action="submit" 
+					size="md"
+					class="bg-indigo-600 text-md text-white rounded-md mt-4" 
+					@click="register">
+					Register
+				</VButton>
 				<p class="text-center">Already have an account? <RouterLink class="text-indigo-600 focus:border-indigo-600 hover:underline cursor-pointer" to="/login">Login Here</RouterLink></p>
 			</form>
 		</section>
@@ -26,9 +53,11 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { ref, watch } from 'vue'
 import { useFetch } from '@/composables/useFetch.ts'
+import VInput from '@/components/atoms/VInput.vue'
+import VButton from '@/components/atoms/VButton.vue'
 
 const formData = ref({
 	username: "",
@@ -36,6 +65,7 @@ const formData = ref({
 	confirmation: ""
 })
 const error = ref<string>('')
+const router = useRouter()
 
 const register = async () => {
 	try {
@@ -46,7 +76,9 @@ const register = async () => {
 				body: JSON.stringify(formData.value)
 			})
 
-			if(response.status !== 200) {
+			if(response.status === 201) {
+				router.push("/login")
+			} else {
 				error.value = "Oops! Something went wrong. Try again."
 			}
 		}
@@ -62,8 +94,8 @@ const validate = () => {
 	   formData.value.password !== "" && 
 	   formData.value.confirmation !== "") {
 		error.value = "Password does not match."
-	} else if(formData.value.username === "" &&
-	          formData.value.password === "" &&
+	} else if(formData.value.username === "" ||
+	          formData.value.password === "" ||
 	          formData.value.confirmation === "") {
 		error.value = "Input fields are empty."
 	} else {

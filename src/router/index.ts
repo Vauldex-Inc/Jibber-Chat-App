@@ -20,6 +20,10 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: TheRegister
+    },{
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import("@/components/pages/TheDashboard.vue")
     }
   ]
 })

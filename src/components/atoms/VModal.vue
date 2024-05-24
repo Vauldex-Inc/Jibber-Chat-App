@@ -13,6 +13,7 @@
             class="absolute top-0 right-0 -translate-x-1/2 translate-y-1/2"
             icon="./src/assets/images/close.svg"
             size="sm"
+            :invert="true"
           />
         </div>
       </Transition>

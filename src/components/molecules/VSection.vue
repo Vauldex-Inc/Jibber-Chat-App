@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="flex items-center justify-between mb-2">
-			<p class="capitalize font-semibold text-gray-600 dark:text-gray-400">{{title}}</p>
+			<p class="capitalize font-semibold text-gray-700 dark:text-gray-300">{{title}}</p>
 			<VButton 
 				size="sm"
 				@click="emits('click')" 

@@ -1,7 +1,7 @@
 import type { User } from "@/types/User"
 
 const userIsUser = (user: User): user is User => {
-	if(user && typeof user.username === 'string' && typeof user.createdAt === 'string' && typeof user.activeAt === 'string') {
+	if(user && typeof user.id === 'string' && typeof user.username === 'string' && typeof user.createdAt === 'string' && typeof user.activeAt === 'string') {
 		return true
 	} else {
 		return false

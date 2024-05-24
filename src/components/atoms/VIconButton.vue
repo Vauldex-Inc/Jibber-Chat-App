@@ -5,7 +5,10 @@
     class="transition-all"
     type="button"
   >
-    <img :src="icon" alt="icon" :class="imageClass" class="aspect-square invert dark:invert-0" />
+    <img 
+          :src="icon" alt="icon" 
+          :class="[imageClass,invert? 'invert dark:invert-0' : 'invert-0']" 
+          class="aspect-square" />
   </button>
 </template>
 
@@ -32,7 +35,7 @@ const imageClass = computed(() => {
     case "md":
       return "h-6";
     case "lg":
-      return "h-10";
+      return "h-8";
     default:
       return "h-6";
   }
@@ -45,6 +48,7 @@ const roundedClass = computed(() => {
 interface IconButtonProps {
   size?: "sm" | "md" | "lg";
   icon: string;
+  invert?: boolean;
   rounded?: boolean;
 }
 

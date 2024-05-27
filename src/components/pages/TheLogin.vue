@@ -36,7 +36,6 @@
 			<p class="mt-1.5">Don't have an account? <RouterLink class="text-indigo-600 cursor-pointer" to="/register">Register now</RouterLink></p>
 		</section>
 	</div>
-	<VToast />
 </template>
 
 <script setup lang="ts">
@@ -46,7 +45,6 @@ import { useFetch } from '@/composables/useFetch.ts'
 import { useUser } from "@/composables/useUser.ts"
 import VButton from "@/components/atoms/VButton.vue"
 import VInput from "@/components/atoms/VInput.vue"
-import VToast from "@/components/molecules/VToast.vue"
 
 const error = ref<string>("")
 const user = useUser()

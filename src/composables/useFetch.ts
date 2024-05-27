@@ -3,13 +3,9 @@ interface Option {
 	body?: string
 }
 
-<<<<<<< HEAD
 const baseUrl = import.meta.env.VITE_JIBBER_BASE_URL
 
 const useFetch =  async (uri: string, option?: Option) => {
-=======
-const useFetch = (url: string, option?: Option) => {
->>>>>>> 5c74f1e (added a fetch composable)
 
 	try {
 		const defaultOption = {

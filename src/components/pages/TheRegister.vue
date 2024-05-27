@@ -25,4 +25,5 @@
 
 <script>
 import RouterLink from '@/router/index.ts'
+
 </script>

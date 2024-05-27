@@ -17,7 +17,7 @@
         />
       </span>
       <div class="flex items-center justify-between flex-1">
-        <p class="text-gray-700 dark:text-gray-300">Notification: {{ message }}</p>
+        <p class="text-indigo-600 dark:text-indigo-300">Notification: {{ message }}</p>
         <button
           type="button"
           @click="close"
@@ -46,7 +46,7 @@
 import { ref, computed, onMounted } from "vue"
 
 const loadingPercentage = ref<number>(0)
-const message = ref<string>('')
+const message = ref<string>('New Message')
 
 let timerId;
 const setLoading = () => {

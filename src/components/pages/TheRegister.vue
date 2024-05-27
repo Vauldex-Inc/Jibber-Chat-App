@@ -15,28 +15,42 @@
           v-model="formData.username"
           id="username" 
           class="bg-gray-50 rounded-md border-2 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600"
-          minlength="8"
           required
         />
         <label for="password" class="font-semibold">Password</label>
-        <VInput
-          type="password"
-          size="lg"
-          v-model="formData.password"
-          id="password" 
-          class="bg-gray-50 rounded-md border-2 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600"
-          minlength="8"
-          required
-        />
+        <div class="relative">
+          <VInput
+            :type="type"
+            size="lg"
+            v-model="formData.password"
+            id="password" 
+            class="bg-gray-50 rounded-md w-full border-2 pr-12 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600"
+            required
+          />
+          <VIconButton
+            size="sm"
+            :icon="icon"
+            class="absolute top-1/2 right-0 -translate-x-1/2 -translate-y-1/2 bg-indigo-600"
+            @click="toggle"
+          />
+        </div>
         <label for="confirm" class="font-semibold">Confirm Password</label>
-        <VInput
-          type="password"
-          size="lg"
-          v-model="formData.confirmation"
-          id="confirm" 
-          class="bg-gray-50 rounded-md border-2 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600"
-          required
-        />
+        <div class="relative">
+          <VInput
+            :type="type"
+            size="lg"
+            v-model="formData.confirmation"
+            id="confirm" 
+            class="bg-gray-50 rounded-md border-2 w-full pr-12 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600"
+            required
+          />
+          <VIconButton
+            size="sm"
+            :icon="icon"
+            class="absolute top-1/2 right-0 -translate-x-1/2 -translate-y-1/2 bg-indigo-600"
+            @click="toggle"
+          />
+        </div>
         <VButton
           v-if="!loader" 
           action="submit" 
@@ -71,6 +85,8 @@ import { ref, watch } from 'vue'
 import { useFetch } from '@/composables/useFetch.ts'
 import VInput from '@/components/atoms/VInput.vue'
 import VButton from '@/components/atoms/VButton.vue'
+import VIconButton from '@/components/atoms/VIconButton.vue'
+
 
 const formData = ref({
   username: "",
@@ -79,7 +95,9 @@ const formData = ref({
 })
 const error = ref<string>('')
 const loader = ref<boolean>(false)
-const visibility = ref<booleab>(false)
+const visibility = ref<boolean>(false)
+const icon = ref<string>('./src/assets/images/visibility-true.svg')
+const type = ref<string>('password')
 const router = useRouter()
 
 const register = async () => {
@@ -119,6 +137,16 @@ const validate = () => {
     error.value = "Input fields are empty."
   } else {
     error.value = ""
+  }
+}
+
+const toggle = () => {
+  if(type.value === "text") {
+    type.value = "password"
+    icon.value = "./src/assets/images/visibility-true.svg"
+  } else {
+    type.value = "text"
+    icon.value = "./src/assets/images/visibility-false.svg"
   }
 }
 

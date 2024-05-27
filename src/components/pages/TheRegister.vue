@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
 	<main class="bg-blue-50 h-screen flex justify-center items-center gap-20">
 		<section class="w-2/5">
 			<div class="pb-8">

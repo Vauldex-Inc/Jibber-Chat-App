@@ -97,7 +97,7 @@ const error = ref<string>('')
 const loader = ref<boolean>(false)
 const visibility = ref<boolean>(false)
 const icon = ref<string>('./src/assets/images/visibility-true.svg')
-const type = ref<string>('password')
+const type = ref<"text" | "password">('password')
 const router = useRouter()
 
 const register = async () => {

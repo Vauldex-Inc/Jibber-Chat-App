@@ -17,15 +17,14 @@ const router = createRouter({
       component: TheLogin
     },
     {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: () => import("@/components/pages/TheDashboard.vue")
-    },
-    {
       path: '/register',
       name: 'register',
       component: TheRegister
-    },
+    },{
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import("@/components/pages/TheDashboard.vue")
+    }
   ]
 })
 

@@ -12,6 +12,7 @@ import { computed } from "vue";
 
 const value = defineModel<string>();
 
+// Create a util
 const sizeClass = computed(() => {
   switch (props.size) {
     case "sm":

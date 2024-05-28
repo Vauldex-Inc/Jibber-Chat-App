@@ -1,6 +1,8 @@
 type Theme = "dark" | "light"
 import {ref} from "vue"
 
+// why not use Pinia ?
+// I don't know what this curTheme variable means.
 const curTheme = ref<Theme>("light")
 
 
@@ -8,13 +10,14 @@ export const useTheme = () => {
 
 	const init = () => {
 		const theme = localStorage.getItem("theme")
-		if(theme) {
+		if(theme) { // add space after `if`
 			setTheme(theme)
 		} else {
 			setTheme("light")
 		}
 	}
 
+	// Not necessary. just use the curTheme
 	const getTheme = () => {
 		return curTheme
 	}
@@ -34,5 +37,5 @@ export const useTheme = () => {
 	}
 
 
-	return {setTheme,init,getTheme}
+	return {setTheme,init,getTheme} // add spaces
 }

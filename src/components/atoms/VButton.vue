@@ -12,6 +12,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+// Create a util
 const sizeClass = computed(() => {
   switch (props.size) {
     case "sm":
@@ -32,6 +33,7 @@ interface ButtonProps {
 
 const props = defineProps<ButtonProps>();
 
+// use the succint syntax
 const emits = defineEmits<{
   click: [];
 }>();

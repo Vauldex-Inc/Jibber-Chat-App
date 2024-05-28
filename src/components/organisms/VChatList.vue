@@ -1,6 +1,7 @@
 <template>
 	<div class="flex flex-col gap-2">
 		<div class="p-3 flex flex-col gap-4">
+			<!-- Create a component for text -->
 			<p class="text-2xl font-bold text-gray-700 dark:text-gray-300 capitalize">{{title}}</p>
 			<VButton 
 					v-if="buttonText"

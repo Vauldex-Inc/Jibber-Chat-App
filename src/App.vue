@@ -5,6 +5,15 @@
 </template>
 
 
+<!--
+  # Import order
+    1. Vue
+    2  Other dependencies
+    3. Components
+    4. Types
+
+  # Spacing in import. ex: `import { MethodName } from '...'`
+ -->
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import {onMounted} from "vue"

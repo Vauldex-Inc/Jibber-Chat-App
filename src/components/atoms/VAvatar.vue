@@ -1,4 +1,5 @@
 <template>
+  <!-- `v-bind:class` Not necessary to put it in array if only 1 -->
 	<div class="relative inline-block">
 		<img 
 			:src="image? image : './src/assets/images/default-avatar.svg'"
@@ -13,6 +14,14 @@
 
 
 <script lang="ts" setup>
+// Heirarcy
+// 1. Imports
+// 2. Internal types
+// 3. props & emits
+// 4. variables
+// 5. computed & watch
+// 6. hooks
+// 7. methods
 import {computed} from "vue"
 
 const imageClass = computed(() => {

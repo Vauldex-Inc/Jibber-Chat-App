@@ -1,3 +1,6 @@
+// REFACTOR THIS!!!
+// APPLY THE "SOLID" PRINCIPLE
+
 interface Option {
 	method?: string
 	body?: string

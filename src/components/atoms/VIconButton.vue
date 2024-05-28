@@ -1,4 +1,6 @@
 <template>
+  <!-- Apply the order of the attributes -->
+  <!-- Use svg or icon instead of image inside the button -->
   <button
     @click="emits('click')"
     :class="[sizeClass, roundedClass]"

@@ -31,15 +31,18 @@
 						:class="{'border-red-400 focus:border-red-600': error}"
 						class="bg-gray-50 px-5 py-3 rounded-md border-2 outline-none 
 										border-gray-300 focus:border-indigo-400 hover:border-indigo-400"/>
-				<VButton type="submit" class="bg-indigo-600 text-md py-3 px-5 text-white rounded-md mt-4 font-semibold">Login</VButton>
+				<VButton type="submit" class="bg-indigo-600 text-md py-3 px-5 text-white rounded-md mt-4 font-semibold" v-if="!isLoading">Login</VButton>
+				<VButton type="submit" class="bg-indigo-600 text-md py-3 px-5 text-white rounded-md mt-4 font-semibold" v-else>Loading...</VButton>
 			</form>
 			<p class="mt-1.5">Don't have an account? <RouterLink class="text-indigo-600 cursor-pointer" to="/register">Register now</RouterLink></p>
 		</section>
 	</div>
+
+
 </template>
 
 <script setup lang="ts">
-import { ref, watch, watchEffect, computed } from "vue"
+import { ref } from "vue"
 import { useRouter, RouterLink } from "vue-router"
 import { useFetch } from '@/composables/useFetch.ts'
 import { useUser } from "@/composables/useUser.ts"
@@ -47,30 +50,29 @@ import VButton from "@/components/atoms/VButton.vue"
 import VInput from "@/components/atoms/VInput.vue"
 
 const error = ref<string>("")
-const user = useUser()
 const router = useRouter()
+const isLoading = ref<boolean>(false)
 
-if(user) {
-	router.push("/")
-}
 
 const formData = ref({
 	username: "",
 	password: ""
 })
 
-let id;
+const timerId = ref<number | undefined>(undefined)
 const displayError = () => {
 	error.value = "User not found!"
-	if(id) clearInterval(id)
-	id = setTimeout(() => {
+	if(timerId.value) {
+		clearInterval(timerIdd.value)
+	}
+
+	timerId.value = setTimeout(() => {
 		error.value = ""
 	}, 5000)
-	return id
 }
 
 const login = async () => {
-
+	isLoading.value = true
 	try {
 		const response = await useFetch("/sessions", {
 			method: "POST",
@@ -87,9 +89,10 @@ const login = async () => {
 		} else if (response.status === 404) {
 			displayError()
 		}
-		return;
 	} catch(error) {
 		throw new Error(error)
+	} finally {
+		isLoading.value = false
 	}
 
 }

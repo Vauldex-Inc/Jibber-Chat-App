@@ -18,57 +18,47 @@
       </span>
       <div class="flex items-center justify-between flex-1">
         <p class="text-indigo-600 dark:text-indigo-300">Notification: {{ message }}</p>
-        <button
-          type="button"
-          @click="close"
-          class="rounded-full ml-4 p-1 dark:text-gray-400 dark:hover:text-gray-200 text-gray-400 hover:text-gray-500"
-        >
-          <!-- close icon -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            x="0px"
-            y="0px"
-            viewBox="0 0 24 24"
-            class="w-4 h-4"
-          >
-            <path
-              fill="currentColor"
-              d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"
-            ></path>
-          </svg>
-        </button>
+        <VIconButton
+            @click="close"
+            class="rounded-full ml-4 p-1 dark:text-gray-400 dark:hover:text-gray-200 text-gray-400 hover:text-gray-500"
+            icon="./src/assets/images/close.svg"
+            size="sm"
+          />
       </div>
     </div>
   </div>  
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue"
+import { ref, onMounted } from "vue"
+import VIconButton from "@/components/atoms/VIconButton.vue"
 
 const loadingPercentage = ref<number>(0)
-const message = ref<string>('New Message')
+const isOpen = ref<boolean>(true)
+const timerId = ref<number | undefined>(undefined);
 
-let timerId;
 const setLoading = () => {
   loadingPercentage.value = 0
 
-  timerId = setInterval(() => {
+  timerId.value = setInterval(() => {
     loadingPercentage.value += 1.1
   }, 50)
 
   setTimeout(() => {
-    clearInterval(timerId)
+    clearInterval(timerId.value)
     close()
   }, 5000)
 }
 
-onMounted(() => {
-  setLoading()
-})
-
-const isOpen = ref<boolean>(true)
 const close = (e) => {
   isOpen.value = false
 }
-  
+
+defineProps<{
+  message: string
+}>()
+
+onMounted(() => {
+  setLoading()
+})  
 </script>

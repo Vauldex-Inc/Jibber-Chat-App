@@ -9,7 +9,7 @@
 				<img class="w-96 h-96" src="@/assets/images/login-welcome.svg" />
 			</div>
 		</section>
-		<section class="bg-white w-1/3 p-8 rounded-lg">
+		<section class="bg-white w-1/3 p-8 rounded-lg shadow-md">
 			<form @submit.prevent="login" class="flex flex-col gap-2">
 				<h2 class="font-bold text-3xl mb-4">Login</h2>
 				<p v-if="error" class="w-full border-2 border-red-600 text-red-500 bg-red-50 p-2 rounded-md">{{ error }}</p>
@@ -32,13 +32,16 @@
 						class="bg-gray-50 px-5 py-3 rounded-md border-2 outline-none 
 										border-gray-300 focus:border-indigo-400 hover:border-indigo-400"/>
 				<VButton type="submit" class="bg-indigo-600 text-md py-3 px-5 text-white rounded-md mt-4 font-semibold" v-if="!isLoading">Login</VButton>
-				<VButton type="submit" class="bg-indigo-600 text-md py-3 px-5 text-white rounded-md mt-4 font-semibold" v-else>Loading...</VButton>
+				<VButton type="submit" class="bg-indigo-600 text-md py-3 px-5 text-white rounded-md mt-4 font-semibold flex justify-center" v-else>
+          <div class="w-4 h-4 p-2 mr-3 border-indigo-700/50 border-b-indigo-200 border-2 rounded-full animate-spin">
+            <p class="sr-only">Loading</p>
+          </div>
+            Processing...
+        </VButton>
 			</form>
 			<p class="mt-1.5">Don't have an account? <RouterLink class="text-indigo-600 cursor-pointer" to="/register">Register now</RouterLink></p>
 		</section>
 	</div>
-
-
 </template>
 
 <script setup lang="ts">
@@ -63,7 +66,7 @@ const timerId = ref<number | undefined>(undefined)
 const displayError = () => {
 	error.value = "User not found!"
 	if(timerId.value) {
-		clearInterval(timerIdd.value)
+		clearInterval(timerId.value)
 	}
 
 	timerId.value = setTimeout(() => {
@@ -85,7 +88,7 @@ const login = async () => {
 			localStorage.setItem("user", JSON.stringify(result.user))
 			formData.value.username = ""
 			formData.value.password = ""
-			router.push("/")
+			router.push("/dashboard")
 		} else if (response.status === 404) {
 			displayError()
 		}

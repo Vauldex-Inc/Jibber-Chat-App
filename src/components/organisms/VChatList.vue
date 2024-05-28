@@ -4,12 +4,12 @@
 			<p class="text-2xl font-bold text-gray-700 dark:text-gray-300 capitalize">{{title}}</p>
 			<VButton 
 					v-if="buttonText"
-					class="capitalize bg-indigo-600 dark:bg-indigo-500 rounded-md text-gray-100 font-semibold w-full" 
+					class="capitalize bg-indigo-600 rounded-md text-gray-100 font-semibold w-full" 
 					size="md" >
 				{{buttonText}}
 			</VButton>
 		</div>
-		<ul class="overflow-y-scroll py-5">
+		<ul class="overflow-y-scroll pb-5">
 			<VChatListItem v-for="n in 20" :key="n" />
 		</ul>
 	</div>

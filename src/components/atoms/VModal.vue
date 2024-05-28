@@ -2,7 +2,7 @@
   <Teleport to="body">
     <div
       v-show="isOpen"
-      class="fixed inset-0 bg-slate-950/20 dark:bg-slate-950/70 text-gray-600 dark:text-gray-400 flex items-center justify-center"
+      class="fixed inset-0 bg-slate-950/20 dark:bg-slate-950/70 text-gray-600 dark:text-gray-400 flex items-center justify-center z-50"
     >
       <Transition name="modal">
         <div class="relative" v-if="isOpen">

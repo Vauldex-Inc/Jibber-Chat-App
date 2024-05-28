@@ -7,5 +7,11 @@
 
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import {onMounted} from "vue"
+import {useTheme} from "@/composables/useTheme"
 
+onMounted(() => {
+  const theme = useTheme()
+  theme.init()
+})
 </script>

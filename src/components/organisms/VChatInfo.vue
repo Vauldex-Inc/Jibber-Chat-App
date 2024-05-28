@@ -17,6 +17,7 @@
 				</div>
 				<div class="group flex flex-col gap-2 items-center justify-center">
 					<VIconButton 
+							@click="openThemeSelector"
 							icon="./src/assets/images/theme.svg"
 							class="bg-indigo-100 border-2 border-indigo-200 group-hover:border-indigo-500 dark:bg-slate-950 dark:border-slate-800 dark:group-hover:bg-slate-900 dark:group-hover:border-indigo-700" 
 							:invert="true"/>
@@ -49,6 +50,11 @@
 				<p v-else class="text-center">No files found</p>
 			</div>
 		</VSection>
+
+		<VModal @close="close" :isOpen="isOpen">
+			<VChatColorSelector @select-color="selectColor" />
+		</VModal>
+
 	</div>
 </template>
 
@@ -56,7 +62,9 @@
 import VSection from "@/components/molecules/VSection.vue"
 import VAvatar from "@/components/atoms/VAvatar.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
-
+import VModal from "@/components/atoms/VModal.vue"
+import VChatColorSelector from "@/components/organisms/VChatColorSelector.vue"
+import { ref } from "vue"
 
 interface VChatInfoProps {
 	members: string[];
@@ -64,6 +72,15 @@ interface VChatInfoProps {
 	files: string[];
 	title: string;
 	name: string;
+}
+
+const isOpen = ref<boolean>(false)
+const openThemeSelector = () => isOpen.value = true
+const close = () => isOpen.value = false
+
+
+const selectColor = (color) => {
+	console.log(color)
 }
 
 const props = defineProps<VChatInfoProps>()

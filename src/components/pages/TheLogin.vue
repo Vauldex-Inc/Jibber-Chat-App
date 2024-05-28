@@ -23,14 +23,17 @@
 						class="bg-gray-50 px-5 py-3 rounded-md border-2 outline-none 
 										border-gray-300 focus:border-indigo-400 hover:border-indigo-400" />
 				<label for="password" class="text-start text-sm font-bold">Password</label>
-				<VInput 
-						v-model="formData.password" 
-						type="password" 
-						id="password" 
-						required 
-						:class="{'border-red-400 focus:border-red-600': error}"
-						class="bg-gray-50 px-5 py-3 rounded-md border-2 outline-none 
-										border-gray-300 focus:border-indigo-400 hover:border-indigo-400"/>
+				<div class="relative">
+					<VInput 
+							v-model="formData.password" 
+							:type="passwordType" 
+							id="password" 
+							required 
+							:class="{'border-red-400 focus:border-red-600': error}"
+							class="w-full inline bg-gray-50 px-5 pr-12 py-3 rounded-md border-2 outline-none 
+											border-gray-300 focus:border-indigo-400 hover:border-indigo-400"/>
+					<VIconButton size="sm" :icon="icon" @click="toggle" :invert="true" class="absolute top-1/2 right-0 -translate-x-1/2 -translate-y-1/2  bg-indigo-600" />
+				</div>
 				<VButton type="submit" class="bg-indigo-600 text-md py-3 px-5 text-white rounded-md mt-4 font-semibold" v-if="!isLoading">Login</VButton>
 				<VButton type="submit" class="bg-indigo-600 text-md py-3 px-5 text-white rounded-md mt-4 font-semibold flex justify-center" v-else>
           <div class="w-4 h-4 p-2 mr-3 border-indigo-700/50 border-b-indigo-200 border-2 rounded-full animate-spin">
@@ -48,19 +51,30 @@
 import { ref } from "vue"
 import { useRouter, RouterLink } from "vue-router"
 import { useFetch } from '@/composables/useFetch.ts'
-import { useUser } from "@/composables/useUser.ts"
 import VButton from "@/components/atoms/VButton.vue"
 import VInput from "@/components/atoms/VInput.vue"
+import VIconButton from "@/components/atoms/VIconButton.vue"
 
 const error = ref<string>("")
 const router = useRouter()
 const isLoading = ref<boolean>(false)
-
+const passwordType = ref<"text" | "password">("password")
+const icon = ref<string>('./src/assets/images/visibility-true.svg')
 
 const formData = ref({
 	username: "",
 	password: ""
 })
+
+const toggle = () => {
+	if(passwordType.value === "text") {
+		passwordType.value = "password"
+		icon.value = './src/assets/images/visibility-true.svg'
+	} else {
+		passwordType.value = "text"
+		icon.value = "./src/assets/images/visibility-false.svg"
+	}
+}
 
 const timerId = ref<number | undefined>(undefined)
 const displayError = () => {

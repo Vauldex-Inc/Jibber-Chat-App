@@ -12,6 +12,7 @@
 			class="bg-indigo-600"
 			icon="./src/assets/images/file.svg"/>
 		<VInput 
+				@keyup.enter="sendMessage"
 				v-model="message"
 				placeholder="Aa"
 				class="flex-1 rounded-md border-2 border-indigo-300 focus:border-indigo-600 hover:border-indigo-600
@@ -35,6 +36,11 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const message = ref<string>("")
 
 
+const sendMessage = () => {
+	// TODO: Send message to api
+	message.value = ""
+}
+
 const openFileSelector = () => {
 	if(fileInput.value){
 		fileInput.value.click()
@@ -42,7 +48,7 @@ const openFileSelector = () => {
 }
 
 const attachFile = (e: Event) => {
-	console.log(e.target.files)
+	// TODO: attache file to message
 }
 
 

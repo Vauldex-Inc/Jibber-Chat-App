@@ -18,24 +18,28 @@
             <p :class="{ 'text-green-500': validation.isSuccess }">• {{ validation.message }}</p>
           </li>
         </ul>
-        <label class="font-semibold">Username</label>
+        <label for="username" class="font-semibold">Username</label>
         <VInput
+          id="username"
           type="text"
           size="lg"
           v-model="formData.username"
           maxlength="20"
           class="bg-gray-50 rounded-md border-2 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600"
           @focus="current = 'username'"
+          @blur="current = undefined"
           required
         />
-        <label class="font-semibold">Password</label>
+        <label for="password" class="font-semibold">Password</label>
         <div class="relative">
           <VInput
+            id="password"
             :type="type"
             size="lg"
             v-model="formData.password"
             class="bg-gray-50 rounded-md w-full border-2 pr-12 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600"
             @focus="current = 'password'"
+            @blur="current = undefined"
             required
           />
           <VIconButton
@@ -47,14 +51,14 @@
             @click="toggle"
           />
         </div>
-        <label class="font-semibold">Confirm Password</label>
+        <label for="confirm" class="font-semibold">Confirm Password</label>
         <div class="relative">
           <VInput
+            id="confirm"
             :type="type"
             size="lg"
             v-model="formData.confirmation"
             class="bg-gray-50 rounded-md border-2 w-full pr-12 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600"
-            @focus="current = undefined"
             required
           />
           <VIconButton

@@ -198,20 +198,16 @@ watchEffect(() => {
     for(let validation of usernameValidations.value) {
       if(validation.regex.test(formData.value.username)){
         validation.isSuccess = true
-        console.log(validation)
       } else {
         validation.isSuccess = false
-        console.log(validation)
       }
     }
   } else {
     for(let validation of passwordValidations.value) {
       if(validation.regex.test(formData.value.password)){
         validation.isSuccess = true
-        console.log(validation)
       } else {
         validation.isSuccess = false
-        console.log(validation)
       }
     }
   }

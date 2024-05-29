@@ -1,9 +1,9 @@
 <template>
   <div v-if="isOpen"
-    class="p-4 bg-indigo-300 dark:bg-slate-700 rounded-md relative overflow-hidden m-4 max-w-[380px] z-40 animate-showIn"
+    class="p-4 bg-indigo-200 dark:bg-slate-900 rounded-md relative overflow-hidden m-4 max-w-[380px] z-40"
   >
     <span
-      class="bg-indigo-500 w-0 h-1 absolute bottom-0 left-0 transition-all"
+      class="bg-indigo-600 w-0 h-1 absolute bottom-0 left-0 transition-all"
       :style="'width:' + loadingPercentage + '%'"
     ></span>
     <div class="flex items-center justify-start gap-4">
@@ -17,10 +17,11 @@
         />
       </span>
       <div class="flex items-center justify-between flex-1">
-        <p class="text-indigo-600 dark:text-indigo-300">Notification: {{ message }}</p>
+        <p class="text-indigo-900 dark:text-gray-200">Notification: {{ message }}</p>
         <VIconButton
             @click="close"
-            class="rounded-full ml-4 p-1 dark:text-gray-400 dark:hover:text-gray-200 text-gray-400 hover:text-gray-500"
+            :invert="true"
+            class="rounded-full ml-4 p-1"
             icon="./src/assets/images/close.svg"
             size="sm"
           />

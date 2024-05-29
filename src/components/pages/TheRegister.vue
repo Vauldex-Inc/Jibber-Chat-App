@@ -154,6 +154,9 @@ const register = async () => {
       })
 
       if(response.status === 201) {
+        const result = await response.json()
+
+        localStorage.setItem("user", JSON.stringify(result.user))
         setTimeout(() => {
           router.push("/dashboard")
         }, 1000)

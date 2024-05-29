@@ -1,7 +1,7 @@
 import type { User } from "@/types/User"
 
 const userIsUser = (user: User): user is User => {
-	if(user && typeof user.id === 'string' && typeof user.username === 'string' && typeof user.createdAt === 'string' && typeof user.activeAt === 'string') {
+	if(typeof user.id === 'string' && typeof user.username === 'string' && typeof user.createdAt === 'string') {
 		return true
 	} else {
 		return false
@@ -9,12 +9,17 @@ const userIsUser = (user: User): user is User => {
 }
 
 const useUser = () => {
-	const user = localStorage.getItem("user")
-	if(userIsUser(user)) {
-		return user
-	}	else {
-		return undefined
+	const userLocal = localStorage.getItem("user")
+
+	if(userLocal) {
+		const user = JSON.parse(userLocal)
+		if(userIsUser(user)) {
+			return user
+		}
 	}
+
+	return undefined
+
 }
 
 export { useUser }

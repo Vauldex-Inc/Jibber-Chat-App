@@ -1,15 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import index from '@/components/pages/index.vue'
 import TheLogin from '@/components/pages/TheLogin.vue'
 import TheRegister from '@/components/pages/TheRegister.vue'
+import TheDashboard from "@/components/pages/TheDashboard.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: index
+      redirect: "/login"
     },
     {
       path: '/login',
@@ -20,10 +19,11 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: TheRegister
-    },{
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
-      component: () => import("@/components/pages/TheDashboard.vue")
+      component: TheDashboard
     }
   ]
 })

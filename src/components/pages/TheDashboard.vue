@@ -1,23 +1,27 @@
  <template>
  	<DashboardLayout>
  		<template #messages>
-			<VChatList class="h-3/6" title="messages" button-text="Create new channel"/>
+			<VChatList @open="openChannel" :items="privateChannels" class="h-3/6" title="messages" button-text="Create new channel"/>
  		</template>
  		 <template #channels>
-			<VChatList class="h-2/6" title="channels"/>
+			<VChatList @open="openChannel" :items="multiChannels" class="h-2/6" title="channels"/>
  		</template>
  		<template #chatbox>
- 			<VChatTitle name="Vauldex Tech" :count="12"/>
- 			<VChatBoxArea class="flex-1"/>
- 			<VChatBox/>
+ 			<template v-if="selectedChannel" >
+	 			<VChatTitle :channel="selectedChannel" :sender="senderId" :count="channelUsersCount"/>
+	 			<VChatBoxArea :messages="messages" class="flex-1" :color="selectedChannel.color"/>
+	 			<VChatBox/>
+ 			</template>
  		</template>
  		<template #chatinfo>
- 			<VChatInfo 
- 					:images="[]"
- 					:files="[]"
- 					:members="[]"
- 					title="channel information"
- 					name="Vauldex Tech" />
+ 			<template v-if="selectedChannel" >
+			 <VChatInfo 
+				:images="[]"
+				:files="[]"
+				:members="[]"
+				title="channel information"
+				:name="selectedChannel.title" />
+ 			</template>
  		</template>
  	</DashboardLayout>
 </template>
@@ -30,7 +34,63 @@ import VChatInfo from "@/components/organisms/VChatInfo.vue"
 import VChatListItem from "@/components/organisms/VChatListItem.vue"
 import VChatBox from "@/components/organisms/VChatBox.vue"
 import VChatBoxArea from "@/components/organisms/VChatBoxArea.vue"
+import {useUserStore} from "@/stores/useUserStore.ts"
+import {useChannelStore} from "@/stores/useChannelStore.ts"
+import {useMessageStore} from "@/stores/useMessageStore.ts"
+import {onMounted,ref,watch,computed} from "vue"
+import type {Message} from "@/types/Message.ts"
+import type {Channel} from "@/types/Channel.ts"
+import {useUser} from "@/composables/useUser.ts"
+import {useChannelUserStore} from "@/stores/useChannelUserStore.ts"
 
 
+const userStore = useUserStore()
+const channelStore = useChannelStore()
+const messageStore = useMessageStore()
+const channelUserStore = useChannelUserStore()
+const loggedUser = useUser()
+const messages = ref<Message[]>([])
+const senderId = ref<string | undefined>(undefined)
+const channelUsersCount = ref<number>(0)
+
+const multiChannels = channelStore.getMultiChannels()
+const singleChannels = channelStore.getSingleChannels()
+const privateChannels = ref<Channel[]>([])
+const selectedChannel = ref<Channel | undefined>(undefined)
+
+
+const openChannel = (id: string) => {
+	selectedChannel.value = channelStore.getChannelById(id)
+}
+
+watch(selectedChannel, async (channel) => {
+	if(channel){
+		const users = await channelUserStore.getChannelUsers(channel.id)
+
+		messages.value = await messageStore.getChannelMessages(channel.id)
+		channelUsersCount.value = users.length
+
+		if(channel.channelType === "SNG") {
+			const sender = users.find(u => u.userId !== loggedUser.id)
+			senderId.value = sender.userId
+		}
+	}
+})
+
+watch(singleChannels, async (channels) => {
+	channels.forEach(async (c) => {
+		const users = await channelUserStore.getChannelUsers(c.id)
+		if(users.some(u => u.userId === loggedUser.id)) {
+			privateChannels.value.push(c)
+		}
+	})
+})
+
+onMounted(async () => {
+	await userStore.init()
+	await channelStore.init()
+
+	selectedChannel.value = privateChannels.value.length > 0 ?  privateChannels.value[0] : multiChannels.value[0]
+})
 </script>
 

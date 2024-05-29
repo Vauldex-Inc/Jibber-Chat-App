@@ -100,7 +100,7 @@
 
 <script setup lang="ts">
 import { RouterLink, useRouter } from 'vue-router'
-import { ref, watchEffect } from 'vue'
+import { ref, watchEffect, computed } from 'vue'
 import { useFetch } from '@/composables/useFetch.ts'
 import VInput from '@/components/atoms/VInput.vue'
 import VButton from '@/components/atoms/VButton.vue'
@@ -112,6 +112,7 @@ interface Validation {
   regex: RegExp
 }
 
+const router = useRouter()
 const formData = ref({
   username: "",
   password: "",
@@ -122,7 +123,6 @@ const loader = ref<boolean>(false)
 const visibility = ref<boolean>(false)
 const icon = ref<string>('./src/assets/images/visibility-true.svg')
 const type = ref<"text" | "password">('password')
-const router = useRouter()
 const current = ref<"username" | "password">()
 const passwordValidations = ref<Validation[]>([
   { message: "Must be at least 8 characters long", isSuccess: false, regex: /^.{8,20}$/ },
@@ -135,6 +135,13 @@ const usernameValidations = ref<Validation[]>([
   { message: "Must contain letters or numbers", isSuccess: false, regex: /^[a-zA-Z0-9]+$/ },
   { message: "Must not have @ character", isSuccess: false, regex: /^[^@]+$/ }
 ])
+
+const validUsername = computed(() => {
+  return usernameValidations.value.filter((u) => u.isSuccess !== true)
+})
+const validPassword = computed(() => { 
+  return passwordValidations.value.filter((p) => p.isSuccess !== true)
+})
 
 const register = async () => {
   try {
@@ -163,16 +170,16 @@ const register = async () => {
 }
 
 const validate = () => {
-  if(formData.value.password !== formData.value.confirmation && 
-     formData.value.password !== "" && 
-     formData.value.confirmation !== "") {
-    error.value = "Password does not match."
-  } else if(formData.value.username === "" ||
-            formData.value.password === "" ||
-            formData.value.confirmation === "") {
-    error.value = "Input fields are empty."
+  if(!formData.value.username || !formData.value.password || !formData.value.confirmation) {
+    error.value = "Input fields are empty.";
+  } else if(validUsername.value.length > 0 ||
+     validPassword.value.length > 0) {
+    error.value = "Invalid Credentials.";
+  } else if(formData.value.password !== 
+     formData.value.confirmation) {
+    error.value = "Password does not match.";
   } else {
-    error.value = ""
+    error.value = "";
   }
 }
 

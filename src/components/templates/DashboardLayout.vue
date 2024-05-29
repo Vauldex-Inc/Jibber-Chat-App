@@ -6,7 +6,9 @@
 	 					from-indigo-600 to-purple-600 bg-clip-text font-bold text-center">
 	 				Jibber
 	 			</p>
-	 			<VThemeSelector/>
+	 			<div class="flex gap-3">
+	 					<slot name="actions"/>
+	 			</div>
 			</div>
 			<hr class="border-0 border-b border-b-indigo-200 dark:border-b-slate-800 my-2" />
 			<slot name="messages"/>
@@ -23,7 +25,3 @@
 	</div>
 </template>
 
-
-<script lang="ts" setup>
-import VThemeSelector from "@/components/organisms/VThemeSelector.vue"
-</script>

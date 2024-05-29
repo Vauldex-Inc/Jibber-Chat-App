@@ -46,7 +46,6 @@
             size="sm"
             :icon="icon"
             tabindex="20"
-            :invert="true"
             class="absolute top-1/2 right-0 -translate-x-1/2 -translate-y-1/2 bg-indigo-600"
             @click="toggle"
           />
@@ -65,7 +64,6 @@
             size="sm"
             :icon="icon"
             tabindex="21"
-            :invert="true"
             class="absolute top-1/2 right-0 -translate-x-1/2 -translate-y-1/2 bg-indigo-600"
             @click="toggle"
           />

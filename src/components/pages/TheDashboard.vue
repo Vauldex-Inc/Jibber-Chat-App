@@ -20,11 +20,10 @@
  		<template #chatinfo>
  			<template v-if="selectedChannel" >
 			 <VChatInfo 
-				:images="[]"
-				:files="[]"
-				:members="[]"
-				title="channel information"
-				:name="selectedChannel.title" />
+				:channel="selectedChannel" 
+				:sender="senderId" 
+				:count="channelUsersCount"
+				title="channel information" />
  			</template>
  		</template>
  	</DashboardLayout>

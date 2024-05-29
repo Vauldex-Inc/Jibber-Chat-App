@@ -1,31 +1,27 @@
 interface Option {
-	method?: string
-	body?: string
+  method: "GET" | "PUT" | "DELETE" | "POST"
+  body?: string;
 }
 
 const baseUrl = import.meta.env.VITE_JIBBER_BASE_URL
 
 const useFetch =  async (uri: string, option?: Option) => {
 
-	try {
-		const defaultOption = {
-				mode: "cors",
-				headers: {
-					"Accept": "application/json",
-					"Content-type": "application/json"
-				},
-				method: "GET",
-				credentials: "include"
-			}
+	const response = await fetch(baseUrl + uri, {
+    method: option ? option.method : "GET",
+    body:
+      option && (option.method === "POST" || option?.method === "PUT")
+        ? option.body
+        : undefined,
+    mode: "cors",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
 
-		const response = option ? await fetch(`${baseUrl}${uri}`, { ...defaultOption, ...option })
-														: await fetch(`${baseUrl}${uri}`, defaultOption)
-		return response
-	} catch(e) {
-		if(e instanceof Error) {
-			throw new Error(e)
-		}
-	}
+  return response;
 }
 
 export { useFetch }

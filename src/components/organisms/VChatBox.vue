@@ -37,7 +37,7 @@ const message = ref<string>("")
 
 
 const sendMessage = () => {
-	// TODO: Send message to api
+	emits("send", message.value)
 	message.value = ""
 }
 
@@ -51,5 +51,9 @@ const attachFile = (e: Event) => {
 	// TODO: attache file to message
 }
 
+
+const emits = defineEmits<{
+	send: [value: string]
+}>()
 
 </script>

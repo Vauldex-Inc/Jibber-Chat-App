@@ -6,7 +6,7 @@
 			class="aspect-square relative z-0">
 		<div 
 			:class="[statusClass]"
-			class="absolute bottom-0 right-0 h-5 aspect-square z-10 rounded-full border-[3px] border-gray-100 translate-x-1 translate-y-1">
+			class="absolute bottom-0 right-0 h-5 aspect-square z-10 rounded-full border-[3px] border-gray-100 dark:border-slate-900 translate-x-1 translate-y-1">
 		</div>
 	</div>
 </template>
@@ -33,9 +33,9 @@ const statusClass = computed(() => {
 	case "online":
 		return "bg-emerald-500";
 	case "offline":
-		return "bg-red-500";
+		return "bg-slate-400 dark:bg-slate-600";
     default:
-      return "bg-red-500";
+      return "bg-slate-400 dark:bg-slate-600";
   }
 })
 

@@ -10,7 +10,7 @@
 					:key="color" 
 					:class="color"
 					class="w-14 transition-all aspect-square border-4 border-transparent rounded-full hover:border-gray-700 cursor-pointer dark:hover:border-white"  
-					@click="$emit('selectColor', color)"></li>
+					@click="emits('color', color)"></li>
 		</ul>
 	</div>
 </template>
@@ -34,8 +34,8 @@ const colorOptions = [
 	"bg-fuchsia-600"
 	]
 
-const emit = defineEmits<{
-	selectColor: []
+const emits = defineEmits<{
+	color: [value: string]
 }>()
 
 </script>

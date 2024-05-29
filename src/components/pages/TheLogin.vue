@@ -32,7 +32,7 @@
 							:class="{'border-red-400 focus:border-red-600': error}"
 							class="w-full inline bg-gray-50 px-5 pr-12 py-3 rounded-md border-2 outline-none 
 											border-gray-300 focus:border-indigo-400 hover:border-indigo-400"/>
-					<VIconButton size="sm" :icon="icon" @click="toggle" :invert="true" class="absolute top-1/2 right-0 -translate-x-1/2 -translate-y-1/2  bg-indigo-600" />
+					<VIconButton size="sm" :icon="icon" @click="toggle" class="absolute top-1/2 right-0 -translate-x-1/2 -translate-y-1/2  bg-indigo-600" />
 				</div>
 				<VButton type="submit" class="bg-indigo-600 text-md py-3 px-5 text-white rounded-md mt-4 font-semibold" v-if="!isLoading">Login</VButton>
 				<VButton type="submit" class="bg-indigo-600 text-md py-3 px-5 text-white rounded-md mt-4 font-semibold flex justify-center" v-else>

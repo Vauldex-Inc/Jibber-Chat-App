@@ -4,7 +4,7 @@
 		<div class="flex items-center justify-between">
 			<p
 				:class="isBold? 'font-semibold text-gray-800 dark:text-gray-300' : 'font-normal text-gray-500'" 
-				class="w-[70%] truncate mt-1">
+				class="w-[80%] line-clamp-1 mt-1">
 				{{text}}
 			</p>
 			<p v-if="subText" >{{subText}}</p>

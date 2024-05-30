@@ -12,8 +12,8 @@
 				<p class="text-xs">{{sentAtFormatter}}</p>
 			</div>
 			<p 
-					:class="[message.userId === loggedUser.id ? 'self-end text-gray-100' : 'self-start bg-gray-300 text-gray-800 dark:text-gray-300 dark:bg-slate-800',
-						color ? color : 'bg-gray-300 text-gray-800 dark:text-gray-300 dark:bg-slate-800'
+					:class="[message.userId === loggedUser.id? `self-end text-gray-100` : 'self-start text-gray-800 dark:text-gray-300',
+						message.userId === loggedUser.id && color ? color : 'bg-gray-300 dark:bg-slate-800 text-gray-800 dark:text-gray-300'
 					]"
 					class="p-3 rounded-lg max-w-[250px]">
 				{{message.text}}

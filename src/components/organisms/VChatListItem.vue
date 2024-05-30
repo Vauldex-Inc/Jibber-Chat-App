@@ -32,6 +32,7 @@ import {formatSentAt} from "@/utils/formatSentAt.ts"
 import {useMessageStore} from "@/stores/useMessageStore.ts"
 import {useChannelUserStore} from "@/stores/useChannelUserStore.ts"
 import {useUser} from "@/composables/useUser.ts"
+import type {Message} from "@/types/Message.ts"
 
 
 const channelUserStore = useChannelUserStore()
@@ -58,19 +59,18 @@ const color = computed(() => {
 	return props.item.color? props.item.color.trim() : 'bg-gray-500 dark:bg-slate-800'
 })
 
-const latestMessage = ref<Message | undefined>(undefined)
-
 const channelAbbr = computed(() => {
 	return props.item.title.slice(0,1)
 })
 
 const sentAt = computed(() => {
-	return latestMessage.value ? formatSentAt(latestMessage.value.sentAt) : ''
+	return props.latestMessage ? formatSentAt(props.latestMessage.sentAt) : ''
 })
 
 
 const props = defineProps<{
-	item: Channel;
+	item: Channel
+	latestMessage?: Message
 }>()
 
 
@@ -79,7 +79,5 @@ onMounted(async () => {
 	const sender = users.find(u => u.userId !== loggedUser.id)
 
 	senderId.value = sender.userId
-
-	latestMessage.value = await messageStore.getLatestMessage(props.item.id)
 })
 </script>

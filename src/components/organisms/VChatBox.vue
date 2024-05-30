@@ -16,7 +16,7 @@
 				v-model="message"
 				placeholder="Aa"
 				class="flex-1 rounded-md border-2 border-indigo-300 focus:border-indigo-600 hover:border-indigo-600
-						dark:bg-slate-900 dark:border-slate-800 dark:focus:border-indigo-600 dark:hover:border-indigo-600"
+						dark:bg-slate-900 dark:border-slate-800 dark:focus:border-indigo-600 dark:hover:border-indigo-600 dark:placeholder:text-gray-600"
 				size="lg"/>
 		<VIconButton
 			size="lg" 

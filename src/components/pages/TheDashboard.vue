@@ -1,7 +1,7 @@
  <template>
  	<DashboardLayout>
  		<template #messages>
-			<VChatList @open="openChannel" :items="privateChannels" class="h-3/6" title="messages" button-text="Create new channel"/>
+			<VChatList @open="openChannel" :items="privateChannels" class="h-3/6" title="messages"/>
  		</template>
  		 <template #channels>
 			<VChatList @open="openChannel" :items="multiChannels" class="h-2/6" title="channels"/>
@@ -10,7 +10,7 @@
  			<template v-if="selectedChannel" >
 	 			<VChatTitle :channel="selectedChannel" :sender="senderId" :count="channelUsersCount"/>
 	 			<VChatBoxArea :messages="messages" class="flex-1" :color="selectedChannel.color"/>
-	 			<VChatBox/>
+	 			<VChatBox @send="sendMessage"/>
  			</template>
  		</template>
  		<template #actions>
@@ -49,6 +49,7 @@ import VThemeSelector from "@/components/organisms/VThemeSelector.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
 import { useRouter } from "vue-router"
 import { useFetch } from "@/composables/useFetch"
+import { useSocket } from "@/composables/useSocket.ts"
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -64,7 +65,7 @@ const multiChannels = channelStore.getMultiChannels()
 const singleChannels = channelStore.getSingleChannels()
 const privateChannels = ref<Channel[]>([])
 const selectedChannel = ref<Channel | undefined>(undefined)
-
+const activeSocket = ref<WebSocket | undefined>(undefined)
 
 const openChannel = (id: string) => {
 	selectedChannel.value = channelStore.getChannelById(id)
@@ -82,6 +83,11 @@ const logout = async () => {
 	} 
 }
 
+
+const sendMessage = (message: string) => {
+	messageStore.sendMessage(selectedChannel.value.id,message)
+}
+
 watch(selectedChannel, async (channel) => {
 	if(channel){
 		const users = await channelUserStore.getChannelUsers(channel.id)
@@ -93,6 +99,10 @@ watch(selectedChannel, async (channel) => {
 			const sender = users.find(u => u.userId !== loggedUser.id)
 			senderId.value = sender.userId
 		}
+		if(activeSocket.value) {
+			activeSocket.value.close();
+		}
+		activeSocket.value = useSocket(`/channels/${channel.id}`,messageStore.updateMessages)
 	}
 })
 
@@ -108,6 +118,7 @@ watch(singleChannels, async (channels) => {
 onMounted(async () => {
 	await userStore.init()
 	await channelStore.init()
+
 
 	selectedChannel.value = privateChannels.value.length > 0 ?  privateChannels.value[0] : multiChannels.value[0]
 })

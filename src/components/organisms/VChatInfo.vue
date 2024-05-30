@@ -13,7 +13,7 @@
 				<template v-else>
 					<div 
 							class="h-16 aspect-square flex items-center justify-center rounded-full text-white"
-							:class="color"
+							:class="curColorTheme"
 							>
 							<p class="text-xl">{{channelAbbr}}</p>
 					</div>
@@ -65,7 +65,7 @@
 
 		</div>
 		<VModal @close="close" :isOpen="isOpen">
-			<VChatColorSelector @select-color="selectColor" />
+			<VChatColorSelector @color="selectColor" />
 		</VModal>
 
 	</div>
@@ -77,8 +77,9 @@ import VAvatar from "@/components/atoms/VAvatar.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
 import VModal from "@/components/atoms/VModal.vue"
 import VChatColorSelector from "@/components/organisms/VChatColorSelector.vue"
-import { ref, computed } from "vue"
+import { ref, computed  } from "vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
+import {useFetch} from "@/composables/useFetch.ts"
 
 const userStore = useUserStore()
 
@@ -111,19 +112,35 @@ const channelAbbr = computed(() => {
 	return props.channel.title.slice(0,1)
 })
 
-const color = computed(() => {
-	return props.channel.color? props.channel.color.trim() : 'bg-gray-500 dark:bg-slate-800'
+const curColorTheme = computed(() => {
+	return props.channel.color ? props.channel.color : ("bg-gray-500 dark:bg-slate-800")
 })
-
 
 const isOpen = ref<boolean>(false)
 const openThemeSelector = () => isOpen.value = true
 const close = () => isOpen.value = false
 
 
-const selectColor = (color) => {
-	console.log(color)
+const selectColor = async (color: string) => {
+	isOpen.value = false
+	const res = await useFetch(`/channels/${props.channel.id}`, {
+		method: "PUT",
+		body: JSON.stringify({
+	    title: props.channel.title,
+	    channelType: props.channel.channelType,
+	    color: color
+		})
+	})
+
+	if(res.status === 200) {
+		emits('colorUpdate', color)
+	}
 }
 
 const props = defineProps<VChatInfoProps>()
+
+const emits = defineEmits<{
+	colorUpdate: [value: string]
+}>()
+
 </script>

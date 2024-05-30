@@ -117,6 +117,7 @@ watch(selectedChannel, async (channel) => {
 })
 
 watch(singleChannels, async (channels) => {
+	privateChannels.value = []
 	channels.forEach(async (c) => {
 		const users = await channelUserStore.getChannelUsers(c.id)
 		if(users.some(u => u.userId === loggedUser.id)) {

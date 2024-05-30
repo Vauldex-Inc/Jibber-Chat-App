@@ -78,6 +78,8 @@ onMounted(async () => {
 	const users = await channelUserStore.getChannelUsers(props.item.id)
 	const sender = users.find(u => u.userId !== loggedUser.id)
 
-	senderId.value = sender.userId
+	if(sender) {
+		senderId.value = sender.userId
+	}
 })
 </script>

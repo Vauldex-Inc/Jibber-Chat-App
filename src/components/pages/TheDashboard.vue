@@ -1,7 +1,10 @@
  <template>
+ 	<VModal :is-open="show" @close="show = false">
+ 		<VChannelForm @submit="newChannel" />
+ 	</VModal>
  	<DashboardLayout>
  		<template #messages>
-			<VChatList @open="openChannel" :items="privateChannels" class="h-3/6" title="messages"/>
+			<VChatList @open="openChannel" @click="show = true" :items="privateChannels" class="h-3/6" title="messages"/>
  		</template>
  		 <template #channels>
 			<VChatList @open="openChannel" :items="multiChannels" class="h-2/6" title="channels"/>
@@ -14,8 +17,7 @@
  			</template>
  		</template>
  		<template #actions>
- 			<VIconButton class="bg-slate-200 dark:bg-slate-800" :rounded="true" size="md" icon="./src/assets/images/logout.svg" @click="logout" />
- 			<VThemeSelector />
+ 			<VSettings />
  		</template>
  		<template #chatinfo>
  			<template v-if="selectedChannel" >
@@ -34,9 +36,10 @@ import DashboardLayout from "@/components/templates/DashboardLayout.vue"
 import VChatList from "@/components/organisms/VChatList.vue"
 import VChatTitle from "@/components/organisms/VChatTitle.vue"
 import VChatInfo from "@/components/organisms/VChatInfo.vue"
-import VChatListItem from "@/components/organisms/VChatListItem.vue"
 import VChatBox from "@/components/organisms/VChatBox.vue"
 import VChatBoxArea from "@/components/organisms/VChatBoxArea.vue"
+import VChannelForm	from "@/components/organisms/VChannelForm.vue"
+import VModal from "@/components/atoms/VModal.vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
 import {useChannelStore} from "@/stores/useChannelStore.ts"
 import {useMessageStore} from "@/stores/useMessageStore.ts"
@@ -45,13 +48,11 @@ import type {Message} from "@/types/Message.ts"
 import type {Channel} from "@/types/Channel.ts"
 import {useUser} from "@/composables/useUser.ts"
 import {useChannelUserStore} from "@/stores/useChannelUserStore.ts"
-import VThemeSelector from "@/components/organisms/VThemeSelector.vue"
-import VIconButton from "@/components/atoms/VIconButton.vue"
-import { useRouter } from "vue-router"
 import { useFetch } from "@/composables/useFetch"
 import { useSocket } from "@/composables/useSocket.ts"
 
-const router = useRouter()
+import VSettings from "@/components/organisms/VSettings.vue"
+
 const userStore = useUserStore()
 const channelStore = useChannelStore()
 const messageStore = useMessageStore()
@@ -67,20 +68,17 @@ const privateChannels = ref<Channel[]>([])
 const selectedChannel = ref<Channel | undefined>(undefined)
 const activeSocket = ref<WebSocket | undefined>(undefined)
 
+const show = ref<boolean>(false)
+
 const openChannel = (id: string) => {
 	selectedChannel.value = channelStore.getChannelById(id)
 }
 
-const logout = async () => {
-	try {
-		const response = await useFetch("/sessions", {method: "DELETE"})
-		if(response.status === 200) {
-			localStorage.removeItem("user")
-			router.push("/")
-		} 
-	} catch (err) {
-		throw new Error(err)
-	} 
+const newChannel = (channel: Channel | undefined) => {
+	if(channel){
+		channelStore.addNewChannel(channel)
+	}
+	show.value = false
 }
 
 

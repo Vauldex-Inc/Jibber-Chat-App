@@ -5,7 +5,8 @@
 			<VIconButton 
 					class="bg-indigo-600"
 					icon="./src/assets/images/add.svg"
-					size="md" >
+					size="md"
+          @click="emits('click')">
 			</VIconButton>
 		</div>
 		<ul class="overflow-y-scroll pb-5 bg-gray-50 dark:bg-slate-950">
@@ -34,5 +35,6 @@ const openChannel = (id: string) => {
 
 const emits = defineEmits<{
 	open: [value: string]
+	click: []
 }>()
 </script>

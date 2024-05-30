@@ -1,18 +1,18 @@
 <template>
 	<li
-		:class="message.userId === user.id ? `self-end` : 'self-start'"
+		:class="message.userId === loggedUser.id ? `self-end` : 'self-start'"
 		class="flex items-start gap-4">
-		<VAvatar v-if="message.userId !== user.id" :image="senderProfile"/>
+		<VAvatar v-if="message.userId !== loggedUser.id" :image="senderProfile"/>
 		<div class="flex items-start gap-2 flex-col">
-			<div :class="message.userId === user.id ? 'self-end' : ''" class="flex items-center gap-1">
-				<template v-if="message.userId !== user.id">
+			<div :class="message.userId === loggedUser.id ? 'self-end' : ''" class="flex items-center gap-1">
+				<template v-if="message.userId !== loggedUser.id">
 					<p class="text-xs">{{senderName}}</p>
 					<p class="text-xs">•</p>
 				</template>
 				<p class="text-xs">{{sentAtFormatter}}</p>
 			</div>
 			<p 
-					:class="message.userId === user.id ? `${color} self-end text-gray-100` : 'self-start bg-gray-300 text-gray-800 dark:text-gray-300 dark:bg-slate-800'"
+					:class="message.userId === loggedUser.id ? `${color} self-end text-gray-100` : 'self-start bg-gray-300 text-gray-800 dark:text-gray-300 dark:bg-slate-800'"
 					class="p-3 rounded-lg max-w-[250px]">
 				{{message.text}}
 			</p>
@@ -28,7 +28,7 @@ import {computed} from "vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
 import VAvatar from "@/components/atoms/VAvatar.vue"
 
-const user = useUser()
+const loggedUser = useUser()
 const userStore = useUserStore()
 const dateFormatter = useDateFormatter()
 
@@ -46,21 +46,11 @@ const sentAtFormatter = computed(() => {
 })
 
 const senderName = computed(() => {
-	if(props.message) {
-		const user = userStore.getUserById(props.message.userId)[1]
-		return user ? `${user.firstName} ${user.lastName}` : "Anonymous"
-	} else {
-		return "Anonymous"
-	}
+	return userStore.getUserNameById(props.message.userId)
 })
 
 const senderProfile = computed(() => {
-	if(props.message) {
-		const user = userStore.getUserById(props.message.userId)[1]
-		return user ? user.image : undefined
-	} else {
-		return undefined
-	}
+	return userStore.getUserImageById(props.message.userId)
 })
 
 const props = defineProps<{

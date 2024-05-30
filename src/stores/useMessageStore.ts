@@ -24,5 +24,51 @@ export const useMessageStore = defineStore("messages", () => {
 
 	}
 
-	return {channelMessages,getChannelMessages}
+	const sendMessage = async (channelId:string, message: string) => {
+		const res = await useFetch(`/channels/${channelId}/messages`, {
+			method: "POST",
+			body: JSON.stringify({text: message})
+		})
+
+		if(res.status === 200) {
+			const data = (await res.json()).messages
+
+			const updatedChannelMessages = channelMessages.value.map(cm => {
+				const [id,messages] = cm
+
+				if(id === channelId) {
+					messages.push(data)
+				}
+
+				return [id,messages]
+			})
+
+			channelMessages.value = [...updatedChannelMessages]
+		}
+	}
+	
+	const updateMessages = (data: MessageEvent) => {
+		const dataJson = JSON.parse(data.data)
+		const newMessage = dataJson.messages
+
+		const updatedChannelMessages = channelMessages.value.map(cm => {
+			const [id,messages] = cm
+
+			if(id === newMessage.channelId) {
+				messages.push(newMessage)
+			}
+
+			return [id,messages]
+		})
+
+		channelMessages.value = [...updatedChannelMessages]
+	}
+
+
+	const getLatestMessage = async (channelId: string) => {
+		const messages = await getChannelMessages(channelId)
+		return messages[messages.length-1]
+	}
+
+	return {channelMessages,getChannelMessages,sendMessage,updateMessages,getLatestMessage}
 })

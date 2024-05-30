@@ -41,7 +41,6 @@ const emits = defineEmits<{
 }>()
 
 const loggedUser = useUser()
-
 const userStore = useUserStore()
 const messageStore = useMessageStore()
 
@@ -76,11 +75,11 @@ const props = defineProps<{
 
 
 onMounted(async () => {
-	const messages = await messageStore.getChannelMessages(props.item.id)
 	const users = await channelUserStore.getChannelUsers(props.item.id)
-
 	const sender = users.find(u => u.userId !== loggedUser.id)
+
 	senderId.value = sender.userId
-	latestMessage.value = messages[messages.length-1]
+
+	latestMessage.value = await messageStore.getLatestMessage(props.item.id)
 })
 </script>

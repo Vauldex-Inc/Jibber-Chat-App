@@ -4,7 +4,7 @@
  	</VModal>
  	<DashboardLayout>
  		<template #messages>
-			<VChatList @open="openChannel" @click="show = true" :items="privateChannels" class="h-3/6" title="messages" button-text="Create new channel"/>
+			<VChatList @open="openChannel" @click="show = true" :items="privateChannels" class="h-3/6" title="messages"/>
  		</template>
  		 <template #channels>
 			<VChatList @open="openChannel" :items="multiChannels" class="h-2/6" title="channels"/>
@@ -13,7 +13,7 @@
  			<template v-if="selectedChannel" >
 	 			<VChatTitle :channel="selectedChannel" :sender="senderId" :count="channelUsersCount"/>
 	 			<VChatBoxArea :messages="messages" class="flex-1" :color="selectedChannel.color"/>
-	 			<VChatBox/>
+	 			<VChatBox @send="sendMessage"/>
  			</template>
  		</template>
  		<template #actions>
@@ -36,7 +36,6 @@ import DashboardLayout from "@/components/templates/DashboardLayout.vue"
 import VChatList from "@/components/organisms/VChatList.vue"
 import VChatTitle from "@/components/organisms/VChatTitle.vue"
 import VChatInfo from "@/components/organisms/VChatInfo.vue"
-import VChatListItem from "@/components/organisms/VChatListItem.vue"
 import VChatBox from "@/components/organisms/VChatBox.vue"
 import VChatBoxArea from "@/components/organisms/VChatBoxArea.vue"
 import VChannelForm	from "@/components/organisms/VChannelForm.vue"
@@ -49,6 +48,8 @@ import type {Message} from "@/types/Message.ts"
 import type {Channel} from "@/types/Channel.ts"
 import {useUser} from "@/composables/useUser.ts"
 import {useChannelUserStore} from "@/stores/useChannelUserStore.ts"
+import { useFetch } from "@/composables/useFetch"
+import { useSocket } from "@/composables/useSocket.ts"
 
 import VSettings from "@/components/organisms/VSettings.vue"
 
@@ -65,9 +66,9 @@ const multiChannels = channelStore.getMultiChannels()
 const singleChannels = channelStore.getSingleChannels()
 const privateChannels = ref<Channel[]>([])
 const selectedChannel = ref<Channel | undefined>(undefined)
+const activeSocket = ref<WebSocket | undefined>(undefined)
 
 const show = ref<boolean>(false)
-
 
 const openChannel = (id: string) => {
 	selectedChannel.value = channelStore.getChannelById(id)
@@ -80,16 +81,9 @@ const newChannel = (channel: Channel | undefined) => {
 	show.value = false
 }
 
-const logout = async () => {
-	try {
-		const response = await useFetch("/sessions", {method: "DELETE"})
-		if(response.status === 200) {
-			localStorage.removeItem("user")
-			router.push("/")
-		} 
-	} catch (err) {
-		throw new Error(err)
-	} 
+
+const sendMessage = (message: string) => {
+	messageStore.sendMessage(selectedChannel.value.id,message)
 }
 
 watch(selectedChannel, async (channel) => {
@@ -103,6 +97,10 @@ watch(selectedChannel, async (channel) => {
 			const sender = users.find(u => u.userId !== loggedUser.id)
 			senderId.value = sender.userId
 		}
+		if(activeSocket.value) {
+			activeSocket.value.close();
+		}
+		activeSocket.value = useSocket(`/channels/${channel.id}`,messageStore.updateMessages)
 	}
 })
 
@@ -118,6 +116,7 @@ watch(singleChannels, async (channels) => {
 onMounted(async () => {
 	await userStore.init()
 	await channelStore.init()
+
 
 	selectedChannel.value = privateChannels.value.length > 0 ?  privateChannels.value[0] : multiChannels.value[0]
 })

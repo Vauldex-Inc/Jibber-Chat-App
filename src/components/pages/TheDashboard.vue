@@ -21,7 +21,8 @@
  		</template>
  		<template #chatinfo>
  			<template v-if="selectedChannel" >
-			 <VChatInfo 
+			 <VChatInfo
+			 	@color-update="updateColor" 
 				:channel="selectedChannel" 
 				:sender="senderId" 
 				:count="channelUsersCount"
@@ -81,6 +82,10 @@ const newChannel = (channel: Channel | undefined) => {
 	show.value = false
 }
 
+const updateColor = (color: string) => {
+	selectedChannel.value.color = color
+}
+
 
 const sendMessage = (message: string) => {
 	messageStore.sendMessage(selectedChannel.value.id,message)
@@ -100,7 +105,14 @@ watch(selectedChannel, async (channel) => {
 		if(activeSocket.value) {
 			activeSocket.value.close();
 		}
-		activeSocket.value = useSocket(`/channels/${channel.id}`,messageStore.updateMessages)
+		activeSocket.value = useSocket(`/channels/${channel.id}`, (data: MessageEvent) => {
+			const dataJson = JSON.parse(data.data)
+			const newMessage = dataJson.messages
+
+			if(!newMessage) return
+
+			messages.value.push(newMessage)
+		})
 	}
 })
 

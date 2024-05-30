@@ -7,10 +7,12 @@ import {useFetch} from "@/composables/useFetch.ts"
 export const useChannelStore = defineStore("channels", () => {
 	const channels = ref<Channel[]>([])
 	const multiChannels = computed(() => {
-		return channels.value.filter(ch => ch.channelType !== "SNG")
+		const copy = [...channels.value]
+		return copy.filter(ch => ch.channelType !== "SNG").sort((a, b) => a.title.localeCompare(b.title))
 	})
 	const singleChannels = computed(() => {
-		return channels.value.filter(ch => ch.channelType === "SNG")
+		const copy = [...channels.value]
+		return copy.filter(ch => ch.channelType === "SNG").sort((a, b) =>  a.title.localeCompare(b.title))
 	})
 
 	const init = async () => {

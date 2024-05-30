@@ -14,8 +14,7 @@
  			</template>
  		</template>
  		<template #actions>
- 			<VIconButton class="bg-slate-200 dark:bg-slate-800" :rounded="true" size="md" icon="./src/assets/images/logout.svg" @click="logout" />
- 			<VThemeSelector />
+ 			<VSettings />
  		</template>
  		<template #chatinfo>
  			<template v-if="selectedChannel" >
@@ -45,12 +44,9 @@ import type {Message} from "@/types/Message.ts"
 import type {Channel} from "@/types/Channel.ts"
 import {useUser} from "@/composables/useUser.ts"
 import {useChannelUserStore} from "@/stores/useChannelUserStore.ts"
-import VThemeSelector from "@/components/organisms/VThemeSelector.vue"
-import VIconButton from "@/components/atoms/VIconButton.vue"
-import { useRouter } from "vue-router"
-import { useFetch } from "@/composables/useFetch"
 
-const router = useRouter()
+import VSettings from "@/components/organisms/VSettings.vue"
+
 const userStore = useUserStore()
 const channelStore = useChannelStore()
 const messageStore = useMessageStore()
@@ -66,21 +62,11 @@ const privateChannels = ref<Channel[]>([])
 const selectedChannel = ref<Channel | undefined>(undefined)
 
 
+
 const openChannel = (id: string) => {
 	selectedChannel.value = channelStore.getChannelById(id)
 }
 
-const logout = async () => {
-	try {
-		const response = await useFetch("/sessions", {method: "DELETE"})
-		if(response.status === 200) {
-			localStorage.removeItem("user")
-			router.push("/")
-		} 
-	} catch (err) {
-		throw new Error(err)
-	} 
-}
 
 watch(selectedChannel, async (channel) => {
 	if(channel){

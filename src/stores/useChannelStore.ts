@@ -32,5 +32,9 @@ export const useChannelStore = defineStore("channels", () => {
 		return channels.value.find(c => c.id === channelId)
 	}
 
-	return {channels,multiChannels,singleChannels,init,getMultiChannels,getSingleChannels,getChannelById}
+	const addNewChannel = (channel: Channel) => {
+		channels.value.push(channel)
+	}
+
+	return {channels,multiChannels,singleChannels,init,getMultiChannels,getSingleChannels,getChannelById,addNewChannel}
 })

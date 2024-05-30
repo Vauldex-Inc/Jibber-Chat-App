@@ -4,16 +4,16 @@
 			@click="setTheme('dark')"
 			class="flex items-center gap-3 w-full"
 		>
-			<img class="h-8 aspect-square" src="@/assets/images/moon.svg" />
-			<span>Dark</span>
+			<img class="h-7 aspect-square" src="@/assets/images/moon.svg" />
+			<span>Theme • ( Light )</span>
 	</VButton>
 	<VButton 
 			v-else 
 			@click="setTheme('light')" 
 			class="flex items-center gap-3 w-full"
 		>
-			<img class="h-8 aspect-square" src="@/assets/images/sun.svg" />
-			<span>Light</span>
+			<img class="h-7 aspect-square" src="@/assets/images/sun.svg" />
+			<span>Theme • ( Dark )</span>
 	</VButton>
 </template>
 

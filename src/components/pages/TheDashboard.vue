@@ -46,10 +46,7 @@ import {useUser} from "@/composables/useUser.ts"
 import {useChannelUserStore} from "@/stores/useChannelUserStore.ts"
 
 import VSettings from "@/components/organisms/VSettings.vue"
-import { useRouter } from "vue-router"
-import { useFetch } from "@/composables/useFetch"
 
-const router = useRouter()
 const userStore = useUserStore()
 const channelStore = useChannelStore()
 const messageStore = useMessageStore()

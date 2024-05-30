@@ -143,10 +143,10 @@ const login = async () => {
 			const result = await response.json()
 
 			localStorage.setItem("user", JSON.stringify(result.user))
-			formData.value.username = ""
-			formData.value.password = ""
+			resetFields(formData, "username", "password")
 			router.push("/dashboard")
 		} else if (response.status === 404) {
+			highlightErrorFields()
 			displayError("Incorrect username and password combination")
 		}
 	} catch(error) {

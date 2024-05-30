@@ -1,7 +1,10 @@
  <template>
+ 	<VModal :is-open="show" @close="show = false">
+ 		<VChannelForm @submit="newChannel" />
+ 	</VModal>
  	<DashboardLayout>
  		<template #messages>
-			<VChatList @open="openChannel" :items="privateChannels" class="h-3/6" title="messages" button-text="Create new channel"/>
+			<VChatList @open="openChannel" @click="show = true" :items="privateChannels" class="h-3/6" title="messages" button-text="Create new channel"/>
  		</template>
  		 <template #channels>
 			<VChatList @open="openChannel" :items="multiChannels" class="h-2/6" title="channels"/>
@@ -37,6 +40,8 @@ import VChatInfo from "@/components/organisms/VChatInfo.vue"
 import VChatListItem from "@/components/organisms/VChatListItem.vue"
 import VChatBox from "@/components/organisms/VChatBox.vue"
 import VChatBoxArea from "@/components/organisms/VChatBoxArea.vue"
+import VChannelForm	from "@/components/organisms/VChannelForm.vue"
+import VModal from "@/components/atoms/VModal.vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
 import {useChannelStore} from "@/stores/useChannelStore.ts"
 import {useMessageStore} from "@/stores/useMessageStore.ts"
@@ -65,9 +70,17 @@ const singleChannels = channelStore.getSingleChannels()
 const privateChannels = ref<Channel[]>([])
 const selectedChannel = ref<Channel | undefined>(undefined)
 
+const show = ref<boolean>(false)
 
 const openChannel = (id: string) => {
 	selectedChannel.value = channelStore.getChannelById(id)
+}
+
+const newChannel = (channel: Channel | undefined) => {
+	if(channel){
+		channelStore.addNewChannel(channel)
+	}
+	show.value = false
 }
 
 const logout = async () => {

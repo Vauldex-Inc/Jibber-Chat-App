@@ -5,7 +5,8 @@
 			<VButton 
 					v-if="buttonText"
 					class="capitalize bg-indigo-600 rounded-md text-gray-100 font-semibold w-full" 
-					size="md" >
+					size="md"
+					@click="emits('click')" >
 				{{buttonText}}
 			</VButton>
 		</div>
@@ -36,5 +37,6 @@ const openChannel = (id: string) => {
 
 const emits = defineEmits<{
 	open: [value: string]
+	click: []
 }>()
 </script>

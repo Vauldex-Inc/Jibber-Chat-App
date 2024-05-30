@@ -62,7 +62,11 @@ const create = async () => {
 				emits('submit', channel)
 			}
 		} else {
-			error.value = "Please provide a channel name."
+			if(props.variant === "MPU") {
+				error.value = "Please provide a channel name."
+			} else {
+				error.value = "Please provide a name."
+			}
 		}
 	} catch (err) {
 		emits('submit', undefined)
@@ -70,7 +74,7 @@ const create = async () => {
 	} finally {
 		setTimeout(() => {
 			error.value = ""
-		}, 2000)
+		}, 1500)
 	}
 }
 

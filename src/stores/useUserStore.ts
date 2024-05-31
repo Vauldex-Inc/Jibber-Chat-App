@@ -17,7 +17,7 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	const getUserById = (id: string) => {
-		return users.value.find(u => u[1].userId === id)
+		return users.value.find(u => u[0].id === id)
 	}
 
 	const getUsers = () => {
@@ -25,7 +25,13 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	const getUserNameById = (id: string) => {
-		const [user,profile] = getUserById(id)
+		const userProfile = getUserById(id)
+
+		if(!userProfile) {
+			return "Anonymous"
+		}
+
+		const [user,profile] = userProfile
 
 		if(!profile) {
 			return user.username

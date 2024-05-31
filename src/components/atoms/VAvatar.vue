@@ -3,7 +3,7 @@
 		<img 
 			:src="image? image : './src/assets/images/default-avatar.svg'"
 			:class="[imageClass]"
-			class="aspect-square relative z-0">
+			class="aspect-square relative z-0 rounded-full object-cover">
 		<div 
 			:class="[statusClass]"
 			class="absolute bottom-0 right-0 h-5 aspect-square z-10 rounded-full border-[3px] border-gray-100 dark:border-slate-900 translate-x-1 translate-y-1">

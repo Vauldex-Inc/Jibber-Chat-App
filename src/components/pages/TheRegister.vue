@@ -208,19 +208,11 @@ const resetInputs = () => {
 watchEffect(() => {
   if(current.value === "username"){
     for(let validation of usernameValidations.value) {
-      if(validation.regex.test(formData.value.username)){
-        validation.isSuccess = true
-      } else {
-        validation.isSuccess = false
-      }
+      validation.isSuccess = validation.regex.test(formData.value.username)
     }
   } else {
     for(let validation of passwordValidations.value) {
-      if(validation.regex.test(formData.value.password)){
-        validation.isSuccess = true
-      } else {
-        validation.isSuccess = false
-      }
+      validation.isSuccess = validation.regex.test(formData.value.password)
     }
   }
 })

@@ -1,13 +1,16 @@
  <template>
- 	<VModal :is-open="show" @close="show = false">
- 		<VChannelForm @submit="newChannel" />
+ 	<VModal :is-open="variant === 'SNG'" @close="variant = undefined">
+ 		<VChannelForm :variant="variant" @submit="newDirect" />
+ 	</VModal>
+ 	<VModal :is-open="variant === 'MPU'" @close="variant = undefined">
+ 		<VChannelForm :variant="variant" @submit="newChannel" />
  	</VModal>
  	<DashboardLayout>
  		<template #messages>
-			<VChatList @open="openChannel" @click="show = true" :items="privateChannels" class="h-3/6" title="messages"/>
+			<VChatList @open="openChannel" @click="variant = 'SNG'" :items="privateChannels" class="h-3/6" title="messages"/>
  		</template>
  		 <template #channels>
-			<VChatList @open="openChannel" :items="multiChannels" class="h-2/6" title="channels"/>
+			<VChatList @open="openChannel" @click="variant = 'MPU'" :items="multiChannels" class="h-2/6" title="channels"/>
  		</template>
  		<template #chatbox>
  			<template v-if="selectedChannel" >
@@ -69,7 +72,7 @@ const privateChannels = ref<Channel[]>([])
 const selectedChannel = ref<Channel | undefined>(undefined)
 const activeSocket = ref<WebSocket | undefined>(undefined)
 
-const show = ref<boolean>(false)
+const variant = ref<"MPU" | "MPR" | "SNG" | undefined>()
 
 const openChannel = (id: string) => {
 	selectedChannel.value = channelStore.getChannelById(id)
@@ -79,7 +82,14 @@ const newChannel = (channel: Channel | undefined) => {
 	if(channel){
 		channelStore.addNewChannel(channel)
 	}
-	show.value = false
+	variant.value = undefined
+}
+
+const newDirect = (channel: Channel | undefined) => {
+	if(channel){
+		channelStore.addNewChannel(channel)
+	}
+	variant.value = undefined
 }
 
 const updateColor = (color: string) => {

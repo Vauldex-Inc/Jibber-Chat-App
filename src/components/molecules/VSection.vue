@@ -4,10 +4,10 @@
 			<p class="capitalize font-semibold text-gray-700 dark:text-gray-300">{{title}}</p>
 			<VButton 
 				size="sm"
-				@click="emits('click')" 
-				class="capitalize text-indigo-600 dark:text-indigo-500 font-semibold hover:bg-indigo-100 dark:hover:bg-slate-900 rounded-md" 
+				@click="emits('click')"
+				class="capitalize font-semibold hover:bg-indigo-100 dark:hover:bg-slate-900 rounded-md" 
 				v-if="actionButton">
-				{{ actionButton }}
+				<p :class="curColorTheme" class="text-transparent inline-block bg-clip-text">{{ actionButton }}</p>
 			</VButton>
 		</div>
 		<slot/>
@@ -16,13 +16,19 @@
 
 <script lang="ts" setup>
 import VButton from "@/components/atoms/VButton.vue"
+import {computed} from "vue"
 
 interface VSectionProps {
 	title: string;
 	actionButton?: string;
+	color?: string
 }
 
-defineProps<VSectionProps>()
+const curColorTheme = computed(() => {
+	return props.color ? props.color : "bg-slate-600 dark:bg-slate-300"
+})
+
+const props = defineProps<VSectionProps>()
 
 const emits = defineEmits<{
 	click: [];

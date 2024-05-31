@@ -13,10 +13,13 @@
 			</div>
 			<VTextGroup class="flex-1" :title="item.title" :text="latestMessage ? latestMessage.text : 'Loading...'"/>
 		</template>
-		<div class="flex items-center flex-col gap-2">
+		<div v-if="!item.archivedAt" class="flex items-center flex-col gap-2">
 			<p class="text-sm">{{sentAt}}</p>
 			<VBadge v-if="false" :count="12"/>
 		</div>
+		<p v-else class="bg-red-500/10 border border-red-500/40 dark:border-red-500/20 text-red-500 py-1 px-3 rounded-full text-xs">
+			Archived
+		</p>
 	</div>
 </template>
 

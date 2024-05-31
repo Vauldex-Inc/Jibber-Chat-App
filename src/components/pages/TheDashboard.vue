@@ -11,9 +11,9 @@
  		</template>
  		<template #chatbox>
  			<template v-if="selectedChannel" >
-	 			<VChatTitle :channel="selectedChannel" :sender="senderId" :count="channelUsersCount"/>
-	 			<VChatBoxArea :messages="messages" class="flex-1" :color="selectedChannel.color"/>
-	 			<VChatBox @send="sendMessage"/>
+	 			<VChatTitle @archive="updateArchived" :channel="selectedChannel" :sender="senderId" :count="channelUsersCount"/>
+	 			<VChatBoxArea :channel="selectedChannel" :messages="messages" class="flex-1"/>
+	 			<VChatBox @send="sendMessage" :channel="selectedChannel"/>
  			</template>
  		</template>
  		<template #actions>
@@ -86,6 +86,9 @@ const updateColor = (color: string) => {
 	selectedChannel.value.color = color
 }
 
+const updateArchived = (archivedAt: string) => {
+	selectedChannel.value.archivedAt = archivedAt
+}
 
 const sendMessage = (message: string) => {
 	messageStore.sendMessage(selectedChannel.value.id,message)

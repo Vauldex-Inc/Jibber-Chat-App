@@ -73,7 +73,7 @@
 		</div>
 		
 		<VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
-			<VMemberInvitation />
+			<VMemberInvitation :color="curColorTheme" />
 		</VModal>
 		<VModal @close="closeThemeSelector" :is-open="stateThemeSelector">
 			<VChatColorSelector @color="selectColor" />

@@ -48,5 +48,20 @@ export const useUserStore = defineStore("users", () => {
 		return profile.image
 	}
 
-	return {users,init,getUserById,getUsers,getUserNameById,getUserImageById}
+	const addUserProfile = (id: string, newProfile: Profile) => {
+		users.value.map(u => {
+				const [user, profile] = u
+				if(user.id === id) {
+				 	profile.userId = id
+				 	profile.nickName = newProfile.nickName
+				 	profile.firstName = newProfile.firstName
+				 	profile.lastName = newProfile.lastName
+				 	profile.image = newProfile.image
+				 	profile.email = newProfile.email
+				}
+				return [user, profile]
+		})
+	}
+
+	return {users,init,getUserById,getUsers,getUserNameById,getUserImageById,addUserProfile}
 })

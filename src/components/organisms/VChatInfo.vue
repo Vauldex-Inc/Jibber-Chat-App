@@ -22,6 +22,7 @@
 				<div class="flex items-center justify-center gap-4">
 					<div class="group flex flex-col gap-2 items-center justify-center">
 						<VIconButton 
+								@click="openMemberInvite"
 								icon="./src/assets/images/add.svg"
 								class="bg-indigo-100 border-2 border-indigo-200 group-hover:border-indigo-500 dark:bg-slate-950 dark:border-slate-800 dark:group-hover:bg-slate-900 dark:group-hover:border-indigo-700" 
 								:invert="true"/>
@@ -62,12 +63,14 @@
 					<p v-else class="text-center">No files found</p>
 				</div>
 			</VSection>
-
 		</div>
-		<VModal @close="close" :isOpen="isOpen">
+		
+		<VModal @close="closeMemberInvite" :isOpen="stateMemberInvite">
+			<VMemberInvitation />
+		</VModal>
+		<VModal @close="closeThemeSelector" :isOpen="stateThemeSelector">
 			<VChatColorSelector @color="selectColor" />
 		</VModal>
-
 	</div>
 </template>
 
@@ -77,6 +80,7 @@ import VAvatar from "@/components/atoms/VAvatar.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
 import VModal from "@/components/atoms/VModal.vue"
 import VChatColorSelector from "@/components/organisms/VChatColorSelector.vue"
+import VMemberInvitation from "@/components/organisms/VMemberInvitation.vue"
 import { ref, computed  } from "vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
 import {useFetch} from "@/composables/useFetch.ts"
@@ -116,9 +120,14 @@ const curColorTheme = computed(() => {
 	return props.channel.color ? props.channel.color : ("bg-gray-500 dark:bg-slate-800")
 })
 
-const isOpen = ref<boolean>(false)
-const openThemeSelector = () => isOpen.value = true
-const close = () => isOpen.value = false
+const stateMemberInvite = ref<boolean>(false)
+const openMemberInvite = () => stateMemberInvite.value = true
+const closeMemberInvite = () => stateMemberInvite.value = false
+
+const stateThemeSelector = ref<boolean>(false)
+const openThemeSelector = () => stateThemeSelector.value = true
+const closeThemeSelector = () => stateThemeSelector.value = false
+
 
 
 const selectColor = async (color: string) => {

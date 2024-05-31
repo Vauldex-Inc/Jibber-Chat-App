@@ -5,19 +5,27 @@
 		<div 
 				v-else
 				class="h-12 aspect-square flex items-center justify-center rounded-full text-white"
-				:class="color"
+				:class="curColorTheme"
 				>
 				<p>{{channelAbbr}}</p>
 		</div>
 		<div>
 			<div>
-				<p v-if="channel.channelType === 'SNG'" class="text-gray-700 dark:text-gray-300 font-semibold">{{senderName}}</p>
-				<p v-else class="text-gray-700 dark:text-gray-300 font-semibold">{{channel.title}}</p>
-				<p>{{count}} members</p>
+				<template v-if="channel.channelType === 'SNG'">
+					<p class="text-gray-700 dark:text-gray-300 font-semibold">{{senderName}}</p>
+					<p class="text-sm">Offline</p>
+				</template>
+				<template v-else>
+					<p class="text-gray-700 dark:text-gray-300 font-semibold">{{channel.title}}</p>
+					<p class="text-sm">{{count && count > 1 ? `${count} members` : `${count} member`}}</p>
+				</template>
 			</div>
 		</div>
 		<VIconButton 
-				class="bg-indigo-600 ml-auto"
+				@click="achiveChannel"
+				v-if="(sender && channel.userId === sender) && !channel.archivedAt"
+				class="ml-auto"
+				:class="curColorTheme"
 				icon="./src/assets/images/archive.svg"/>
 	</div>
 </template>
@@ -47,9 +55,28 @@ const channelAbbr = computed(() => {
 	return props.channel.title.slice(0,1)
 })
 
-const color = computed(() => {
-	return props.channel.color? props.channel.color.trim() : 'bg-gray-500 dark:bg-slate-800'
+const curColorTheme = computed(() => {
+	return props.channel.color ? props.channel.color : "bg-slate-800"
 })
+
+
+const achiveChannel = async () => {
+	const archivedAt = new Date().toISOString()
+
+	const res = await useFetch(`/channels/${props.channel.id}`, {
+		method: "PUT",
+		body: JSON.stringify({
+	    title: props.channel.title,
+	    channelType: props.channel.channelType,
+	    color: undefined,
+	    archivedAt: archivedAt
+		})
+	})
+
+	if(res.status === 200) {
+		emits('archive', archivedAt)
+	}
+}
 
 
 const props = defineProps<{
@@ -58,5 +85,8 @@ const props = defineProps<{
 	count?: number
 }>()
 
+const emits = defineEmits<{
+	archive: [value: string]
+}>()
 
 </script>

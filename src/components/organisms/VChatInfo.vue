@@ -4,10 +4,13 @@
 					border-b-indigo-200 dark:border-b-slate-800 py-[30px] px-5 bg-white dark:bg-slate-950 z-40">
 			{{title}}
 		</p>
-		<div class="overflow-y-scroll flex-1 bg-white dark:bg-slate-950">
+		<div class="overflow-y-scroll flex-1 bg-white dark:bg-slate-950 pb-24">
 			<div class="flex flex-col items-center justify-center gap-5 px-5 pb-5 pt-16">
 				<template v-if="channel.channelType === 'SNG'">
-					<VAvatar size="lg" :image="senderProfile"/>
+					<div>
+						<VAvatar size="lg" :image="senderProfile"/>
+						<p class="text-sm text-center">Offline</p>
+					</div>
 					<p class="font-semibold">{{senderName}}</p>
 				</template>
 				<template v-else>
@@ -21,31 +24,35 @@
 				</template>
 				<div class="flex items-center justify-center gap-4">
 					<div class="group flex flex-col gap-2 items-center justify-center">
-						<VIconButton 
+						<VIconButton
+								:disabled="channel.archivedAt !== undefined"
 								icon="./src/assets/images/add.svg"
-								class="bg-indigo-100 border-2 border-indigo-200 group-hover:border-indigo-500 dark:bg-slate-950 dark:border-slate-800 dark:group-hover:bg-slate-900 dark:group-hover:border-indigo-700" 
+								:class="{'opacity-50' : channel.archivedAt}"
+								class="bg-indigo-100 border-2 border-indigo-200 dark:bg-slate-950 dark:border-slate-800 dark:group-hover:bg-slate-900 group-hover:border-slate-500 dark:group-hover:border-slate-800" 
 								:invert="true"/>
-						<p class="text-sm text-gray-500 group-hover:text-indigo-600 dark:text-gray-400">Member</p>
+						<p class="text-sm text-gray-600 dark:text-slate-400">Member</p>
 					</div>
 					<div class="group flex flex-col gap-2 items-center justify-center">
-						<VIconButton 
+						<VIconButton
+								:disabled="channel.archivedAt !== undefined"
 								@click="openThemeSelector"
 								icon="./src/assets/images/theme.svg"
-								class="bg-indigo-100 border-2 border-indigo-200 group-hover:border-indigo-500 dark:bg-slate-950 dark:border-slate-800 dark:group-hover:bg-slate-900 dark:group-hover:border-indigo-700" 
+								:class="{'opacity-50' : channel.archivedAt}"
+								class="bg-indigo-100 border-2 border-indigo-200 dark:bg-slate-950 dark:border-slate-800 dark:group-hover:bg-slate-900 group-hover:border-slate-500 dark:group-hover:border-slate-800" 
 								:invert="true"/>
-						<p class="text-sm text-gray-500 group-hover:text-indigo-600 dark:text-gray-400">Theme</p>
+						<p class="text-sm text-gray-600 dark:text-slate-400">Theme</p>
 					</div>
 				</div>
 			</div>
 			<hr class="border-0 border-b border-b-indigo-200 dark:border-b-slate-800 my-5" />
-			<VSection class="p-5" title="Members" actionButton="View All">
+			<VSection :color="channel.color" class="p-5" title="Members" actionButton="View All">
 				<div class="flex items-center gap-3 p-3">
 					<img src="@/assets/images/profile.svg" class="h-8 aspect-square dark:invert">
-					<p>{{count}} members</p>
+					<p>{{count && count > 1 ? `${count} members` : `${count} member`}}</p>
 				</div>
 			</VSection>
 			<hr class="border-0 border-b border-b-indigo-200 dark:border-b-slate-800 my-5" />
-			<VSection class="p-5" title="Images" actionButton="View All">
+			<VSection :color="channel.color" class="p-5" title="Images" actionButton="View All">
 				<div class="p-3">
 					<ul v-if="images.length !== 0">
 						
@@ -54,7 +61,7 @@
 				</div>
 			</VSection>
 			<hr class="border-0 border-b border-b-indigo-200 dark:border-b-slate-800 my-5" />
-			<VSection class="p-5" title="Files" actionButton="View All">
+			<VSection :color="channel.color" class="p-5" title="Files" actionButton="View All">
 				<div class="p-3">
 					<ul v-if="files.length !== 0">
 						
@@ -113,7 +120,7 @@ const channelAbbr = computed(() => {
 })
 
 const curColorTheme = computed(() => {
-	return props.channel.color ? props.channel.color : ("bg-gray-500 dark:bg-slate-800")
+	return props.channel.color ? props.channel.color : "bg-slate-800"
 })
 
 const isOpen = ref<boolean>(false)

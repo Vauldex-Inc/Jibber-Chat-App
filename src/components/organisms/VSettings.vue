@@ -41,7 +41,7 @@ const formShown = ref<boolean>(false)
 
 const toggleSettings = () => isOpen.value = !isOpen.value
 
-const newProfile = (profile: Profile | undefined) => {
+const newProfile = () => {
 	formShown.value = false
 }
 	

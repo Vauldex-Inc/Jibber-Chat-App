@@ -72,10 +72,10 @@
 			</VSection>
 		</div>
 		
-		<VModal @close="closeMemberInvite" :isOpen="stateMemberInvite">
+		<VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
 			<VMemberInvitation />
 		</VModal>
-		<VModal @close="closeThemeSelector" :isOpen="stateThemeSelector">
+		<VModal @close="closeThemeSelector" :is-open="stateThemeSelector">
 			<VChatColorSelector @color="selectColor" />
 		</VModal>
 	</div>
@@ -138,7 +138,7 @@ const closeThemeSelector = () => stateThemeSelector.value = false
 
 
 const selectColor = async (color: string) => {
-	isOpen.value = false
+	stateThemeSelector.value = false
 	const res = await useFetch(`/channels/${props.channel.id}`, {
 		method: "PUT",
 		body: JSON.stringify({

@@ -101,8 +101,8 @@ const updateArchived = (archivedAt: string) => {
 	selectedChannel.value.archivedAt = archivedAt
 }
 
-const sendMessage = (message: string) => {
-	messageStore.sendMessage(selectedChannel.value.id,message)
+const sendMessage = (message: string, img: string | undefined) => {
+	messageStore.sendMessage(selectedChannel.value.id,message,img)
 }
 
 watch(selectedChannel, async (channel) => {

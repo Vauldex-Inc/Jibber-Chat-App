@@ -46,7 +46,9 @@
 				</div>
 			</div>
 			<hr class="border-0 border-b border-b-indigo-200 dark:border-b-slate-800 my-5" />
-			<VSection :color="channel.color" class="p-5" title="Members" actionButton="View All">
+			<VSection :color="channel.color" class="p-5" title="Members" actionButton="View All"
+			 @click="openDisplayAllMembers"
+			>
 				<div class="flex items-center gap-3 p-3">
 					<img src="@/assets/images/profile.svg" class="h-8 aspect-square dark:invert">
 					<p>{{count && count > 1 ? `${count} members` : `${count} member`}}</p>
@@ -71,12 +73,17 @@
 				</div>
 			</VSection>
 		</div>
-		
+
 		<VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
 			<VMemberInvitation :color="curColorTheme" />
 		</VModal>
+
 		<VModal @close="closeThemeSelector" :is-open="stateThemeSelector">
 			<VChatColorSelector @color="selectColor" />
+		</VModal>
+
+		<VModal @close="closeDisplayAllMembers" :is-open="stateDisplayAllMembers">
+			<VDisplayAllMembers :channel-id="channel.id" />
 		</VModal>
 	</div>
 </template>
@@ -88,6 +95,7 @@ import VIconButton from "@/components/atoms/VIconButton.vue"
 import VModal from "@/components/atoms/VModal.vue"
 import VChatColorSelector from "@/components/organisms/VChatColorSelector.vue"
 import VMemberInvitation from "@/components/organisms/VMemberInvitation.vue"
+import VDisplayAllMembers from "@/components/organisms/VDisplayAllMembers.vue"
 import { ref, computed  } from "vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
 import {useFetch} from "@/composables/useFetch.ts"
@@ -135,6 +143,9 @@ const stateThemeSelector = ref<boolean>(false)
 const openThemeSelector = () => stateThemeSelector.value = true
 const closeThemeSelector = () => stateThemeSelector.value = false
 
+const stateDisplayAllMembers = ref<boolean>(false)
+const openDisplayAllMembers = () => stateDisplayAllMembers.value = true
+const closeDisplayAllMembers = () => stateDisplayAllMembers.value = false
 
 
 const selectColor = async (color: string) => {

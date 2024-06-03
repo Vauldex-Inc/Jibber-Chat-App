@@ -1,6 +1,6 @@
  <template>
  	<VModal :is-open="variant === 'SNG'" @close="variant = undefined">
- 		<VChannelForm :variant="variant" @submit="newDirect" />
+ 		<VInvitationDirect color="bg-indigo-600" @submit="newDirect"/>
  	</VModal>
  	<VModal :is-open="variant === 'MPU'" @close="variant = undefined">
  		<VChannelForm :variant="variant" @submit="newChannel" />
@@ -44,6 +44,7 @@ import VChatBox from "@/components/organisms/VChatBox.vue"
 import VChatBoxArea from "@/components/organisms/VChatBoxArea.vue"
 import VChannelForm	from "@/components/organisms/VChannelForm.vue"
 import VModal from "@/components/atoms/VModal.vue"
+import VInvitationDirect from "@/components/organisms/VInvitationDirect.vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
 import {useChannelStore} from "@/stores/useChannelStore.ts"
 import {useMessageStore} from "@/stores/useMessageStore.ts"

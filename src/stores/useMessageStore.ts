@@ -10,10 +10,13 @@ export const useMessageStore = defineStore("messages", () => {
 			return (await res.json()).messages
 	}
 
-	const sendMessage = async (channelId:string, message: string) => {
+	const sendMessage = async (channelId:string, message: string, img: string | undefined) => {
 		const res = await useFetch(`/channels/${channelId}/messages`, {
 			method: "POST",
-			body: JSON.stringify({text: message})
+			body: JSON.stringify({
+				text: message,
+				image: img
+			})
 		})
 	}
 

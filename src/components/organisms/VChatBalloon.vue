@@ -2,7 +2,7 @@
 	<li
 		:class="message.userId === loggedUser.id ? `self-end` : 'self-start'"
 		class="flex items-start gap-4">
-		<VAvatar v-if="message.userId !== loggedUser.id" :image="senderProfile"/>
+		<VAvatar v-if="message.userId !== loggedUser.id" :image="senderProfile" :status="senderStatus"/>
 		<div class="flex items-start gap-2 flex-col">
 			<div :class="message.userId === loggedUser.id ? 'self-end' : ''" class="flex items-center gap-1">
 				<template v-if="message.userId !== loggedUser.id">
@@ -17,6 +17,7 @@
 					]"
 					class="p-3 rounded-lg max-w-[250px]">
 				{{message.text}}
+				<img v-if="message.image" class="max-h-48 aspect-auto rounded-md mt-2" :src="message.image">
 			</p>
 		</div>
 	</li>
@@ -53,6 +54,10 @@ const senderName = computed(() => {
 
 const senderProfile = computed(() => {
 	return userStore.getUserImageById(props.message.userId)
+})
+
+const senderStatus = computed(() => {
+	return userStore.getOnlineUsers().value.indexOf(props.message.userId) !== -1 ? 'online' : 'offline'
 })
 
 const props = defineProps<{

@@ -8,8 +8,9 @@
 			<div class="flex flex-col items-center justify-center gap-5 px-5 pb-5 pt-16">
 				<template v-if="channel.channelType === 'SNG'">
 					<div>
-						<VAvatar size="lg" :image="senderProfile"/>
-						<p class="text-sm text-center">Offline</p>
+						<VAvatar size="lg" :image="senderProfile" :status="senderStatus"/>
+						<p class="text-sm text-center capitalize p-1 mt-2 rounded-md" 
+							:class="senderStatus === 'online' ? 'bg-emerald-100 dark:bg-slate-900 text-emerald-600' : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400'">{{senderStatus}}</p>
 					</div>
 					<p class="font-semibold">{{senderName}}</p>
 				</template>
@@ -125,6 +126,11 @@ const senderName = computed(() => {
 const senderProfile = computed(() => {
 	if(!props.sender) return undefined
 	return userStore.getUserImageById(props.sender)
+})
+
+const senderStatus = computed(() => {
+	if(!props.sender) return undefined
+	return userStore.getOnlineUsers().value.indexOf(props.sender) !== -1 ? 'online' : 'offline'
 })
 
 const channelAbbr = computed(() => {

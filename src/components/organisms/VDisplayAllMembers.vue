@@ -8,7 +8,7 @@
 			<li v-for="[user, profile] in users" class="flex justify-between items-center hover:bg-gray-100 hover:dark:bg-gray-800 rounded-md px-4 py-2">
 				<div class="flex gap-4">
  					<template v-if="profile">
-						<VAvatar :image="profile.image" :status="user.activeAt" />
+						<VAvatar :image="profile.image" :status="getStatus(user.id)" />
 						<div class="flex flex-col">
 							<span class="font-semibold">{{ `${profile.firstName} ${profile.lastName}` }}</span>
 							<span v-if="profile.nickName" class="text-xs">({{ profile.nickName }})</span>
@@ -41,6 +41,10 @@ const channelUserStore = useChannelUserStore()
 const props = defineProps<{
 	channelId: string
 }>()
+
+const getStatus = (id: string) => {
+	return userStore.getOnlineUsers().value.indexOf(id) !== -1 ? 'online' : 'offline'
+}
 
 const channelUsers = ref([])
 const users = ref<[User, Profile][]>([])

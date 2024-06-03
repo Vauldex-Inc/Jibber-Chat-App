@@ -8,6 +8,8 @@ import {useFetch} from "@/composables/useFetch.ts"
 export const useUserStore = defineStore("users", () => {
 	const users = ref<[User,Profile][]>([])
 
+	const onlineUsers = ref<string[]>([])
+
 
 	const init = async () => {
 		const res = await useFetch("/users")
@@ -45,8 +47,14 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	const getUserImageById = (id: string) => {
-		const profile = getUserById(id)[1]
+		const userProfile = getUserById(id)
 
+		if(!userProfile) {
+			return undefined
+		}
+
+		const [user,profile] = userProfile
+		
 		if(!profile) {
 			return undefined
 		}
@@ -69,5 +77,23 @@ export const useUserStore = defineStore("users", () => {
 		})
 	}
 
-	return {users,init,getUserById,getUsers,getUserNameById,getUserImageById,addUserProfile}
+	const updateUserOnlineAt = (users: User[], type: string) => {
+		if(type === "online") {
+			onlineUsers.value = users
+		} else {
+			onlineUsers.value = [...onlineUsers.value.filter(ol => users.indexOf(ol) === -1 )]
+		}
+	}
+
+	const getOnlineUsers = () => {
+		return onlineUsers
+	}
+
+	const addNewUser = (user: User) => {
+		console.log(user)
+		users.value.push([user,undefined])
+	}
+
+	return {users,init,getUserById,getUsers,getUserNameById,
+	getUserImageById,addUserProfile,updateUserOnlineAt,onlineUsers,getOnlineUsers, addNewUser}
 })

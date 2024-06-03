@@ -24,5 +24,11 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 
 	}
 
-	return {channelUsers,getChannelUsers}
+	const isMember = (channelId: string,userId: string) => {
+		const users = channelUsers.value.find(c => c[0] === channelId)
+
+		return users && users[1].find(u => u.id === userId) !== undefined
+	}
+
+	return {channelUsers,getChannelUsers,isMember}
 })

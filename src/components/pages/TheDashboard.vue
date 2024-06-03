@@ -32,6 +32,9 @@
 				title="channel information" />
  			</template>
  		</template>
+<!--  		<template #notifications>
+ 				<VToast v-for="notif in notifications" :message="notif.message" :title="notif.title"/>
+ 		</template> -->
  	</DashboardLayout>
 </template>
 
@@ -48,13 +51,18 @@ import VInvitationDirect from "@/components/organisms/VInvitationDirect.vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
 import {useChannelStore} from "@/stores/useChannelStore.ts"
 import {useMessageStore} from "@/stores/useMessageStore.ts"
-import {onMounted,ref,watch,computed} from "vue"
+import {onMounted,ref,watch,computed,onUnmounted} from "vue"
 import type {Message} from "@/types/Message.ts"
 import type {Channel} from "@/types/Channel.ts"
 import {useUser} from "@/composables/useUser.ts"
 import {useChannelUserStore} from "@/stores/useChannelUserStore.ts"
 import { useFetch } from "@/composables/useFetch"
 import { useSocket } from "@/composables/useSocket.ts"
+import VToast from "@/components/molecules/VToast.vue"
+
+const notifAudio = new Audio("./src/assets/slack_sound.mp3")
+
+const notifications = ref<{title: string, message:string}[]>([])
 
 import VSettings from "@/components/organisms/VSettings.vue"
 
@@ -74,6 +82,7 @@ const selectedChannel = ref<Channel | undefined>(undefined)
 const activeSocket = ref<WebSocket | undefined>(undefined)
 
 const variant = ref<"MPU" | "MPR" | "SNG" | undefined>()
+const onlineSocket = ref<WebSocket | undefined>(undefined)
 
 const openChannel = (id: string) => {
 	selectedChannel.value = channelStore.getChannelById(id)
@@ -95,14 +104,22 @@ const newDirect = (channel: Channel | undefined) => {
 
 const updateColor = (color: string) => {
 	selectedChannel.value.color = color
+	channelStore.updateChannel(selectedChannel.id,color)
 }
 
-const updateArchived = (archivedAt: string) => {
-	selectedChannel.value.archivedAt = archivedAt
+const updateArchived = (data: {color: string ,archivedAt: string}) => {
+	selectedChannel.value.color = data.color
+	selectedChannel.value.archivedAt = data.archivedAt
+	channelStore.updateChannel(selectedChannel.id,data.color,data.archivedAt)
 }
 
-const sendMessage = (message: string, img: string | undefined) => {
-	messageStore.sendMessage(selectedChannel.value.id,message,img)
+const sendMessage =  async (message: string, img: string | undefined) => {
+	if(!channelUserStore.isMember(selectedChannel.value.id,loggedUser.id)) {
+		const res = await useFetch(`/channels/${selectedChannel.value.id}/users`, {
+			method: "POST"
+		})
+	}
+	await messageStore.sendMessage(selectedChannel.value.id,message,img)
 }
 
 watch(selectedChannel, async (channel) => {
@@ -144,8 +161,59 @@ onMounted(async () => {
 	await userStore.init()
 	await channelStore.init()
 
+	onlineSocket.value = useSocket('/sessions',(data: MessageEvent) => {
+		const updates = JSON.parse(data.data)
+
+		switch (updates.resourceType) {
+			case "CHANNEL_UPDATE" : {
+				const update = updates.content.channelUpdate
+				channelStore.updateChannel(updates.content.channelId,update.color,update.archivedAt)
+				break;
+			}
+
+			case "CHANNEL" : {
+				const channel = updates.content.channel
+				channelStore.addNewChannel(channel)
+				notifAudio.play()
+				break;
+			}
+
+			case "UNREAD" : {
+				const unreadMessage = updates.content.unread
+				if(unreadMessage.senderId !== loggedUser.id && unreadMessage.channelId !== selectedChannel.value.id) {
+					notifAudio.play()
+				}
+				break;
+			}
+
+			case "ONLINE_USERS" : {
+				const onlineUsers = updates.content.onlineUsers
+				userStore.updateUserOnlineAt(onlineUsers,"online")
+				break;
+			}
+
+			case "OFFLINE_USER" : {
+				const offlineUser = updates.content.offlineUser
+				userStore.updateUserOnlineAt(offlineUser,"offline")
+				break;
+			}
+
+			case "NEW_USER" : {
+				const newUser = updates.content.newUser
+				userStore.addNewUser(newUser)
+				notifAudio.play()
+				break;
+			}
+		}
+
+	})
+
 
 	selectedChannel.value = privateChannels.value.length > 0 ?  privateChannels.value[0] : multiChannels.value[0]
+})
+
+onUnmounted(() => {
+	onlineSocket.value.close();
 })
 </script>
 

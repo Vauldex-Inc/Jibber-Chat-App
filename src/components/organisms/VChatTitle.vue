@@ -1,7 +1,7 @@
 <template>
 	<div class="flex items-center justify-start gap-5 p-5 border-b border-b-indigo-200
 			 dark:border-b-slate-800 dark:shadow-none">
-		<VAvatar v-if="channel.channelType === 'SNG'" :image="senderProfile"/>
+		<VAvatar v-if="channel.channelType === 'SNG'" :image="senderProfile" :status="senderStatus"/>
 		<div 
 				v-else
 				class="h-12 aspect-square flex items-center justify-center rounded-full text-white"
@@ -13,7 +13,7 @@
 			<div>
 				<template v-if="channel.channelType === 'SNG'">
 					<p class="text-gray-700 dark:text-gray-300 font-semibold">{{senderName}}</p>
-					<p class="text-sm">Offline</p>
+					<p class="text-sm capitalize" :class="{'text-emerald-600': senderStatus === 'online'}">{{senderStatus}}</p>
 				</template>
 				<template v-else>
 					<p class="text-gray-700 dark:text-gray-300 font-semibold">{{channel.title}}</p>
@@ -51,6 +51,11 @@ const senderProfile = computed(() => {
 	return userStore.getUserImageById(props.sender)
 })
 
+const senderStatus = computed(() => {
+	if(!props.sender) return undefined
+	return userStore.getOnlineUsers().value.indexOf(props.sender) !== -1 ? 'online' : 'offline'
+})
+
 const channelAbbr = computed(() => {
 	return props.channel.title.slice(0,1)
 })
@@ -74,7 +79,7 @@ const achiveChannel = async () => {
 	})
 
 	if(res.status === 200) {
-		emits('archive', archivedAt)
+		emits('archive', {color:undefined,archivedAt})
 	}
 }
 

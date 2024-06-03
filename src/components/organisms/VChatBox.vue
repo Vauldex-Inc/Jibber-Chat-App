@@ -30,7 +30,7 @@
 					@focus="isInputTextFocus = true"
 					@blur="isInputTextFocus = false"
 					@keyup.enter="sendMessage"
-					v-model="message"
+					v-model.trim="message"
 					:placeholder="channel.archivedAt ? 'You can\'t reply to this channel' : 'Aa'"
 					class="w-full rounded-md bg-gray-100 dark:bg-slate-900 dark:placeholder:text-gray-600"
 					size="lg"/>
@@ -63,6 +63,8 @@ const imageForm = ref<ImageForm>({
 	title: ""
 })
 
+const isMessageWithImage = ref<boolean>(false)
+
 const curColorTheme = computed(() => {
 	return props.channel.color ? props.channel.color : "bg-slate-800"
 })
@@ -71,12 +73,20 @@ const remove = () => {
 	message.value = ""
 	imageForm.value.image = ""
 	fileInput.value.value = ""
+	isMessageWithImage.value = false
 }
 
 const sendMessage = () => {
-	emits("send", message.value ? message.value : "Sent an image", imageForm.value.image)
+	if(isMessageWithImage.value) {
+		emits("send", message.value ? message.value : "Sent an image", imageForm.value.image)
+	} else {
+		if(message.value) {
+			emits("send",message.value)
+		}
+	}
 	message.value = ""
 	imageForm.value.image = ""
+	isMessageWithImage.value = false
 }
 
 const openFileSelector = () => {
@@ -94,6 +104,7 @@ const attachFile = (e: Event) => {
 		reader.onload = () => {
 			imageForm.value.image = reader.result
 			imageForm.value.title = file.name
+			isMessageWithImage.value = true;
 		}
 		reader.readAsDataURL(file)
 	}

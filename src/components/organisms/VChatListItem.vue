@@ -1,7 +1,7 @@
 <template>
 	<div @click="emits('open', item.id)" class="flex items-center p-3 gap-4 hover:bg-indigo-500/10 cursor-pointer transition-all">
 		<template v-if="item.channelType === 'SNG'">
-			<VAvatar :image="senderProfile"/>
+			<VAvatar :image="senderProfile" :status="senderStatus"/>
 			<VTextGroup class="flex-1" :title="senderName" :text="latestMessage ? latestMessage.text : 'Loading...'"/>
 		</template>
 		<template v-else>
@@ -54,6 +54,11 @@ const senderName = computed(() => {
 
 const senderProfile = computed(() => {
 	return senderId.value? userStore.getUserImageById(senderId.value) : undefined
+})
+
+const senderStatus = computed(() => {
+	if(!senderId.value) return undefined
+	return userStore.getOnlineUsers().value.indexOf(senderId.value) !== -1 ? 'online' : 'offline'
 })
 
 const senderId = ref<string | undefined>(undefined)

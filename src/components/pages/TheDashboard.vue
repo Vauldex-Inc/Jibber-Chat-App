@@ -14,7 +14,7 @@
  		</template>
  		<template #chatbox>
  			<template v-if="selectedChannel" >
-	 			<VChatTitle @archive="updateArchived" :channel="selectedChannel" :sender="senderId" :count="channelUsersCount"/>
+	 			<VChatTitle @archive="updateArchived" :channel="selectedChannel" :sender="senderId"/>
 	 			<VChatBoxArea :channel="selectedChannel" :messages="messages" class="flex-1"/>
 	 			<VChatBox @send="sendMessage" :channel="selectedChannel"/>
  			</template>
@@ -28,13 +28,19 @@
 			 	@color-update="updateColor" 
 				:channel="selectedChannel" 
 				:sender="senderId" 
-				:count="channelUsersCount"
 				title="channel information" />
  			</template>
  		</template>
-<!--  		<template #notifications>
- 				<VToast v-for="notif in notifications" :message="notif.message" :title="notif.title"/>
- 		</template> -->
+	 	<template #notification>
+	 		<TransitionGroup name="notif" tag="ul" class="flex flex-col gap-2">
+		 		<VToast v-for="notif in notifications" 
+		 					:key="notif.id"
+		 					:toast-id="notif.id"
+		 					:message="notif.message" 
+		 					:title="notif.title" 
+		 					@close="closeToast"/>
+	 		</TransitionGroup>
+	 	</template>
  	</DashboardLayout>
 </template>
 
@@ -59,10 +65,11 @@ import {useChannelUserStore} from "@/stores/useChannelUserStore.ts"
 import { useFetch } from "@/composables/useFetch"
 import { useSocket } from "@/composables/useSocket.ts"
 import VToast from "@/components/molecules/VToast.vue"
+import type {Notification} from "@/types/Notification"
 
 const notifAudio = new Audio("./src/assets/slack_sound.mp3")
 
-const notifications = ref<{title: string, message:string}[]>([])
+const notifications = ref<Notification[]>([])
 
 import VSettings from "@/components/organisms/VSettings.vue"
 
@@ -73,7 +80,6 @@ const channelUserStore = useChannelUserStore()
 const loggedUser = useUser()
 const messages = ref<Message[]>([])
 const senderId = ref<string | undefined>(undefined)
-const channelUsersCount = ref<number>(0)
 
 const multiChannels = channelStore.getMultiChannels()
 const singleChannels = channelStore.getSingleChannels()
@@ -116,10 +122,15 @@ const updateArchived = (data: {color: string ,archivedAt: string}) => {
 const sendMessage =  async (message: string, img: string | undefined) => {
 	if(!channelUserStore.isMember(selectedChannel.value.id,loggedUser.id)) {
 		const res = await useFetch(`/channels/${selectedChannel.value.id}/users`, {
-			method: "POST"
+			method: "POST",
+			body: JSON.stringify({})
 		})
 	}
 	await messageStore.sendMessage(selectedChannel.value.id,message,img)
+}
+
+const closeToast = (id: string) => {
+	notifications.value = [...notifications.value.filter(n => n.id !== id)]
 }
 
 watch(selectedChannel, async (channel) => {
@@ -127,7 +138,6 @@ watch(selectedChannel, async (channel) => {
 		const users = await channelUserStore.getChannelUsers(channel.id)
 
 		messages.value = await messageStore.getChannelMessages(channel.id)
-		channelUsersCount.value = users.length
 
 		if(channel.channelType === "SNG") {
 			const sender = users.find(u => u.userId !== loggedUser.id)
@@ -173,7 +183,15 @@ onMounted(async () => {
 
 			case "CHANNEL" : {
 				const channel = updates.content.channel
+				console.log(channel)
 				channelStore.addNewChannel(channel)
+				const senderName = userStore.getUserNameById(channel.userId)
+
+				notifications.value.push({
+					id: channel.id,
+					message: `${senderName} created a new channel`,
+					title: "Notification"
+				})
 				notifAudio.play()
 				break;
 			}
@@ -181,7 +199,21 @@ onMounted(async () => {
 			case "UNREAD" : {
 				const unreadMessage = updates.content.unread
 				if(unreadMessage.senderId !== loggedUser.id && unreadMessage.channelId !== selectedChannel.value.id) {
-					notifAudio.play()
+					const channel = channelStore.getChannelById(unreadMessage.channelId)
+
+					if(channel){
+						const senderName = userStore.getUserNameById(unreadMessage.senderId)
+						const title = channel.channelType === "SNG"
+													? senderName
+													: `${channel.title} (${senderName})`
+
+						notifications.value.push({
+							id: unreadMessage.messageId,
+							message: unreadMessage.text,
+							title: title
+						})
+						notifAudio.play()
+					}
 				}
 				break;
 			}
@@ -201,7 +233,34 @@ onMounted(async () => {
 			case "NEW_USER" : {
 				const newUser = updates.content.newUser
 				userStore.addNewUser(newUser)
-				notifAudio.play()
+				break;
+			}
+
+			case "NOTIFICATION" : {
+
+				break;
+			}
+
+			case "CHANNEL_INVITE" : {
+
+				break;
+			}
+
+			case "NEW_MEMBER" : {
+				const member = updates.content.member
+				channelUserStore.addNewChannelUser(member)
+				break;
+			}
+
+			case "NEW_PROFILE" : {
+				const profile = updates.content.newProfile
+				userStore.addUserProfile(profile.userId,profile)
+				break;
+			}
+
+			case "UPDATE_PROFILE" : {
+				const profile = updates.content.updateProfile
+				userStore.addUserProfile(profile.userId,profile)
 				break;
 			}
 		}
@@ -216,4 +275,23 @@ onUnmounted(() => {
 	onlineSocket.value.close();
 })
 </script>
+
+
+<style scoped>
+.notif-move, 
+.notif-enter-active,
+.notif-leave-active {
+  transition: all 0.5s ease;
+}
+
+.notif-enter-from,
+.notif-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.notif-leave-active {
+  position: absolute;
+}
+</style>
 

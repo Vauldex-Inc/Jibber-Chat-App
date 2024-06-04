@@ -15,7 +15,7 @@
 					:class="[message.userId === loggedUser.id? `self-end text-gray-100` : 'self-start text-gray-800 dark:text-gray-300',
 						message.userId === loggedUser.id && color ? color : 'bg-gray-300 dark:bg-slate-800 text-gray-800 dark:text-gray-300'
 					]"
-					class="p-3 rounded-lg max-w-[250px]">
+					class="p-3 rounded-lg max-w-[250px] break-words">
 				{{message.text}}
 				<img v-if="message.image" class="max-h-48 aspect-auto rounded-md mt-2" :src="message.image">
 			</p>

@@ -100,11 +100,11 @@ import VDisplayAllMembers from "@/components/organisms/VDisplayAllMembers.vue"
 import { ref, computed  } from "vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
 import {useFetch} from "@/composables/useFetch.ts"
+import {useChannelUserStore} from "@/stores/useChannelUserStore"
 
 const userStore = useUserStore()
 
 interface VChatInfoProps {
-	count: number;
 	channel: Channel;
 	title: string;
 	sender?: string;
@@ -116,6 +116,15 @@ const files = computed(() => {
 
 const images = computed(() => {
 	return []
+})
+
+const channelUserStore = useChannelUserStore()
+const channelUsersCount = channelUserStore.getChannelUsersCount()
+
+const count = computed(() => {
+	const userCount = channelUsersCount.value.find(ch => ch[0] === props.channel.id)
+
+	return userCount ? userCount[1] : 0
 })
 
 const senderName = computed(() => {

@@ -1,5 +1,5 @@
 <template>
-	<div class="flex justify-between h-screen bg-white dark:bg-slate-950">
+	<div class="flex justify-between h-screen bg-white dark:bg-slate-950 relative">
 		<aside class="h-full w-[380px]">
 			<div class="p-5 flex items-center justify-between">
 				 <p class="text-4xl flex-1 text-transparent bg-gradient-to-r inline-block flex items-center justify-center
@@ -22,6 +22,9 @@
 		<aside class="w-[350px]">
 			<slot name="chatinfo"/>
 		</aside>
+		<section class="absolute top-0 right-0 z-40">
+			<slot name="notification"/>
+		</section>
 	</div>
 </template>
 

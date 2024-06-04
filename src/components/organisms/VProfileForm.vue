@@ -13,6 +13,7 @@
 				type="file" 
 				ref="fileInput"/>
 			<VIconButton
+				v-if="viewOnly ? false : true"
 				@click="openFileSelector"
 				size="sm"
 				icon="./src/assets/images/edit.svg"
@@ -27,18 +28,21 @@
 			v-model="formData.nickName"
 			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300 dark:focus:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600"
 			v-focus
+			:disabled="viewOnly ? viewOnly : false"
 		/>
 		<label for="firstname">Firstname</label>
 		<VInput
 			id="firstname"
 			v-model="formData.firstName"
 			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300 dark:focus:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600"
+			:disabled="viewOnly ? viewOnly : false"
 		/>
 		<label for="lastname">Lastname</label>
 		<VInput
 			id="lastname"
 			v-model="formData.lastName"
 			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300 dark:focus:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600"
+			:disabled="viewOnly ? viewOnly : false"
 		/>
 		<label for="email">Email</label>
 		<VInput
@@ -46,16 +50,17 @@
 			size="md"
 			v-model="formData.email"
 			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300 dark:focus:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600"
+			:disabled="viewOnly ? viewOnly : false"
 		/>
 		<VButton
-			v-if="method === 'POST'"
+			v-if="!viewOnly && method === 'POST'"
 			action="submit"
 			class="bg-indigo-600 text-md text-white rounded-md mt-4 py-3 px-5"
 		>
 		Add
 		</VButton>
 		<VButton
-			v-else
+			v-else-if="!viewOnly && method === 'PUT'"
 			action="submit"
 			class="bg-indigo-600 text-md text-white rounded-md mt-4 py-3 px-5"
 		>
@@ -78,6 +83,10 @@ import { useUser } from '@/composables/useUser.ts'
 
 const emits = defineEmits<{
 	submit: []
+}>()
+const props = defineProps<{
+	sender?: string
+	viewOnly?: boolean
 }>()
 
 const method = ref<"POST" | "PUT" | undefined>()
@@ -147,7 +156,7 @@ const create = async () => {
 
 const doesExist = () => {
 	if(currUser) {
-		const [user, profile] = getUserById(currUser.id)
+		const [user, profile] = getUserById(props.sender ? props.sender : currUser.id)
 
 		if(profile) {
 			method.value = "PUT"

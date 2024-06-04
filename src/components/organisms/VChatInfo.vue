@@ -8,11 +8,14 @@
 			<div class="flex flex-col items-center justify-center gap-5 px-5 pb-5 pt-16">
 				<template v-if="channel.channelType === 'SNG'">
 					<div>
-						<VAvatar size="lg" :image="senderProfile" :status="senderStatus"/>
+						<VAvatar size="lg" :image="senderProfile" :status="senderStatus" @click="openDisplayProfile"/>
 						<p class="text-sm text-center capitalize p-1 mt-2 rounded-md" 
 							:class="senderStatus === 'online' ? 'bg-emerald-100 dark:bg-slate-900 text-emerald-600' : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400'">{{senderStatus}}</p>
 					</div>
 					<p class="font-semibold">{{senderName}}</p>
+					<VModal @close="closeDisplayProfile" :is-open="stateDisplayProfile">
+						<VProfileForm :sender="sender" :viewOnly="true" />
+					</VModal>
 				</template>
 				<template v-else>
 					<div 
@@ -85,7 +88,7 @@
 		</VModal>
 
 		<VModal @close="closeDisplayAllMembers" :is-open="stateDisplayAllMembers">
-			<VDisplayAllMembers :channel-id="channel.id" />
+			<VDisplayAllMembers :channel-id="channel.id" @close="closeFromProfile" />
 		</VModal>
 	</div>
 </template>
@@ -99,6 +102,7 @@ import VChatColorSelector from "@/components/organisms/VChatColorSelector.vue"
 import VMemberInvitation from "@/components/organisms/VMemberInvitation.vue"
 import VDisplayAllMembers from "@/components/organisms/VDisplayAllMembers.vue"
 import VImageViewer from "@/components/organisms/VImageViewer.vue"
+import VProfileForm from "@/components/organisms/VProfileForm.vue"
 import type { Message } from "@/types/Message.ts"
 import { ref, computed  } from "vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
@@ -152,10 +156,15 @@ const closeThemeSelector = () => stateThemeSelector.value = false
 const stateDisplayAllMembers = ref<boolean>(false)
 const openDisplayAllMembers = () => stateDisplayAllMembers.value = true
 const closeDisplayAllMembers = () => stateDisplayAllMembers.value = false
+const closeFromProfile = (isOpen: boolean) => stateDisplayAllMembers.value = isOpen
 
 const stateDisplayImages = ref<boolean>(false)
 const openDisplayImages = () => stateDisplayImages.value = true
 const closeDisplayImages = () => stateDisplayImages.value = false
+
+const stateDisplayProfile = ref<boolean>(false)
+const openDisplayProfile = () => stateDisplayProfile.value = true
+const closeDisplayProfile = () => stateDisplayProfile.value = false
 
 const selectColor = async (color: string) => {
 	stateThemeSelector.value = false

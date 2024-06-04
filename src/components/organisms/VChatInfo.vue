@@ -56,24 +56,25 @@
 				</div>
 			</VSection>
 			<hr class="border-0 border-b border-b-indigo-200 dark:border-b-slate-800 my-5" />
-			<VSection :color="channel.color" class="p-5" title="Images" actionButton="View All">
+			<VSection :color="channel.color" class="p-5" title="Images" actionButton="View All"
+				@click="openDisplayImages">
 				<div class="p-3">
-					<ul v-if="images.length !== 0">
-						
+					<ul class="flex flex-wrap justify-center items-start overflow-y-scroll gap-1" v-if="images.length !== 0">
+						<template v-for="image in images.reverse().slice(0, 4)">
+							<li v-if="image !== undefined">
+								<img class="border-2 border-slate-200 dark:border-slate-800 rounded-md w-32 h-24 object-cover" :src="image"
+							</li>
+						</template>
 					</ul>
 					<p v-else class="text-center">No images found</p>
 				</div>
 			</VSection>
 			<hr class="border-0 border-b border-b-indigo-200 dark:border-b-slate-800 my-5" />
-			<VSection :color="channel.color" class="p-5" title="Files" actionButton="View All">
-				<div class="p-3">
-					<ul v-if="files.length !== 0">
-						
-					</ul>
-					<p v-else class="text-center">No files found</p>
-				</div>
-			</VSection>
 		</div>
+
+		<VModal @close="closeDisplayImages" :is-open="stateDisplayImages">
+			<VImageViewer :chatImages="images" />
+		</VModal>
 
 		<VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
 			<VMemberInvitation :color="curColorTheme" />
@@ -97,6 +98,8 @@ import VModal from "@/components/atoms/VModal.vue"
 import VChatColorSelector from "@/components/organisms/VChatColorSelector.vue"
 import VMemberInvitation from "@/components/organisms/VMemberInvitation.vue"
 import VDisplayAllMembers from "@/components/organisms/VDisplayAllMembers.vue"
+import VImageViewer from "@/components/organisms/VImageViewer.vue"
+import type { Message } from "@/types/Message.ts"
 import { ref, computed  } from "vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
 import {useFetch} from "@/composables/useFetch.ts"
@@ -104,18 +107,15 @@ import {useFetch} from "@/composables/useFetch.ts"
 const userStore = useUserStore()
 
 interface VChatInfoProps {
+	chatMessages: Message[];
 	count: number;
 	channel: Channel;
 	title: string;
 	sender?: string;
 }
 
-const files = computed(() => {
-	return []
-})
-
 const images = computed(() => {
-	return []
+	return props.chatMessages.map((m) => m.image).filter((img) => img != undefined)
 })
 
 const senderName = computed(() => {
@@ -153,6 +153,9 @@ const stateDisplayAllMembers = ref<boolean>(false)
 const openDisplayAllMembers = () => stateDisplayAllMembers.value = true
 const closeDisplayAllMembers = () => stateDisplayAllMembers.value = false
 
+const stateDisplayImages = ref<boolean>(false)
+const openDisplayImages = () => stateDisplayImages.value = true
+const closeDisplayImages = () => stateDisplayImages.value = false
 
 const selectColor = async (color: string) => {
 	stateThemeSelector.value = false

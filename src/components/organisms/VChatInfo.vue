@@ -56,7 +56,7 @@
 				</div>
 			</VSection>
 			<hr class="border-0 border-b border-b-indigo-200 dark:border-b-slate-800 my-5" />
-			<VSection :color="channel.color" class="p-5" title="Images" actionButton="View All"
+			<VSection :color="channel.color" class="p-5" title="Images" :actionButton="images.length ? 'View All' : null"
 				@click="openDisplayImages">
 				<div class="p-3">
 					<ul class="flex flex-wrap justify-center items-start overflow-y-scroll gap-1" v-if="images.length !== 0">

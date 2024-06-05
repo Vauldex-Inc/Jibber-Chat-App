@@ -41,6 +41,7 @@ import type { User } from "@/types/User"
 import type { Profile } from "@/types/Profile"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
+import {useUser} from "@/composables/useUser"
 
 const props = defineProps<{
 	color: string
@@ -52,7 +53,7 @@ const emits = defineEmits<{
 
 const userStore = useUserStore()
 const users = userStore.getUsers()
-
+const loggedUser = useUser()
 const inputUserName = ref<string>('')
 const invitedUsers = ref<string[]>([])
 
@@ -74,7 +75,7 @@ const create = async (userId: string, name: string) => {
 		const response = await useFetch("/channels", {
 			method: "POST",
 			body: JSON.stringify({
-				title: name,
+				title: `${loggedUser.id}/${userId}`,
 				channelType: "SNG"
 			})
 		})

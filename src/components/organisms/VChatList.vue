@@ -9,7 +9,7 @@
           @click="emits('click')">
 			</VIconButton>
 		</div>
-		<ul class="overflow-y-scroll pb-5 bg-gray-50 dark:bg-slate-950">
+		<ul class="overflow-y-scroll pb-5 bg-white dark:bg-slate-950">
 			<template v-if="items.length !==0">
 				<VChatListItem @open="openChannel" v-for="item in items" :key="item.id" :item="item" />
 			</template>

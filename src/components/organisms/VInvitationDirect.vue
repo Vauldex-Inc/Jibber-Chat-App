@@ -85,7 +85,8 @@ const create = async (userId: string, name: string) => {
 			const channel = result.channel
 
 			const res = await useFetch(`/channels/${channel.id}/users`, {
-				method: "POST"
+				method: "POST",
+				body: JSON.stringify({userId})
 			})
 			
 			invitedUsers.value.push(userId)

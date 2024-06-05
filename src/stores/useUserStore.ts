@@ -90,7 +90,6 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	const addNewUser = (user: User) => {
-		console.log(user)
 		users.value.push([user,undefined])
 	}
 

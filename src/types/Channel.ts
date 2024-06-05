@@ -7,3 +7,8 @@ export interface Channel {
 	createdAt: string;
 	archivedAt?: string;
 }
+
+export interface ChannelUser {
+	channelId: string;
+	userId: string
+}

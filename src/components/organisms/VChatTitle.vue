@@ -38,8 +38,18 @@ import type {User} from "@/types/User.ts"
 import {useUserStore} from "@/stores/useUserStore.ts"
 import {computed,ref} from "vue"
 import {useFetch} from "@/composables/useFetch.ts"
+import {useChannelUserStore} from "@/stores/useChannelUserStore"
+
 
 const userStore = useUserStore()
+const channelUserStore = useChannelUserStore()
+const channelUsersCount = channelUserStore.getChannelUsersCount()
+
+const count = computed(() => {
+	const userCount = channelUsersCount.value.find(ch => ch[0] === props.channel.id)
+
+	return userCount ? userCount[1] : 0
+})
 
 const senderName = computed(() => {
 	if(!props.sender) return ""
@@ -87,7 +97,6 @@ const achiveChannel = async () => {
 const props = defineProps<{
 	channel: Channel
 	sender?: string
-	count?: number
 }>()
 
 const emits = defineEmits<{

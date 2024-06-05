@@ -80,7 +80,7 @@
 		</VModal>
 
 		<VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
-			<VMemberInvitation :color="curColorTheme" />
+			<VMemberInvitation @action="inviteMember" :color="curColorTheme" />
 		</VModal>
 
 		<VModal @close="closeThemeSelector" :is-open="stateThemeSelector">
@@ -107,12 +107,12 @@ import type { Message } from "@/types/Message.ts"
 import { ref, computed  } from "vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
 import {useFetch} from "@/composables/useFetch.ts"
+import {useChannelUserStore} from "@/stores/useChannelUserStore"
 
 const userStore = useUserStore()
 
 interface VChatInfoProps {
 	chatMessages: Message[];
-	count: number;
 	channel: Channel;
 	title: string;
 	sender?: string;
@@ -120,6 +120,15 @@ interface VChatInfoProps {
 
 const images = computed(() => {
 	return props.chatMessages.map((m) => m.image).filter((img) => img != undefined)
+})
+
+const channelUserStore = useChannelUserStore()
+const channelUsersCount = channelUserStore.getChannelUsersCount()
+
+const count = computed(() => {
+	const userCount = channelUsersCount.value.find(ch => ch[0] === props.channel.id)
+
+	return userCount ? userCount[1] : 0
 })
 
 const senderName = computed(() => {
@@ -180,6 +189,15 @@ const selectColor = async (color: string) => {
 	if(res.status === 200) {
 		emits('colorUpdate', color)
 	}
+}
+
+const inviteMember = async (id: string) => {
+	const res = await useFetch(`/channels/${props.channel.id}/invites`, {
+		method: "POST",
+		body: JSON.stringify({
+			userId: id
+		})
+	})
 }
 
 const props = defineProps<VChatInfoProps>()

@@ -56,7 +56,8 @@ const create = async () => {
 				const channel = result.channel
 
 				const res = await useFetch(`/channels/${channel.id}/users`, {
-					method: "POST"
+					method: "POST",
+					body: JSON.stringify({})
 				})
 
 				emits('submit', channel)

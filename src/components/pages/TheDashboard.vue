@@ -23,7 +23,7 @@
  			</template>
  		</template>
  		<template #actions>
- 			<VSettings />
+ 			<VSettings :profileImage="profileImage" :username="loggedUser.username" />
  		</template>
  		<template #chatinfo>
  			<template v-if="selectedChannel" >
@@ -94,6 +94,10 @@ const multiChannels = channelStore.getMultiChannels()
 const singleChannels = channelStore.getSingleChannels()
 const privateChannels = computed(() => {
 	return singleChannels.value
+})
+
+const profileImage = computed(() => {
+	return userStore.getUserImageById(loggedUser.id)
 })
 
 const viewChannel = (id: string) => {

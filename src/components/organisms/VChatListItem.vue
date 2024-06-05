@@ -1,5 +1,5 @@
 <template>
-	<div @click="emits('open', item.id)" class="flex items-center p-3 gap-4 hover:bg-indigo-500/10 cursor-pointer transition-all">
+	<div @click="emits('open', item.id)" class="flex items-center p-3 gap-4 hover:bg-indigo-400/10 cursor-pointer transition-all">
 		<template v-if="item.channelType === 'SNG'">
 			<VAvatar :image="senderProfile" :status="senderStatus"/>
 			<VTextGroup class="flex-1" :title="senderName" :text="latestMessage ? latestMessage.text : 'Loading...'"/>
@@ -33,12 +33,9 @@ import {computed, onMounted,ref} from "vue"
 import {useFetch} from "@/composables/useFetch.ts"
 import {formatSentAt} from "@/utils/formatSentAt.ts"
 import {useMessageStore} from "@/stores/useMessageStore.ts"
-import {useChannelUserStore} from "@/stores/useChannelUserStore.ts"
 import {useUser} from "@/composables/useUser.ts"
 import type {Message} from "@/types/Message.ts"
 
-
-const channelUserStore = useChannelUserStore()
 
 const emits = defineEmits<{
 	open: [value: string]
@@ -82,12 +79,14 @@ const props = defineProps<{
 }>()
 
 
-onMounted(async () => {
-	const users = await channelUserStore.getChannelUsers(props.item.id)
-	const sender = users.find(u => u.userId !== loggedUser.id)
+onMounted(() => {
+	if(props.item.channelType === "SNG") {
+		const users = props.item.title.split("/")
+		const sender = users.find(u => u !== loggedUser.id)
 
-	if(sender) {
-		senderId.value = sender.userId
+		if(sender) {
+			senderId.value = sender
+		}
 	}
 })
 </script>

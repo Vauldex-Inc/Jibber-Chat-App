@@ -27,7 +27,7 @@
 					<p class="font-semibold">{{channel.title}}</p>
 				</template>
 				<div class="flex items-center justify-center gap-4">
-					<div class="group flex flex-col gap-2 items-center justify-center">
+					<div v-if="channel.channelType !== 'SNG'" class="group flex flex-col gap-2 items-center justify-center">
 						<VIconButton 
 								@click="openMemberInvite"
                 :disabled="channel.archivedAt !== undefined"
@@ -80,7 +80,7 @@
 		</VModal>
 
 		<VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
-			<VMemberInvitation @action="inviteMember" :color="curColorTheme" />
+			<VMemberInvitation @action="inviteMember" :color="curColorTheme" :channel-id="channel.id" />
 		</VModal>
 
 		<VModal @close="closeThemeSelector" :is-open="stateThemeSelector">

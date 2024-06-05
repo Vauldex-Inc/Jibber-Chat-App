@@ -3,7 +3,7 @@
 		<h4 v-if="variant === 'MPU'" class="pb-2 font-semibold text-gray-600 dark:text-gray-300 text-lg">Create new public channel</h4>
 		<h4 v-else class="pb-2 font-semibold text-gray-600 dark:text-gray-300 text-lg">Direct message</h4>
 		<p v-if="error" class="text-red-500 text-center text-sm border border-red-600 bg-red-500/10 p-3 rounded-md">{{ error }}</p>
-		<VInput class="bg-gray-50 dark:bg-slate-800 rounded-md border-2 w-full pr-12 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600" size="md" v-model="channelForm.title" v-focus :placeholder="variant === 'MPU' ? 'Channel name' : 'Name' "/>
+		<VInput class="bg-gray-50 dark:bg-slate-800 rounded-md border-2 w-full pr-12 outline-none border-gray-300 focus:border-indigo-600 hover:border-indigo-600 dark:placeholder:text-gray-500" size="md" v-model="channelForm.title" v-focus :placeholder="variant === 'MPU' ? 'Channel name' : 'Name' "/>
 		<VButton class="bg-indigo-600 text-md text-white rounded-md mt-4" size="md" action="submit">Submit</VButton>
 	</form>
 </template>

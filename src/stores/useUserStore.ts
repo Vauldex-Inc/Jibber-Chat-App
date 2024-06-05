@@ -43,6 +43,11 @@ export const useUserStore = defineStore("users", () => {
 			return user.username
 		}
 
+
+		if(profile.firstName.trim() === "" || profile.lastName.trim() === "") {
+			return user.username
+		}
+
 		return `${profile.firstName} ${profile.lastName}`
 	}
 
@@ -63,18 +68,13 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	const addUserProfile = (id: string, newProfile: Profile) => {
-		users.value.map(u => {
+		users.value = [...users.value.map(u => {
 				const [user, profile] = u
 				if(user.id === id) {
-				 	profile.userId = id
-				 	profile.nickName = newProfile.nickName
-				 	profile.firstName = newProfile.firstName
-				 	profile.lastName = newProfile.lastName
-				 	profile.image = newProfile.image
-				 	profile.email = newProfile.email
+					return [user,newProfile]
 				}
 				return [user, profile]
-		})
+		})]
 	}
 
 	const updateUserOnlineAt = (users: User[], type: string) => {

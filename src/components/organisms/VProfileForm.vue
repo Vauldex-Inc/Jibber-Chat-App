@@ -25,7 +25,8 @@
 		<label for="nickname">Nickname</label>
 		<VInput
 			id="nickname"
-			v-model="formData.nickName"
+			v-model.trim="formData.nickName"
+			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300 dark:focus:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600"
 			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300"
 			:class="viewOnly ? 'border-gray-300' : 'dark:focus:border-indigo-600 dark:hover:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600'"
 			v-focus
@@ -34,7 +35,8 @@
 		<label for="firstname">Firstname</label>
 		<VInput
 			id="firstname"
-			v-model="formData.firstName"
+			v-model.trim="formData.firstName"
+			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300 dark:focus:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600"
 			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300"
 			:class="viewOnly ? 'border-gray-300' : 'dark:focus:border-indigo-600 dark:hover:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600'"
 			:disabled="viewOnly ? viewOnly : false"
@@ -42,7 +44,8 @@
 		<label for="lastname">Lastname</label>
 		<VInput
 			id="lastname"
-			v-model="formData.lastName"
+			v-model.trim="formData.lastName"
+			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300 dark:focus:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600"
 			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300"
 			:class="viewOnly ? 'border-gray-300' : 'dark:focus:border-indigo-600 dark:hover:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600'"
 			:disabled="viewOnly ? viewOnly : false"
@@ -51,7 +54,8 @@
 		<VInput
 			id="email"
 			size="md"
-			v-model="formData.email"
+			v-model.trim="formData.email"
+			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300 dark:focus:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600"
 			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300"
 			:class="viewOnly ? 'border-gray-300' : 'dark:focus:border-indigo-600 dark:hover:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600'"
 			:disabled="viewOnly ? viewOnly : false"

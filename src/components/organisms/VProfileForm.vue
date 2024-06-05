@@ -4,7 +4,7 @@
 			<VAvatar
 				:image="formData.image"
 				size="lg"
-				status="online"
+				:status="getStatus()"
 			/>
 			<input 
 				@change="attachFile"
@@ -101,12 +101,16 @@ const formData = ref<ProfileData>({
 })
 
 const currUser = useUser()
-const { getUserById, addUserProfile } = useUserStore()
+const { getUserById, addUserProfile, getOnlineUsers } = useUserStore()
 
 const openFileSelector = () => {
 	if(fileInput.value) {
 		fileInput.value.click()
 	}
+}
+
+const getStatus = () => {
+	return getOnlineUsers().value.indexOf(props.sender) !== -1 ? 'online' : 'offline'
 }
 
 const attachFile = () => {

@@ -28,7 +28,7 @@
  			</template>
  		</template>
  		<template #actions>
- 			<VSettings />
+ 			<VSettings :profileImage="profileImage" :username="loggedUser.username" />
  		</template>
  		<template #chatinfo>
  			<template v-if="selectedChannel" >
@@ -109,6 +109,10 @@ const isChatListOpen = ref<boolean>(true)
 const toggleChatList = () => {
 	isChatListOpen.value = !isChatListOpen.value;
 }
+
+const profileImage = computed(() => {
+	return userStore.getUserImageById(loggedUser.id)
+})
 
 const viewChannel = (id: string) => {
 	selectedChannel.value = channelStore.getChannelById(id)

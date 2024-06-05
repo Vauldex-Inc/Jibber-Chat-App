@@ -76,7 +76,7 @@
 		</div>
 
 		<VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
-			<VMemberInvitation :color="curColorTheme" />
+			<VMemberInvitation @action="inviteMember" :color="curColorTheme" />
 		</VModal>
 
 		<VModal @close="closeThemeSelector" :is-open="stateThemeSelector">
@@ -177,6 +177,15 @@ const selectColor = async (color: string) => {
 	if(res.status === 200) {
 		emits('colorUpdate', color)
 	}
+}
+
+const inviteMember = async (id: string) => {
+	const res = await useFetch(`/channels/${props.channel.id}/invites`, {
+		method: "POST",
+		body: JSON.stringify({
+			userId: id
+		})
+	})
 }
 
 const props = defineProps<VChatInfoProps>()

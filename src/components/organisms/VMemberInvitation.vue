@@ -13,7 +13,7 @@
 						dark:bg-slate-900 dark:border-slate-800 dark:focus:border-indigo-600 dark:hover:border-indigo-600">
 			<ul class="max-h-56 overflow-y-scroll flex flex-col gap-2">
 				<template v-if="filteredUserName.length > 0">
-					<li v-for="[id, name] in filteredUserName" :key="id"  class="flex justify-between items-center hover:bg-gray-100 hover:dark:bg-gray-800 rounded-md px-4 py-2">
+					<li v-for="[id, name] in filteredUserName" :key="id"  class="flex justify-between items-center hover:bg-gray-100 hover:dark:bg-slate-800/50 rounded-md px-4 py-2">
 						<span>
 							{{ name }}
 						</span>

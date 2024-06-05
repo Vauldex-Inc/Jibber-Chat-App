@@ -5,6 +5,9 @@
  	<VModal :is-open="variant === 'MPU'" @close="variant = undefined">
  		<VChannelForm :variant="variant" @submit="newChannel" />
  	</VModal>
+ 	<VModal :is-open="invitationModalOpen" @close="closeInvitationModal" >
+ 		<VChatInvitation name="Jane" :notif="invitationNotif" @view="viewChannel" @close="closeInvitationModal"/>
+ 	</VModal>
  	<DashboardLayout>
  		<template #messages>
 			<VChatList @open="openChannel" @click="variant = 'SNG'" :items="privateChannels" class="h-3/6" title="messages"/>
@@ -66,6 +69,8 @@ import { useFetch } from "@/composables/useFetch"
 import { useSocket } from "@/composables/useSocket.ts"
 import VToast from "@/components/molecules/VToast.vue"
 import type {Notification} from "@/types/Notification"
+import VChatInvitation from "@/components/organisms/VChatInvitation.vue"
+import type {Invitation} from "@/types/Invitation"
 
 const notifAudio = new Audio("./src/assets/slack_sound.mp3")
 
@@ -81,9 +86,24 @@ const loggedUser = useUser()
 const messages = ref<Message[]>([])
 const senderId = ref<string | undefined>(undefined)
 
+const invitationModalOpen = ref<boolean>(false)
+const invitationNotif = ref<Invitation | undefined>(undefined)
+
 const multiChannels = channelStore.getMultiChannels()
 const singleChannels = channelStore.getSingleChannels()
-const privateChannels = ref<Channel[]>([])
+const privateChannels = computed(() => {
+	return singleChannels.value
+})
+
+const viewChannel = (id: string) => {
+	selectedChannel.value = channelStore.getChannelById(id)
+	invitationModalOpen.value = false
+}
+
+const closeInvitationModal = () => {
+	invitationModalOpen.value = false
+}
+
 const selectedChannel = ref<Channel | undefined>(undefined)
 const activeSocket = ref<WebSocket | undefined>(undefined)
 
@@ -157,15 +177,15 @@ watch(selectedChannel, async (channel) => {
 	}
 })
 
-watch(singleChannels, async (channels) => {
-	privateChannels.value = []
-	channels.forEach(async (c) => {
-		const users = await channelUserStore.getChannelUsers(c.id)
-		if(users.some(u => u.userId === loggedUser.id)) {
-			privateChannels.value.push(c)
-		}
-	})
-})
+// watch(singleChannels, async (channels) => {
+// 	privateChannels.value = []
+// 	channels.forEach(async (c) => {
+// 		const users = await channelUserStore.getChannelUsers(c.id)
+// 		if(users.some(u => u.userId === loggedUser.id)) {
+// 			privateChannels.value.push(c)
+// 		}
+// 	})
+// })
 
 onMounted(async () => {
 	await userStore.init()
@@ -183,7 +203,6 @@ onMounted(async () => {
 
 			case "CHANNEL" : {
 				const channel = updates.content.channel
-				console.log(channel)
 				channelStore.addNewChannel(channel)
 				const senderName = userStore.getUserNameById(channel.userId)
 
@@ -198,7 +217,9 @@ onMounted(async () => {
 
 			case "UNREAD" : {
 				const unreadMessage = updates.content.unread
-				if(unreadMessage.senderId !== loggedUser.id && unreadMessage.channelId !== selectedChannel.value.id) {
+				if(unreadMessage.senderId !== loggedUser.id && 
+					unreadMessage.channelId !== selectedChannel.value.id &&
+					channelUserStore.isMember(unreadMessage.channelId,loggedUser.id)) {
 					const channel = channelStore.getChannelById(unreadMessage.channelId)
 
 					if(channel){
@@ -237,7 +258,10 @@ onMounted(async () => {
 			}
 
 			case "NOTIFICATION" : {
-
+				const notification = updates.content.notification
+				invitationModalOpen.value = true
+				invitationNotif.value = notification
+				notifAudio.play()
 				break;
 			}
 

@@ -26,6 +26,7 @@
  			<template v-if="selectedChannel" >
 			 <VChatInfo
 			 	@color-update="updateColor" 
+			 	:chatMessages="messages"
 				:channel="selectedChannel" 
 				:sender="senderId" 
 				:count="channelUsersCount"

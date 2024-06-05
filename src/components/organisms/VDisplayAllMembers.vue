@@ -10,7 +10,7 @@
  					<template v-if="profile">
 						<VAvatar :image="profile.image" :status="getStatus(user.id)" />
 						<div class="flex flex-col">
-							<span class="font-semibold">{{ `${profile.firstName} ${profile.lastName}` }}</span>
+							<span class="font-semibold">{{userStore.getUserNameById(user.id)}}</span>
 							<span v-if="profile.nickName" class="text-xs">({{ profile.nickName }})</span>
 						</div>
 					</template>

@@ -40,11 +40,18 @@ import { useUserStore } from "@/stores/useUserStore"
 import type { User } from "@/types/User"
 import type { Profile } from "@/types/Profile"
 
+import {useChannelUserStore} from "@/stores/useChannelUserStore"
+
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
 
+
 const userStore = useUserStore()
-const users = userStore.getUsers()
+const channelUserStore = useChannelUserStore()
+const users = computed(() => {
+	const appUsers= userStore.getUsers()
+	return appUsers.value.filter(cu => !channelUserStore.isMember(props.channelId,cu[0].id))
+})
 
 const invitedUsers = ref<string[]>([])
 const checkInviteStatus = (userId) => invitedUsers.value.includes(userId)
@@ -69,6 +76,7 @@ const filteredUserName = computed(() => {
 
 const props = defineProps<{
 	color: string
+	channelId: string
 }>()
 
 const emits = defineEmits<{

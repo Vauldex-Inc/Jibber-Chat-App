@@ -175,6 +175,7 @@ const doesExist = () => {
 			formData.value.email = profile.email
 		} else {
 			method.value = "POST"
+			formData.value.nickName = user.username
 		}
 	}
 }

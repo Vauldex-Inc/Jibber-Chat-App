@@ -240,12 +240,14 @@ onMounted(async () => {
 				channelStore.addNewChannel(channel)
 				const senderName = userStore.getUserNameById(channel.userId)
 
-				notifications.value.push({
-					id: channel.id,
-					message: `${senderName} created a new channel`,
-					title: "Notification"
-				})
-				notifAudio.play()
+				if(channel.channelType !== "SNG"){
+					notifications.value.push({
+						id: channel.id,
+						message: `${senderName} created a new channel`,
+						title: "Notification"
+					})
+					notifAudio.play()
+				}
 				break;
 			}
 
@@ -305,9 +307,12 @@ onMounted(async () => {
 
 			case "NOTIFICATION" : {
 				const notification = updates.content.notification
-				notificationStore.addNewNotification(notification)
-				notificationStore.setSelectedInvitation(notification)
-				notifAudio.play()
+				const channel = channelStore.getChannelById(notification.channelId)
+				if(channel.channelType !== "SNG"){
+					notificationStore.addNewNotification(notification)
+					notificationStore.setSelectedInvitation(notification)
+					notifAudio.play()
+				}
 				break;
 			}
 

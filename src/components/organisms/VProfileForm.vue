@@ -1,8 +1,20 @@
 <template>
 	<form @submit.prevent="create" class="bg-white w-96 dark:bg-slate-900 max-w-full p-5 rounded-lg flex flex-col justify-center gap-3 shadow-md" >
-		<div class="relative flex justify-center">
+		<div class="relative flex justify-center" 
+			@mouseenter="onAvatar = true"
+				@mouseleave="onAvatar = false">
+			<VIconButton
+				v-if="viewOnly ? false : true"
+				@click="removeImage"
+				size="sm"
+				rounded
+				icon="./src/assets/images/close.svg"
+				class="scale-75"
+				:class="viewOnly ? 'hidden' : 'absolute dark:focus:border-indigo-600 focus:border-indigo-600 bottom-0 right-32 -translate-y-10 -translate-x-2 z-20 bg-red-500'"
+				:hidden="!onAvatar"
+			/>
 			<VAvatar
-				:image="formData.image"
+				:image="formData.image ? formData.image : './src/assets/images/default-avatar.svg'"
 				size="lg"
 				:status="getStatus()"
 			/>
@@ -25,31 +37,35 @@
 		<label for="nickname">Nickname</label>
 		<VInput
 			id="nickname"
-			v-model="formData.nickName"
-			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300 dark:focus:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600"
+			v-model.trim="formData.nickName"
+			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300"
+			:class="viewOnly ? 'border-gray-300' : 'dark:focus:border-indigo-600 dark:hover:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600'"
 			v-focus
 			:disabled="viewOnly ? viewOnly : false"
 		/>
 		<label for="firstname">Firstname</label>
 		<VInput
 			id="firstname"
-			v-model="formData.firstName"
-			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300 dark:focus:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600"
+			v-model.trim="formData.firstName"
+			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300"
+			:class="viewOnly ? 'border-gray-300' : 'dark:focus:border-indigo-600 dark:hover:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600'"
 			:disabled="viewOnly ? viewOnly : false"
 		/>
 		<label for="lastname">Lastname</label>
 		<VInput
 			id="lastname"
-			v-model="formData.lastName"
-			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300 dark:focus:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600"
+			v-model.trim="formData.lastName"
+			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300"
+			:class="viewOnly ? 'border-gray-300' : 'dark:focus:border-indigo-600 dark:hover:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600'"
 			:disabled="viewOnly ? viewOnly : false"
 		/>
 		<label for="email">Email</label>
 		<VInput
 			id="email"
 			size="md"
-			v-model="formData.email"
-			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300 dark:focus:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600"
+			v-model.trim="formData.email"
+			class="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 rounded-md border-2 outline-none border-gray-300"
+			:class="viewOnly ? 'border-gray-300' : 'dark:focus:border-indigo-600 dark:hover:border-indigo-600 focus:border-indigo-600 hover:border-indigo-600'"
 			:disabled="viewOnly ? viewOnly : false"
 		/>
 		<VButton
@@ -92,6 +108,7 @@ const props = defineProps<{
 const method = ref<"POST" | "PUT" | undefined>()
 const error = ref<string>('')
 const fileInput = ref<HTMLInputElement | null>(null)
+const onAvatar = ref<boolean>(false)
 const formData = ref<ProfileData>({
 	nickName: "",
 	firstName: "",
@@ -124,6 +141,11 @@ const attachFile = () => {
 		}
 	  reader.readAsDataURL(file)
 	}
+}
+
+const removeImage = () => {
+	formData.value.image = ""
+	fileInput.value.value = ""
 }
 
 const create = async () => {
@@ -171,6 +193,7 @@ const doesExist = () => {
 			formData.value.email = profile.email
 		} else {
 			method.value = "POST"
+			formData.value.nickName = user.username
 		}
 	}
 }

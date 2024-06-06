@@ -8,7 +8,7 @@
  	<VModal :is-open="invitationModalOpen" @close="closeInvitationModal" >
  		<VChatInvitation name="Jane" :notif="invitationNotif" @view="viewChannel" @close="closeInvitationModal"/>
  	</VModal>
- 	<DashboardLayout>
+ 	<DashboardLayout :toggle-chat="isChatListOpen" :toggle-info="isChatInfoOpen">
  		<template #messages>
 			<VChatList @open="openChannel" @click="variant = 'SNG'" :items="privateChannels" class="h-3/6" title="messages"/>
  		</template>
@@ -17,14 +17,19 @@
  		</template>
  		<template #chatbox>
  			<template v-if="selectedChannel" >
-	 			<VChatTitle @archive="updateArchived" :channel="selectedChannel" :sender="senderId"/>
+	 			<VChatTitle
+	 				 	@toggle-chat="toggleChatList"  
+	 					@toggle-info="toggleChatInfo" 
+	 					@archive="updateArchived" 
+	 					:channel="selectedChannel" 
+	 					:sender="senderId"/>
 	 			<VChatBoxArea :channel="selectedChannel" :messages="messages" class="flex-1"/>
 	 			<VChatBox @send="sendMessage" :channel="selectedChannel"/>
  			</template>
  		</template>
  		<template #actions>
  			<VNotificationList />
- 			<VSettings />
+ 			<VSettings :profileImage="profileImage" :username="loggedUser.username" />
  		</template>
  		<template #chatinfo>
  			<template v-if="selectedChannel" >
@@ -96,9 +101,22 @@ const invitationModalOpen = ref<boolean>(false)
 const invitationNotif = notificationStore.getSelectedInvitation()
 
 const multiChannels = channelStore.getMultiChannels()
-const singleChannels = channelStore.getSingleChannels()
-const privateChannels = computed(() => {
-	return singleChannels.value
+const privateChannels = channelStore.getSingleChannels()
+
+const isChatInfoOpen = ref<boolean>(true)
+
+const toggleChatInfo = () => {
+	isChatInfoOpen.value = !isChatInfoOpen.value;
+}
+
+const isChatListOpen = ref<boolean>(true)
+
+const toggleChatList = () => {
+	isChatListOpen.value = !isChatListOpen.value;
+}
+
+const profileImage = computed(() => {
+	return userStore.getUserImageById(loggedUser.id)
 })
 
 const viewChannel = (id: string) => {
@@ -187,15 +205,6 @@ watch(selectedChannel, async (channel) => {
 	}
 })
 
-// watch(singleChannels, async (channels) => {
-// 	privateChannels.value = []
-// 	channels.forEach(async (c) => {
-// 		const users = await channelUserStore.getChannelUsers(c.id)
-// 		if(users.some(u => u.userId === loggedUser.id)) {
-// 			privateChannels.value.push(c)
-// 		}
-// 	})
-// })
 
 onMounted(async () => {
 	await userStore.init()

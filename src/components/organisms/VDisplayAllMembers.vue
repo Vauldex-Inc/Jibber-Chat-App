@@ -1,5 +1,5 @@
 <template>
-	<div class="bg-white py-5 shadow-md rounded-md w-[420px] dark:bg-slate-900">
+	<div v-if="!stateDisplayProfile" class="bg-white py-5 shadow-md rounded-md w-[420px] dark:bg-slate-900">
 		<header class="px-5">
 			<h4 class="pb-2 font-semibold text-gray-600 dark:text-gray-300 text-lg">Members</h4>
 			<hr class="my-3 border-0 border-b border-b-indigo-300 dark:border-b-slate-700"/>
@@ -10,7 +10,7 @@
  					<template v-if="profile">
 						<VAvatar :image="profile.image" :status="getStatus(user.id)" />
 						<div class="flex flex-col">
-							<span class="font-semibold">{{ `${profile.firstName} ${profile.lastName}` }}</span>
+							<span class="font-semibold">{{userStore.getUserNameById(user.id)}}</span>
 							<span v-if="profile.nickName" class="text-xs">({{ profile.nickName }})</span>
 						</div>
 					</template>

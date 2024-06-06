@@ -1,14 +1,14 @@
 <template>
   <button
     @click="emits('click')"
-    :class="[sizeClass, roundedClass]"
+    :class="[roundedClass, hasPadding ? 'p-0' : sizeClass]"
     class="transition-all"
     type="button"
   >
     <img 
           :src="icon" alt="icon" 
           :class="[imageClass,invert? 'invert dark:invert-0' : 'invert-0']" 
-          class="aspect-square" />
+          class="aspect-square rounded-full object-cover" />
   </button>
 </template>
 
@@ -36,6 +36,8 @@ const imageClass = computed(() => {
       return "h-6";
     case "lg":
       return "h-8";
+    case "xl":
+      return "h-12"
     default:
       return "h-6";
   }
@@ -50,6 +52,7 @@ interface IconButtonProps {
   icon: string;
   invert?: boolean;
   rounded?: boolean;
+  hasPadding?: boolean;
 }
 
 const props = defineProps<IconButtonProps>();

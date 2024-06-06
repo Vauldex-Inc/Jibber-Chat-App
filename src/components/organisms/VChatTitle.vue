@@ -1,6 +1,11 @@
 <template>
 	<div class="flex items-center justify-start gap-5 p-5 border-b border-b-indigo-200
 			 dark:border-b-slate-800 dark:shadow-none">
+			<VIconButton
+					@click="emits('toggleChat')" 
+					class="hover:bg-gray-100 hover:dark:bg-slate-900"
+					:invert="true"
+					icon="./src/assets/images/menu.svg"/>
 		<VAvatar v-if="channel.channelType === 'SNG'" :image="senderProfile" :status="senderStatus"/>
 		<div 
 				v-else
@@ -21,12 +26,17 @@
 				</template>
 			</div>
 		</div>
-		<VIconButton 
-				@click="achiveChannel"
-				v-if="(sender && channel.userId === sender) && !channel.archivedAt"
-				class="ml-auto"
-				:class="curColorTheme"
-				icon="./src/assets/images/archive.svg"/>
+		<div class="ml-auto flex gap-4">
+			<VIconButton 
+					@click="achiveChannel"
+					v-if="(sender && channel.userId === sender) && !channel.archivedAt"
+					:class="curColorTheme"
+					icon="./src/assets/images/archive.svg"/>
+			<VIconButton
+					@click="emits('toggleInfo')" 
+					:class="curColorTheme"
+					icon="./src/assets/images/info.svg"/>
+		</div>
 	</div>
 </template>
 
@@ -101,6 +111,8 @@ const props = defineProps<{
 
 const emits = defineEmits<{
 	archive: [value: string]
+	toggleInfo: []
+	toggleChat: []
 }>()
 
 </script>

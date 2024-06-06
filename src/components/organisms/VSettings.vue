@@ -2,9 +2,9 @@
 	<VModal :is-open="formShown" @close="formShown = false">
 		<VProfileForm @submit="newProfile" />
 	</VModal>
-	<div class="relative">
+	<div class="relative place-self-center">
 		<VIconButton class="bg-gray-100 dark:bg-slate-900" :invert="true" icon="./src/assets/images/settings.svg" @click="toggleSettings" :rounded="true"/>
-		<ul class="absolute w-[220px] bottom-0 left-0 translate-y-full  flex flex-col bg-white shadow-xl z-30 rounded-md dark:bg-slate-800" v-if="isOpen">
+		<ul @mouseleave="toggleSettings" class="absolute w-[220px] -bottom-2 left-0 translate-y-full  flex flex-col bg-white shadow-xl z-30 rounded-md dark:bg-slate-800" v-if="isOpen">
 			<li class="hover:bg-gray-100 dark:hover:bg-slate-700 hover:rounded-md" @click="formShown = true">
 				<VButton class="flex items-center w-full gap-3"  @click="isOpen = false">
 					<img class="h-7 aspect-square" src="@/assets/images/default-avatar.svg" />

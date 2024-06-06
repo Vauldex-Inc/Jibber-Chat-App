@@ -1,5 +1,5 @@
 <template>
-	<span :class="color? color : 'bg-indigo-600'" class="p-1 rounded-full text-xs text-gray-100 dark:text-gray-200 font-semibold">
+	<span :class="color? color : 'bg-indigo-600'" class="py-1 px-2 rounded-full text-xs text-gray-100 dark:text-gray-200 font-semibold">
 		{{count}}
 	</span>
 </template>

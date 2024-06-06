@@ -2,11 +2,9 @@ import {ref,computed} from "vue"
 import {defineStore} from "pinia"
 import type {Channel} from "@/types/Channel.ts"
 import {useFetch} from "@/composables/useFetch.ts"
-import {useUser} from "@/composables/useUser"
 
 
 export const useChannelStore = defineStore("channels", () => {
-	const loggedUser = useUser()
 	const channels = ref<Channel[]>([])
 	const multiChannels = computed(() => {
 		const copy = [...channels.value]
@@ -14,11 +12,7 @@ export const useChannelStore = defineStore("channels", () => {
 	})
 	const singleChannels = computed(() => {
 		const copy = [...channels.value]
-		return copy.filter(ch => {
-				const users = ch.title.split("/")
-				
-				return ch.channelType === "SNG" && users.some(u => u === loggedUser.id)
-			}).sort((a, b) =>  a.title.localeCompare(b.title))
+		return copy.filter(ch => ch.channelType === "SNG").sort((a, b) =>  a.title.localeCompare(b.title))
 	})
 
 	const init = async () => {

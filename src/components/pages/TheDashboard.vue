@@ -28,6 +28,7 @@
  			</template>
  		</template>
  		<template #actions>
+ 			<VNotificationList />
  			<VSettings :profileImage="profileImage" :username="loggedUser.username" />
  		</template>
  		<template #chatinfo>
@@ -63,6 +64,7 @@ import VChatBoxArea from "@/components/organisms/VChatBoxArea.vue"
 import VChannelForm	from "@/components/organisms/VChannelForm.vue"
 import VModal from "@/components/atoms/VModal.vue"
 import VInvitationDirect from "@/components/organisms/VInvitationDirect.vue"
+import VNotificationList from "@/components/organisms/VNotificationList.vue"
 import {useUserStore} from "@/stores/useUserStore.ts"
 import {useChannelStore} from "@/stores/useChannelStore.ts"
 import {useMessageStore} from "@/stores/useMessageStore.ts"
@@ -73,6 +75,7 @@ import {useUser} from "@/composables/useUser.ts"
 import {useChannelUserStore} from "@/stores/useChannelUserStore.ts"
 import { useFetch } from "@/composables/useFetch"
 import { useSocket } from "@/composables/useSocket.ts"
+import { useNotificationStore } from "@/stores/useNotificationStore"
 import VToast from "@/components/molecules/VToast.vue"
 import type {Notification} from "@/types/Notification"
 import VChatInvitation from "@/components/organisms/VChatInvitation.vue"
@@ -84,6 +87,7 @@ const notifications = ref<Notification[]>([])
 
 import VSettings from "@/components/organisms/VSettings.vue"
 
+const notificationStore = useNotificationStore()
 const userStore = useUserStore()
 const channelStore = useChannelStore()
 const messageStore = useMessageStore()
@@ -93,7 +97,8 @@ const messages = ref<Message[]>([])
 const senderId = ref<string | undefined>(undefined)
 
 const invitationModalOpen = ref<boolean>(false)
-const invitationNotif = ref<Invitation | undefined>(undefined)
+
+const invitationNotif = notificationStore.getSelectedInvitation()
 
 const multiChannels = channelStore.getMultiChannels()
 const privateChannels = channelStore.getSingleChannels()
@@ -172,6 +177,10 @@ const closeToast = (id: string) => {
 	notifications.value = [...notifications.value.filter(n => n.id !== id)]
 }
 
+watch(invitationNotif, () => {
+	invitationModalOpen.value = true
+})
+
 watch(selectedChannel, async (channel) => {
 	if(channel){
 		const users = await channelUserStore.getChannelUsers(channel.id)
@@ -200,6 +209,7 @@ watch(selectedChannel, async (channel) => {
 onMounted(async () => {
 	await userStore.init()
 	await channelStore.init()
+	await notificationStore.init()
 
 	onlineSocket.value = useSocket('/sessions',(data: MessageEvent) => {
 		const updates = JSON.parse(data.data)
@@ -269,8 +279,8 @@ onMounted(async () => {
 
 			case "NOTIFICATION" : {
 				const notification = updates.content.notification
-				invitationModalOpen.value = true
-				invitationNotif.value = notification
+				notificationStore.addNewNotification(notification)
+				notificationStore.setSelectedInvitation(notification)
 				notifAudio.play()
 				break;
 			}

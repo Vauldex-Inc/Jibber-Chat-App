@@ -8,9 +8,14 @@ const useNotificationStore = defineStore("notifications", () => {
 	const selectedInvitation = ref<Invitation | undefined>(undefined)
 
 	const init = async () => {
-		const res = await useFetch("/users/invites")
-		const data = (await res.json()).notifications
-		notifications.value = data
+		try {
+			const res = await useFetch("/users/invites")
+			const data = (await res.json()).notifications
+			notifications.value = data
+		} catch (error) {
+			throw new Error(error)
+		}
+
 	}
 
 	const getNotifications = () => {
@@ -29,7 +34,24 @@ const useNotificationStore = defineStore("notifications", () => {
 		notifications.value.push(notification)
 	}
 
-	return { notifications, init, getNotifications, setSelectedInvitation, getSelectedInvitation, addNewNotification }
+	const updateNotification = async (id: string) => {
+		try {
+			const response = await useFetch(`/users/invites/${id}`, {"method": "POST"})
+			if(response.status === 200) {
+				const foundNotif = notifications.value.find((n) => {
+					return n.id === id
+				})
+				foundNotif.seenAt = new Date().toISOString()
+
+				return true
+			}
+		} catch(error) {
+			throw new Error(error)
+		}
+
+	}
+
+	return { notifications, init, getNotifications, setSelectedInvitation, getSelectedInvitation, addNewNotification, updateNotification }
 })
 
 export { useNotificationStore }

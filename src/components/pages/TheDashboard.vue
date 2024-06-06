@@ -77,6 +77,7 @@ import VToast from "@/components/molecules/VToast.vue"
 import type {Notification} from "@/types/Notification"
 import VChatInvitation from "@/components/organisms/VChatInvitation.vue"
 import type {Invitation} from "@/types/Invitation"
+import {useUnreadMessageStore} from "@/stores/useUnreadMessageStore"
 
 const notifAudio = new Audio("./src/assets/slack_sound.mp3")
 
@@ -88,6 +89,7 @@ const userStore = useUserStore()
 const channelStore = useChannelStore()
 const messageStore = useMessageStore()
 const channelUserStore = useChannelUserStore()
+const unreadMessageStore = useUnreadMessageStore()
 const loggedUser = useUser()
 const messages = ref<Message[]>([])
 const senderId = ref<string | undefined>(undefined)
@@ -96,7 +98,15 @@ const invitationModalOpen = ref<boolean>(false)
 const invitationNotif = ref<Invitation | undefined>(undefined)
 
 const multiChannels = channelStore.getMultiChannels()
-const privateChannels = channelStore.getSingleChannels()
+const singleChannels = channelStore.getSingleChannels()
+
+const privateChannels = computed(() => {
+	return singleChannels.value.filter(s => {
+		const users = s.title.split("/")
+
+		return users.some(u => u === loggedUser.id)
+	})
+})
 
 const isChatInfoOpen = ref<boolean>(true)
 
@@ -200,6 +210,8 @@ watch(selectedChannel, async (channel) => {
 onMounted(async () => {
 	await userStore.init()
 	await channelStore.init()
+	await messageStore.init()
+	await unreadMessageStore.init()
 
 	onlineSocket.value = useSocket('/sessions',(data: MessageEvent) => {
 		const updates = JSON.parse(data.data)
@@ -227,11 +239,23 @@ onMounted(async () => {
 
 			case "UNREAD" : {
 				const unreadMessage = updates.content.unread
+				const latestMessage = {
+					id: unreadMessage.messageId,
+					channelId: unreadMessage.channelId,
+					userId: unreadMessage.userId,
+					text: unreadMessage.text,
+					sentAt: unreadMessage.sentAt
+				}
+
+				messageStore.addNewLatestMessage(latestMessage)
+				if(unreadMessage.channelId !== selectedChannel.value.id){
+						unreadMessageStore.addUnreadMessage(unreadMessage)
+				}
+
 				if(unreadMessage.senderId !== loggedUser.id && 
 					unreadMessage.channelId !== selectedChannel.value.id &&
 					channelUserStore.isMember(unreadMessage.channelId,loggedUser.id)) {
 					const channel = channelStore.getChannelById(unreadMessage.channelId)
-
 					if(channel){
 						const senderName = userStore.getUserNameById(unreadMessage.senderId)
 						const title = channel.channelType === "SNG"
@@ -272,11 +296,6 @@ onMounted(async () => {
 				invitationModalOpen.value = true
 				invitationNotif.value = notification
 				notifAudio.play()
-				break;
-			}
-
-			case "CHANNEL_INVITE" : {
-
 				break;
 			}
 

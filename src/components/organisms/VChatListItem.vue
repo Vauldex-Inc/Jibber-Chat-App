@@ -1,8 +1,8 @@
 <template>
-	<div @click="emits('open', item.id)" class="flex items-center p-3 gap-4 hover:bg-indigo-400/10 cursor-pointer transition-all">
+	<div @click="openChannel" class="flex items-center p-3 gap-4 hover:bg-indigo-400/10 cursor-pointer transition-all">
 		<template v-if="item.channelType === 'SNG'">
 			<VAvatar :image="senderProfile" :status="senderStatus"/>
-			<VTextGroup class="flex-1" :title="senderName" :text="latestMessage ? latestMessage.text : 'Loading...'"/>
+			<VTextGroup :is-bold="unReadMessages.length > 0" class="flex-1" :title="senderName" :text="latestMessage ? latestMessage.text : ''"/>
 		</template>
 		<template v-else>
 			<div 
@@ -11,11 +11,11 @@
 					>
 					<p>{{channelAbbr}}</p>
 			</div>
-			<VTextGroup class="flex-1" :title="item.title" :text="latestMessage ? latestMessage.text : 'Loading...'"/>
+			<VTextGroup :is-bold="unReadMessages.length > 0" class="flex-1" :title="item.title" :text="latestMessage ? latestMessage.text : ''"/>
 		</template>
 		<div v-if="!item.archivedAt" class="flex items-center flex-col gap-2">
 			<p class="text-sm">{{sentAt}}</p>
-			<VBadge v-if="false" :count="12"/>
+			<VBadge v-if="unReadMessages.length > 0" :count="unReadMessages.length" :color="color"/>
 		</div>
 		<p v-else class="bg-red-500/10 border border-red-500/40 dark:border-red-500/20 text-red-500 py-1 px-3 rounded-full text-xs">
 			Archived
@@ -34,8 +34,8 @@ import {useFetch} from "@/composables/useFetch.ts"
 import {formatSentAt} from "@/utils/formatSentAt.ts"
 import {useMessageStore} from "@/stores/useMessageStore.ts"
 import {useUser} from "@/composables/useUser.ts"
-import type {Message} from "@/types/Message.ts"
-
+import {useUnreadMessageStore} from "@/stores/useUnreadMessageStore"
+import {useChannelUserStore} from "@/stores/useChannelUserStore.ts"
 
 const emits = defineEmits<{
 	open: [value: string]
@@ -44,6 +44,12 @@ const emits = defineEmits<{
 const loggedUser = useUser()
 const userStore = useUserStore()
 const messageStore = useMessageStore()
+const channelUserStore = useChannelUserStore()
+const unreadMessageStore = useUnreadMessageStore()
+
+const unReadMessages = computed(() => {
+	return unreadMessageStore.getUnreadMessages().value.filter(ur => ur.channelId === props.item.id)
+})
 
 const senderName = computed(() => {
 	return senderId.value? userStore.getUserNameById(senderId.value) : "Anonymous"
@@ -68,18 +74,45 @@ const channelAbbr = computed(() => {
 	return props.item.title.slice(0,1)
 })
 
-const sentAt = computed(() => {
-	return props.latestMessage ? formatSentAt(props.latestMessage.sentAt) : ''
+const latestMessage = computed(() => {
+
+	if(unReadMessages.value.length > 0){
+		return unReadMessages.value[unReadMessages.value.length -1]
+	} 
+
+	const messages = messageStore.getLatestMessages().value.filter(m => {
+		if(m){
+			return m.channelId === props.item.id
+		}
+	})
+	
+	if(messages.length > 0) {
+		return messages[messages.length -1]
+	}
+
 })
+
+
+const sentAt = computed(() => {
+	return latestMessage.value ? formatSentAt(latestMessage.value.sentAt) : ''
+})
+
+
+
+const openChannel = () => {
+	unreadMessageStore.removeUnreadMessages(props.item.id)
+	emits("open",props.item.id)
+}
 
 
 const props = defineProps<{
 	item: Channel
-	latestMessage?: Message
 }>()
 
 
-onMounted(() => {
+onMounted(async () => {
+	await channelUserStore.getChannelUsers(props.item.id)
+
 	if(props.item.channelType === "SNG") {
 		const users = props.item.title.split("/")
 		const sender = users.find(u => u !== loggedUser.id)

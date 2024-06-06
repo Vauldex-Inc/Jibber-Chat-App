@@ -9,6 +9,9 @@
 	 					from-indigo-600 to-purple-600 bg-clip-text font-bold text-center">
 	 				Jibber
 	 			</p>
+	 			<div class="flex items-center gap-3">
+	 					<slot name="notification"/>
+	 			</div>
 			</div>
 			<hr class="border-0 border-b border-b-indigo-200 dark:border-b-slate-800 mb-2" />
 			<slot name="messages"/>
@@ -25,7 +28,7 @@
 			<slot name="chatinfo"/>
 		</aside>
 		<section class="absolute top-0 right-0 z-40">
-			<slot name="notification"/>
+			<slot name="toast"/>
 		</section>
 	</div>
 </template>

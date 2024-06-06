@@ -28,8 +28,10 @@
  			</template>
  		</template>
  		<template #actions>
- 			<VNotificationList />
  			<VSettings :profileImage="profileImage" :username="loggedUser.username" />
+ 		</template>
+ 		<template #notification>
+ 			<VNotificationList />
  		</template>
  		<template #chatinfo>
  			<template v-if="selectedChannel" >
@@ -41,7 +43,7 @@
 				title="channel information" />
  			</template>
  		</template>
-	 	<template #notification>
+	 	<template #toast>
 	 		<TransitionGroup name="notif" tag="ul" class="flex flex-col gap-2">
 		 		<VToast v-for="notif in notifications" 
 		 					:key="notif.id"

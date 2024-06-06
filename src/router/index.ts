@@ -14,6 +14,14 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
+      beforeEnter: (_,__,next) => {
+        const user = useUser()
+        if(user) {
+          next({ name: 'dashboard' })
+        } else {
+          next()
+        }
+      },
       component: TheLogin
     },
     {

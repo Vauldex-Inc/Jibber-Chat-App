@@ -2,7 +2,7 @@
 	<div class="flex flex-col gap-2">
 		<div class="p-3 flex items-center justify-between gap-4">
 			<p class="text-2xl font-bold text-gray-700 dark:text-gray-300 capitalize">{{title}}</p>
-			<VIconButton 
+			<VIconButton
 					class="bg-slate-700 dark:bg-slate-800"
 					icon="./src/assets/images/add.svg"
 					size="md"

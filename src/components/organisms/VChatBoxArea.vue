@@ -5,7 +5,7 @@
 		<VChatBalloon v-for="message in messages" :key="message.id" :message="message" :color="channel.color"/>
 		<p 
 			v-if="messages.length === 0"
-			class="text-center p-3 rounded-md bg-gray-200 text-gray-500 text-sm border border-gray-300">
+			class="text-center p-3 rounded-md bg-gray-200 text-gray-500 text-sm border border-gray-300 dark:bg-slate-800 dark:border-gray-700">
 			"Sometimes you don't need to write a long letter. A simple 'I'm thinking of you' can brighten someone's day." - Mitchi Albom
 		</p>
 		<template v-if="channel.archivedAt">

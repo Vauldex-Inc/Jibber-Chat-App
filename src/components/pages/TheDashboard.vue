@@ -18,6 +18,7 @@
  		<template #chatbox>
  			<template v-if="selectedChannel" >
 	 			<VChatTitle
+	 					:collapse="isChatListOpen"
 	 				 	@toggle-chat="toggleChatList"  
 	 					@toggle-info="toggleChatInfo" 
 	 					@archive="updateArchived" 

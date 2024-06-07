@@ -28,7 +28,7 @@
 				</template>
 				<div class="flex items-center justify-center gap-4">
 					<div v-if="channel.channelType !== 'SNG'" class="group flex flex-col gap-2 items-center justify-center">
-						<VIconButton 
+						<VIconButton
 								@click="openMemberInvite"
                 :disabled="channel.archivedAt !== undefined"
 								icon="./src/assets/images/add.svg"
@@ -65,7 +65,7 @@
 					<ul class="flex flex-wrap justify-center items-start overflow-y-scroll gap-1" v-if="images.length !== 0">
 						<template v-for="image in images.reverse().slice(0, 4)">
 							<li v-if="image !== undefined">
-								<img class="border-2 border-slate-200 dark:border-slate-800 rounded-md w-32 h-24 object-cover" :src="image"
+								<img class="border-2 border-slate-200 dark:border-slate-800 rounded-md w-32 h-24 object-cover" :src="image"/>
 							</li>
 						</template>
 					</ul>

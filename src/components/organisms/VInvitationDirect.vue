@@ -11,30 +11,27 @@
 		</form>
 		<div class="absolute top-40 shadow-md left-0 bg-white w-full rounded-md px-2 py-5 hover:border-indigo-600
 						dark:bg-slate-900 dark:border-slate-800 dark:focus:border-indigo-600 dark:hover:border-indigo-600">
-			<ul class="max-h-56 overflow-y-scroll flex flex-col gap-2">
-				<template v-if="filteredUserName.length > 0">
-					<li v-for="[id, name] in filteredUserName" :key="id"  class="flex justify-between items-center hover:bg-gray-100 hover:dark:bg-gray-800 rounded-md px-4 py-2">
+			<ul v-if="filteredUserName.length > 0" class="max-h-56 overflow-y-scroll flex flex-col gap-2">
+				<template v-for="[id, name] in filteredUserName" :key="id">
+					<li class="flex justify-between items-center hover:bg-gray-100 hover:dark:bg-gray-800 rounded-md px-4 py-2">
 						<span>
 							{{ name }}
 						</span>
-						<p v-if="checkInviteStatus(id)"  class="dark:bg-slate-700 dark:text-gray-400 bg-slate-300 text-gray-700 py-2 px-3 text-sm rounded-md">
-							Messaged
-						</p>
-						<VButton v-else @click="create(id, name)" size="sm" :class="color" class="cursor-pointer text-gray-100 rounded-md">
+						<VButton @click="create(id, name)" size="sm" :class="color" class="cursor-pointer text-gray-100 rounded-md">
 							Message
 						</VButton>
 					</li>
 				</template>
-				<p v-else class="text-sm text-center">
-					Nothing matched.
-				</p>
 			</ul>
+			<p v-else class="text-sm text-center">
+				Nothing matched.
+			</p>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref, computed ,onMounted } from "vue"
 import { useFetch } from "@/composables/useFetch.ts"
 import { useUserStore } from "@/stores/useUserStore"
 import type { User } from "@/types/User"
@@ -42,6 +39,9 @@ import type { Profile } from "@/types/Profile"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
 import {useUser} from "@/composables/useUser"
+import {useChannelStore} from "@/stores/useChannelStore"
+
+const channelStore = useChannelStore()
 
 const props = defineProps<{
 	color: string
@@ -51,19 +51,29 @@ const emits = defineEmits<{
 	submit: [channel: Channel | undefined]
 }>()
 
+const singleChannels = channelStore.getSingleChannels()
+
+const privateChannels = computed(() => {
+	return singleChannels.value.filter(s => {
+		const users = s.title.split("/")
+
+		return users.some(u => u === loggedUser.id)
+	})
+})
+
 const userStore = useUserStore()
 const users = userStore.getUsers()
 const loggedUser = useUser()
 const inputUserName = ref<string>('')
 const invitedUsers = ref<string[]>([])
 
-const checkInviteStatus = (userId: string) => invitedUsers.value.includes(userId)
+const isInvited = (userId: string) => invitedUsers.value.includes(userId)
 
 const filteredUserName = computed(() => {
 	return users.value.filter((userProfile: [User, Profile]) => {
 		const [user, profile] = userProfile
 		const currentName = inputUserName.value.toLowerCase()
-		return (userStore.getUserNameById(user.id).toLowerCase().includes(currentName))
+		return (userStore.getUserNameById(user.id).toLowerCase().includes(currentName) && !isInvited(user.id))
 	}).map((userProfile: [User, Profile]) => {
 		const [user, profile] = userProfile
 		return [user.id, userStore.getUserNameById(user.id)]
@@ -98,5 +108,13 @@ const create = async (userId: string, name: string) => {
 		throw new Error(err)
 	}
 }
+
+onMounted(() => {
+	privateChannels.value.forEach(s => {
+		const users = s.title.split("/")
+
+		users.forEach(u => invitedUsers.value.push(u))
+	})
+})
 
 </script>

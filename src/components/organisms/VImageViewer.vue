@@ -2,10 +2,10 @@
 	<div class="w-screen flex items-center justify-center relative h-screen bg-slate-900/70">
 		<img class="p-1 rounded-md" :src="chatImages[count]">
 		<div class="absolute left-5">
-			<VIconButton size="lg" @click="leftMove" icon="./src/assets/images/left-button.svg"/>
+			<VIconButton tool-tip="previous" size="lg" @click="leftMove" icon="./src/assets/images/left-button.svg"/>
 		</div>
 		<div class="absolute right-5">
-			<VIconButton size="lg" @click="rightMove" icon="./src/assets/images/right-button.svg"/>
+			<VIconButton tool-tip="next" size="lg" @click="rightMove" icon="./src/assets/images/right-button.svg"/>
 		</div>
 	</div>
 </template>

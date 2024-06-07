@@ -2,13 +2,18 @@
   <button
     @click="emits('click')"
     :class="[roundedClass, hasPadding ? 'p-0' : sizeClass]"
-    class="transition-all"
+    class="transition-all group"
     type="button"
   >
-    <img 
-          :src="icon" alt="icon" 
-          :class="[imageClass,invert? 'invert dark:invert-0' : 'invert-0']" 
-          class="aspect-square rounded-full object-cover" />
+    <div class="relative">
+      <img 
+            :src="icon" alt="icon" 
+            :class="[imageClass,invert? 'invert dark:invert-0' : 'invert-0']" 
+            class="aspect-square rounded-full object-cover" />
+      <p 
+        class="absolute -bottom-4 left-1/2 -translate-x-1/2 translate-y-full hidden group-hover:block px-2 
+        py-1 bg-slate-800 text-gray-200 rounded-md text-sm capitalize z-50 min-w-24" v-if="toolTip" >{{toolTip}}</p>
+    </div>
   </button>
 </template>
 
@@ -53,6 +58,7 @@ interface IconButtonProps {
   invert?: boolean;
   rounded?: boolean;
   hasPadding?: boolean;
+  toolTip?: string
 }
 
 const props = defineProps<IconButtonProps>();

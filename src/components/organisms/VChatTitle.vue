@@ -2,10 +2,19 @@
 	<div class="flex items-center justify-start gap-5 p-5 border-b border-b-indigo-200
 			 dark:border-b-slate-800 dark:shadow-none">
 			<VIconButton
+					v-if="collapse"
 					@click="emits('toggleChat')" 
-					class="hover:bg-gray-100 hover:dark:bg-slate-900"
+					class="hover:bg-gray-200 hover:dark:bg-slate-900 border bg-gray-100 dark:bg-gray-900 dark:border-slate-800"
 					:invert="true"
-					icon="./src/assets/images/menu.svg"/>
+					tool-tip="hide chats"
+					icon="./src/assets/images/collapse-menu-left.svg"/>
+			<VIconButton
+					v-else
+					@click="emits('toggleChat')" 
+					class="hover:bg-gray-200 hover:dark:bg-slate-900 border bg-gray-100 dark:bg-gray-900 dark:border-slate-800"
+					:invert="true"
+					tool-tip="show chats"
+					icon="./src/assets/images/collapse-menu-right.svg"/>
 		<VAvatar v-if="channel.channelType === 'SNG'" :image="senderProfile" :status="senderStatus"/>
 		<div 
 				v-else
@@ -31,10 +40,12 @@
 					@click="achiveChannel"
 					v-if="(sender && channel.userId === sender) && !channel.archivedAt"
 					:class="curColorTheme"
+					tool-tip="archive chat"
 					icon="./src/assets/images/archive.svg"/>
 			<VIconButton
 					@click="emits('toggleInfo')" 
 					:class="curColorTheme"
+					tool-tip="show chat details"
 					icon="./src/assets/images/info.svg"/>
 		</div>
 	</div>
@@ -107,6 +118,7 @@ const achiveChannel = async () => {
 const props = defineProps<{
 	channel: Channel
 	sender?: string
+	collapse: boolean
 }>()
 
 const emits = defineEmits<{

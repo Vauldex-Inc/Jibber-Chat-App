@@ -1,5 +1,5 @@
 # Communication tool
-> A simple online web application for chat communiction chat
+> A simple online web application for chat communiction
 
 ## About the project
 

@@ -14,6 +14,37 @@ A web real time chat service that supports multi-public chat channels and one to
 *Direct Message Screenshot*
 ![Product Name Screen Shot][screenshot-three]
 
+## Features
+- [x] Login
+- [x] Register
+- [x] Direct Message Channel
+    - [x] Find users
+    - [x] Send text message
+    - [x] Send photo message
+    - [ ] Voice Call
+    - [ ] Video Call
+    - [ ] Share Screen
+- [x] Group Message Channel
+    - [x] Invite Members
+    - [x] Send text message
+    - [x] Send photo message
+    - [x] Members List
+    - [ ] Voice Call
+    - [ ] Video Call
+    - [ ] Share Screen
+- [x] Channel Notification
+- [x] Online Status
+- [x] Channel Settings
+    - [x] Channel Name
+    - [x] Photo Uploads
+    - [x] Chat theme switcher
+    - [ ] Leave Channel
+    - [ ] Delete Channel
+- [x] Archive
+- [ ] Unarchive
+- [x] Profile Settings
+- [x] Switch Apperance (Light and Dark) 
+
 ### Built With
 
 List of technologies stack used:

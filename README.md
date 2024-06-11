@@ -19,6 +19,9 @@ A web real time chat service that supports multi-public chat channels and one to
 This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
 * [![Scala][Scala]][Scala-url]
+* [![HTML5][HTML5]][HTML5-url]
+* [![JS][JS]][JS-url]
+* [![TS][TS]][TS-url]
 * [![Vue][Vue]][Vue-url]
 * [![Tailwindcss][Tailwindcss]][Tailwindcss-url]
 
@@ -28,6 +31,12 @@ This section should list any major frameworks/libraries used to bootstrap your p
 [screenshot-three]: https://github.com/Vauldex-Technologies-Inc/jibber-client/assets/169636389/1f9a0244-0c99-44b1-b8f2-e41dbf57998d
 [Scala-url]: https://www.scala-lang.org/
 [Scala]: https://img.shields.io/badge/Scala-DC322F?style=for-the-badge&logo=scala&logoColor=FFFFFF
+[HTML5-url]: https://developer.mozilla.org/en-US/docs/Web/HTML
+[HTML5]: https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=FFFFFF
+[JS-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+[JS]: https://img.shields.io/badge/Javascript-000000?style=for-the-badge&logo=javascript&logoColor=F7DF1E
+[TS-url]: https://www.typescriptlang.org/
+[TS]: https://img.shields.io/badge/TYPESCRIPT-3178C6?style=for-the-badge&logo=typescript&logoColor=FFFFFF
 [Vue-url]: https://vuejs.org/
 [Vue]: https://img.shields.io/badge/Vue.JS-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
 [Tailwindcss-url]: https://tailwindcss.com/

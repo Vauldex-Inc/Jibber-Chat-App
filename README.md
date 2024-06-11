@@ -16,12 +16,13 @@ A web real time chat service that supports multi-public chat channels and one to
 
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+List of technologies stack used:
 
 * [![Scala][Scala]][Scala-url]
 * [![HTML5][HTML5]][HTML5-url]
 * [![JS][JS]][JS-url]
 * [![TS][TS]][TS-url]
+* [![Node][Node]][Node-url]
 * [![Vue][Vue]][Vue-url]
 * [![Tailwindcss][Tailwindcss]][Tailwindcss-url]
 
@@ -37,6 +38,8 @@ This section should list any major frameworks/libraries used to bootstrap your p
 [JS]: https://img.shields.io/badge/Javascript-000000?style=for-the-badge&logo=javascript&logoColor=F7DF1E
 [TS-url]: https://www.typescriptlang.org/
 [TS]: https://img.shields.io/badge/TYPESCRIPT-3178C6?style=for-the-badge&logo=typescript&logoColor=FFFFFF
+[Node-url]: https://nodejs.org/en
+[Node]: https://img.shields.io/badge/Node.js-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=FFFFFF
 [Vue-url]: https://vuejs.org/
 [Vue]: https://img.shields.io/badge/Vue.JS-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
 [Tailwindcss-url]: https://tailwindcss.com/

@@ -1,67 +1,58 @@
 <template>
-	<li
-		:class="message.userId === loggedUser.id ? `self-end` : 'self-start'"
-		class="flex items-start gap-4">
-		<VAvatar v-if="message.userId !== loggedUser.id" :image="senderProfile" :status="senderStatus"/>
-		<div class="flex items-start gap-2 flex-col">
-			<div :class="message.userId === loggedUser.id ? 'self-end' : ''" class="flex items-center gap-1">
-				<template v-if="message.userId !== loggedUser.id">
-					<p class="text-xs">{{senderName}}</p>
-					<p class="text-xs">•</p>
-				</template>
-				<p class="text-xs">{{sentAtFormatter}}</p>
-			</div>
-			<p 
-					:class="[message.userId === loggedUser.id? `self-end text-gray-100` : 'self-start text-gray-800 dark:text-gray-300',
-						message.userId === loggedUser.id && color ? color : 'bg-gray-300 dark:bg-slate-800 text-gray-800 dark:text-gray-300'
-					]"
-					class="p-3 rounded-lg max-w-[250px] break-words">
-				{{message.text}}
-				<img v-if="message.image" class="max-h-48 aspect-auto rounded-md mt-2" :src="message.image">
-			</p>
-		</div>
-	</li>
+  <li
+    v-if="loggedUser"
+    :class="message.userId === loggedUser.id ? `self-end` : 'self-start'"
+    class="flex items-start gap-4"
+  >
+    <VAvatar
+      v-if="message.userId !== loggedUser.id"
+      :image="userStore.senderProfile(message)"
+      :status="userStore.senderStatus(message)"
+    />
+    <div class="flex flex-col items-start gap-2">
+      <div
+        :class="message.userId === loggedUser.id ? 'self-end' : ''"
+        class="flex items-center gap-1"
+      >
+        <template v-if="message.userId !== loggedUser.id">
+          <p class="text-xs">{{ userStore.senderName(message) }}</p>
+          <p class="text-xs">•</p>
+        </template>
+        <p class="text-xs">{{ userStore.sentAtFormatter(message) }}</p>
+      </div>
+      <p
+        :class="[
+          message.userId === loggedUser.id
+            ? `self-end text-gray-100`
+            : 'self-start text-gray-800 dark:text-gray-300',
+          message.userId === loggedUser.id && color
+            ? color
+            : 'bg-gray-300 text-gray-800 dark:bg-slate-800 dark:text-gray-300',
+        ]"
+        class="max-w-[250px] break-words rounded-lg p-3"
+      >
+        {{ message.text }}
+        <img
+          v-if="message.image"
+          class="mt-2 aspect-auto max-h-48 rounded-md"
+          :src="message.image"
+        />
+      </p>
+    </div>
+  </li>
 </template>
 
 <script lang="ts" setup>
-import type {Message} from "@/types/Message.ts"
-import {useUser} from "@/composables/useUser.ts"
-import {useDateFormatter} from "@/composables/useDateFormatter.ts"
-import {computed} from "vue"
-import {useUserStore} from "@/stores/useUserStore.ts"
-import VAvatar from "@/components/atoms/VAvatar.vue"
+import type { Message } from "@/types/Message.ts";
+import { useUser } from "@/composables/useUser";
+import { useUserStore } from "@/stores/useUserStore";
+import VAvatar from "@/components/atoms/VAvatar.vue";
 
-const loggedUser = useUser()
-const userStore = useUserStore()
-const dateFormatter = useDateFormatter()
+const userStore = useUserStore();
+const loggedUser = useUser();
 
-const options: Intl.DateTimeFormatOptions = {
-	month: 'long',
-    day: 'numeric',
-    weekday: 'long',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-  }
-
-const sentAtFormatter = computed(() => {
-	return dateFormatter.format(props.message.sentAt,options)
-})
-
-const senderName = computed(() => {
-	return userStore.getUserNameById(props.message.userId)
-})
-
-const senderProfile = computed(() => {
-	return userStore.getUserImageById(props.message.userId)
-})
-
-const senderStatus = computed(() => {
-	return userStore.getOnlineUsers().value.indexOf(props.message.userId) !== -1 ? 'online' : 'offline'
-})
-
-const props = defineProps<{
-	message: Message
-	color?: string
-}>()
+defineProps<{
+  message: Message;
+  color?: string;
+}>();
 </script>

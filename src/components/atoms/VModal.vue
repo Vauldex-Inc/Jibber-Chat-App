@@ -2,7 +2,7 @@
   <Teleport to="body">
     <div
       v-show="isOpen"
-      class="fixed inset-0 bg-slate-950/20 dark:bg-slate-950/70 text-gray-600 dark:text-gray-400 flex items-center justify-center z-50"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/20 text-gray-600 dark:bg-slate-950/70 dark:text-gray-400"
     >
       <Transition name="modal">
         <div class="relative" v-if="isOpen">
@@ -10,7 +10,7 @@
           <VIconButton
             v-if="closeButton ? closeButton : true"
             @click="emits('close')"
-            class="absolute top-0 right-0 -translate-x-1/2 translate-y-1/2"
+            class="absolute right-0 top-0 -translate-x-1/2 translate-y-1/2"
             icon="./src/assets/images/close.svg"
             size="sm"
             :invert="true"

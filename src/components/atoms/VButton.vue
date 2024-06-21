@@ -2,10 +2,10 @@
   <button
     @click="emits('click')"
     :class="[sizeClass]"
-    class="transition-all capitalize"
+    class="capitalize transition-all"
     :type="action ? action : 'button'"
   >
-    <slot/>
+    <slot />
   </button>
 </template>
 

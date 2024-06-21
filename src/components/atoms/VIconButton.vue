@@ -2,17 +2,22 @@
   <button
     @click="emits('click')"
     :class="[roundedClass, hasPadding ? 'p-0' : sizeClass]"
-    class="transition-all group"
+    class="group transition-all"
     type="button"
   >
     <div class="relative">
-      <img 
-            :src="icon" alt="icon" 
-            :class="[imageClass,invert? 'invert dark:invert-0' : 'invert-0']" 
-            class="aspect-square rounded-full object-cover" />
-      <p 
-        class="absolute -bottom-4 left-1/2 -translate-x-1/2 translate-y-full hidden group-hover:block px-2 
-        py-1 bg-slate-800 text-gray-200 rounded-md text-sm capitalize z-50 min-w-24" v-if="toolTip" >{{toolTip}}</p>
+      <img
+        :src="icon"
+        alt="icon"
+        :class="[imageClass, invert ? 'invert dark:invert-0' : 'invert-0']"
+        class="aspect-square rounded-full object-cover"
+      />
+      <p
+        class="absolute -bottom-4 left-1/2 z-50 hidden min-w-24 -translate-x-1/2 translate-y-full rounded-md bg-slate-800 px-2 py-1 text-sm capitalize text-gray-200 group-hover:block"
+        v-if="toolTip"
+      >
+        {{ toolTip }}
+      </p>
     </div>
   </button>
 </template>
@@ -42,7 +47,7 @@ const imageClass = computed(() => {
     case "lg":
       return "h-8";
     case "xl":
-      return "h-12"
+      return "h-12";
     default:
       return "h-6";
   }
@@ -53,12 +58,12 @@ const roundedClass = computed(() => {
 });
 
 interface IconButtonProps {
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   icon: string;
   invert?: boolean;
   rounded?: boolean;
   hasPadding?: boolean;
-  toolTip?: string
+  toolTip?: string;
 }
 
 const props = defineProps<IconButtonProps>();

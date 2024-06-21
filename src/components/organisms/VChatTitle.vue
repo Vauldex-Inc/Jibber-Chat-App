@@ -1,130 +1,150 @@
 <template>
-	<div class="flex items-center justify-start gap-5 p-5 border-b border-b-indigo-200
-			 dark:border-b-slate-800 dark:shadow-none">
-			<VIconButton
-					v-if="collapse"
-					@click="emits('toggleChat')" 
-					class="hover:bg-gray-200 hover:dark:bg-slate-900 border bg-gray-100 dark:bg-gray-900 dark:border-slate-800"
-					:invert="true"
-					tool-tip="hide chats"
-					icon="./src/assets/images/collapse-menu-left.svg"/>
-			<VIconButton
-					v-else
-					@click="emits('toggleChat')" 
-					class="hover:bg-gray-200 hover:dark:bg-slate-900 border bg-gray-100 dark:bg-gray-900 dark:border-slate-800"
-					:invert="true"
-					tool-tip="show chats"
-					icon="./src/assets/images/collapse-menu-right.svg"/>
-		<VAvatar v-if="channel.channelType === 'SNG'" :image="senderProfile" :status="senderStatus"/>
-		<div 
-				v-else
-				class="h-12 aspect-square flex items-center justify-center rounded-full text-white"
-				:class="curColorTheme"
-				>
-				<p>{{channelAbbr}}</p>
-		</div>
-		<div>
-			<div>
-				<template v-if="channel.channelType === 'SNG'">
-					<p class="text-gray-700 dark:text-gray-300 font-semibold">{{senderName}}</p>
-					<p class="text-sm capitalize" :class="{'text-emerald-600': senderStatus === 'online'}">{{senderStatus}}</p>
-				</template>
-				<template v-else>
-					<p class="text-gray-700 dark:text-gray-300 font-semibold">{{channel.title}}</p>
-					<p class="text-sm">{{count && count > 1 ? `${count} members` : `${count} member`}}</p>
-				</template>
-			</div>
-		</div>
-		<div class="ml-auto flex gap-4">
-			<VIconButton 
-					@click="achiveChannel"
-					v-if="(sender && channel.userId === sender) && !channel.archivedAt"
-					:class="curColorTheme"
-					tool-tip="archive chat"
-					icon="./src/assets/images/archive.svg"/>
-			<VIconButton
-					@click="emits('toggleInfo')" 
-					:class="curColorTheme"
-					tool-tip="show chat details"
-					icon="./src/assets/images/info.svg"/>
-		</div>
-	</div>
+  <div
+    class="flex items-center justify-start gap-5 border-b border-b-indigo-200 p-5 dark:border-b-slate-800 dark:shadow-none"
+  >
+    <VIconButton
+      v-if="collapse"
+      @click="emits('toggleChat')"
+      class="border bg-gray-100 hover:bg-gray-200 dark:border-slate-800 dark:bg-gray-900 hover:dark:bg-slate-900"
+      :invert="true"
+      tool-tip="hide chats"
+      icon="./src/assets/images/collapse-menu-left.svg"
+    />
+    <VIconButton
+      v-else
+      @click="emits('toggleChat')"
+      class="border bg-gray-100 hover:bg-gray-200 dark:border-slate-800 dark:bg-gray-900 hover:dark:bg-slate-900"
+      :invert="true"
+      tool-tip="show chats"
+      icon="./src/assets/images/collapse-menu-right.svg"
+    />
+    <VAvatar
+      v-if="channel.channelType === 'SNG'"
+      :image="senderProfile"
+      :status="senderStatus"
+    />
+    <div
+      v-else
+      class="flex aspect-square h-12 items-center justify-center rounded-full text-white"
+      :class="curColorTheme"
+    >
+      <p>{{ channelAbbr }}</p>
+    </div>
+    <div>
+      <div>
+        <template v-if="channel.channelType === 'SNG'">
+          <p class="font-semibold text-gray-700 dark:text-gray-300">
+            {{ senderName }}
+          </p>
+          <p
+            class="text-sm capitalize"
+            :class="{ 'text-emerald-600': senderStatus === 'online' }"
+          >
+            {{ senderStatus }}
+          </p>
+        </template>
+        <template v-else>
+          <p class="font-semibold text-gray-700 dark:text-gray-300">
+            {{ channel.title }}
+          </p>
+          <p class="text-sm">
+            {{ count && count > 1 ? `${count} members` : `${count} member` }}
+          </p>
+        </template>
+      </div>
+    </div>
+    <div class="ml-auto flex gap-4">
+      <VIconButton
+        @click="achiveChannel"
+        v-if="sender && channel.userId === sender && !channel.archivedAt"
+        :class="curColorTheme"
+        tool-tip="archive chat"
+        icon="./src/assets/images/archive.svg"
+      />
+      <VIconButton
+        @click="emits('toggleInfo')"
+        :class="curColorTheme"
+        tool-tip="show chat details"
+        icon="./src/assets/images/info.svg"
+      />
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import VAvatar from "@/components/atoms/VAvatar.vue"
-import VIconButton from "@/components/atoms/VIconButton.vue"
-import type {Channel} from "@/types/Channel.ts"
-import type {User} from "@/types/User.ts"
-import {useUserStore} from "@/stores/useUserStore.ts"
-import {computed,ref} from "vue"
-import {useFetch} from "@/composables/useFetch.ts"
-import {useChannelUserStore} from "@/stores/useChannelUserStore"
+import VAvatar from "@/components/atoms/VAvatar.vue";
+import VIconButton from "@/components/atoms/VIconButton.vue";
+import type { Channel } from "@/types/Channel.ts";
+import type { User } from "@/types/User.ts";
+import { useUserStore } from "@/stores/useUserStore.ts";
+import { computed, ref } from "vue";
+import { useFetch } from "@/composables/useFetch.ts";
+import { useChannelUserStore } from "@/stores/useChannelUserStore";
 
-
-const userStore = useUserStore()
-const channelUserStore = useChannelUserStore()
-const channelUsersCount = channelUserStore.getChannelUsersCount()
+const userStore = useUserStore();
+const channelUserStore = useChannelUserStore();
+const channelUsersCount = channelUserStore.getChannelUsersCount();
 
 const count = computed(() => {
-	const userCount = channelUsersCount.value.find(ch => ch[0] === props.channel.id)
+  const userCount = channelUsersCount.value.find(
+    (ch) => ch[0] === props.channel.id,
+  );
 
-	return userCount ? userCount[1] : 0
-})
+  return userCount ? userCount[1] : 0;
+});
 
 const senderName = computed(() => {
-	if(!props.sender) return ""
-	return userStore.getUserNameById(props.sender)
-})
+  if (!props.sender) return "";
+  return userStore.getUserNameById(props.sender);
+});
 
 const senderProfile = computed(() => {
-	if(!props.sender) return undefined
-	return userStore.getUserImageById(props.sender)
-})
+  if (!props.sender) return undefined;
+  return userStore.getUserImageById(props.sender);
+});
 
 const senderStatus = computed(() => {
-	if(!props.sender) return undefined
-	return userStore.getOnlineUsers().value.indexOf(props.sender) !== -1 ? 'online' : 'offline'
-})
+  if (!props.sender) return undefined;
+  return userStore.getOnlineUsers().value.indexOf(props.sender) !== -1
+    ? "online"
+    : "offline";
+});
 
 const channelAbbr = computed(() => {
-	return props.channel.title.slice(0,1)
-})
+  return props.channel.title.slice(0, 1);
+});
 
 const curColorTheme = computed(() => {
-	return props.channel.color ? props.channel.color : "bg-slate-800"
-})
-
+  return props.channel.color ? props.channel.color : "bg-slate-800";
+});
 
 const achiveChannel = async () => {
-	const archivedAt = new Date().toISOString()
+  const archivedAt = new Date().toISOString();
 
-	const res = await useFetch(`/channels/${props.channel.id}`, {
-		method: "PUT",
-		body: JSON.stringify({
-	    title: props.channel.title,
-	    channelType: props.channel.channelType,
-	    color: undefined,
-	    archivedAt: archivedAt
-		})
-	})
+  const res = await useFetch(`/channels/${props.channel.id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      title: props.channel.title,
+      channelType: props.channel.channelType,
+      color: undefined,
+      archivedAt: archivedAt,
+    }),
+  });
 
-	if(res.status === 200) {
-		emits('archive', {color:undefined,archivedAt})
-	}
-}
-
+  if (res.status === 200) {
+    emits("archive", { color: undefined, archivedAt });
+  }
+};
 
 const props = defineProps<{
-	channel: Channel
-	sender?: string
-	collapse: boolean
-}>()
+  channel: Channel;
+  sender?: string;
+  collapse: boolean;
+}>();
 
 const emits = defineEmits<{
-	archive: [value: string]
-	toggleInfo: []
-	toggleChat: []
-}>()
-
+  archive: [value: string];
+  toggleInfo: [];
+  toggleChat: [];
+}>();
 </script>

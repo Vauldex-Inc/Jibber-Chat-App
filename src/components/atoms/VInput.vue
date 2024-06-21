@@ -26,7 +26,7 @@ const sizeClass = computed(() => {
 });
 
 interface InputProps {
-  type?: "text" | "file";
+  type?: "text" | "file" | "password";
   size?: "sm" | "md" | "lg";
 }
 

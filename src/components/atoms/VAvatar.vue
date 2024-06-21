@@ -2,7 +2,7 @@
   <div class="relative inline-block">
     <img
       :src="image ? image : './src/assets/images/default-avatar.svg'"
-      :class="[imageClass]"
+      :class="imageSizeClass(size)"
       class="relative z-0 aspect-square rounded-full object-cover"
     />
     <div
@@ -14,19 +14,7 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
-
-const imageClass = computed(() => {
-  switch (props.size) {
-    case "sm":
-      return "h-10";
-    case "md":
-      return "h-12";
-    case "lg":
-      return "h-16";
-    default:
-      return "h-12";
-  }
-});
+import { imageSizeClass } from "@/composables/useSize";
 
 const statusClass = computed(() => {
   switch (props.status) {

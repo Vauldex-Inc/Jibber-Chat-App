@@ -1,7 +1,7 @@
 <template>
   <button
     @click="emits('click')"
-    :class="[sizeClass]"
+    :class="sizeClass(size)"
     class="capitalize transition-all"
     :type="action ? action : 'button'"
   >
@@ -10,27 +10,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-
-const sizeClass = computed(() => {
-  switch (props.size) {
-    case "sm":
-      return "py-2 px-4 text-sm";
-    case "md":
-      return "py-3 px-5 text-base";
-    case "lg":
-      return "py-4 px-6 text-lg";
-    default:
-      return "py-3 px-5 text-base";
-  }
-});
+import { sizeClass } from "@/composables/useSize";
 
 interface ButtonProps {
   size?: "sm" | "md" | "lg";
   action?: "submit" | "button";
 }
 
-const props = defineProps<ButtonProps>();
+defineProps<ButtonProps>();
 
 const emits = defineEmits<{
   click: [];

@@ -1,15 +1,26 @@
-import {ref} from "vue"
-import {defineStore} from "pinia"
-import type {User} from "@/types/User.ts"
-import type {Profile} from "@/types/Profile.ts"
-import {useFetch} from "@/composables/useFetch.ts"
+import { ref } from "vue"
+import { defineStore } from "pinia"
+import type { User } from "@/types/User.ts"
+import type { Profile } from "@/types/Profile.ts"
+import type { Message } from "@/types/Message"
+import { useFetch } from "@/composables/useFetch"
+import { useDateFormatter } from "@/composables/useDateFormatter";
 
+const dateFormatter = useDateFormatter()
+
+const defaultOptions: Intl.DateTimeFormatOptions = {
+	month: "long",
+	day: "numeric",
+	weekday: "long",
+	hour: "numeric",
+	minute: "numeric",
+	hour12: true,
+};
 
 export const useUserStore = defineStore("users", () => {
-	const users = ref<[User,Profile][]>([])
+	const users = ref<[User, Profile | undefined][]>([])
 
 	const onlineUsers = ref<string[]>([])
-
 
 	const init = async () => {
 		const res = await useFetch("/users")
@@ -29,22 +40,22 @@ export const useUserStore = defineStore("users", () => {
 	const getUserNameById = (id: string) => {
 		const userProfile = getUserById(id)
 
-		if(!userProfile) {
+		if (!userProfile) {
 			return "Anonymous"
 		}
 
-		const [user,profile] = userProfile
+		const [user, profile] = userProfile
 
-		if(!profile) {
+		if (!profile) {
 			return user.username
 		}
 
-		if(!profile.firstName && !profile.lastName) {
+		if (!profile.firstName && !profile.lastName) {
 			return user.username
 		}
 
 
-		if(profile.firstName.trim() === "" || profile.lastName.trim() === "") {
+		if (profile.firstName?.trim() === "" || profile.lastName?.trim() === "") {
 			return user.username
 		}
 
@@ -54,13 +65,13 @@ export const useUserStore = defineStore("users", () => {
 	const getUserImageById = (id: string) => {
 		const userProfile = getUserById(id)
 
-		if(!userProfile) {
+		if (!userProfile) {
 			return undefined
 		}
 
-		const [user,profile] = userProfile
-		
-		if(!profile) {
+		const [user, profile] = userProfile
+
+		if (!profile) {
 			return undefined
 		}
 
@@ -68,20 +79,22 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	const addUserProfile = (id: string, newProfile: Profile) => {
-		users.value = [...users.value.map(u => {
-				const [user, profile] = u
-				if(user.id === id) {
-					return [user,newProfile]
-				}
-				return [user, profile]
+		const updatedUsers = [...users.value.map(u => {
+			const [user, profile] = u
+			if (user.id === id) {
+				return [user, newProfile] as [User, Profile]
+			}
+			return [user, profile] as [User, Profile]
 		})]
+
+		users.value = [...updatedUsers]
 	}
 
-	const updateUserOnlineAt = (users: User[], type: string) => {
-		if(type === "online") {
+	const updateUserOnlineAt = (users: string[], type: string) => {
+		if (type === "online") {
 			onlineUsers.value = users
 		} else {
-			onlineUsers.value = [...onlineUsers.value.filter(ol => users.indexOf(ol) === -1 )]
+			onlineUsers.value = [...onlineUsers.value.filter(ol => users.indexOf(ol) === -1)]
 		}
 	}
 
@@ -90,9 +103,29 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	const addNewUser = (user: User) => {
-		users.value.push([user,undefined])
+		users.value.push([user, undefined])
 	}
 
-	return {users,init,getUserById,getUsers,getUserNameById,
-	getUserImageById,addUserProfile,updateUserOnlineAt,onlineUsers,getOnlineUsers, addNewUser}
+	const sentAtFormatter = (message: Message, options: Intl.DateTimeFormatOptions = defaultOptions) => {
+		return dateFormatter.format(message.sentAt, options);
+	};
+
+	const senderName = (message: Message) => {
+		return getUserNameById(message.userId);
+	};
+
+	const senderProfile = (message: Message) => {
+		return getUserImageById(message.userId);
+	};
+
+	const senderStatus = (message: Message) => {
+		return getOnlineUsers().value.includes(message.userId)
+			? "online"
+			: "offline";
+	};
+
+	return {
+		users, init, getUserById, getUsers, getUserNameById,
+		getUserImageById, addUserProfile, updateUserOnlineAt, onlineUsers, getOnlineUsers, addNewUser, sentAtFormatter, senderName, senderProfile, senderStatus
+	}
 })

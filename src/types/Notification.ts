@@ -1,12 +1,12 @@
 export interface Notification {
 	id: string
 	title: string
-	message:string
+	message: string
 }
 
 export interface Invitation {
 	id: string
-	notificationType: string
+	notificationType: "INV" | "NEW"
 	userId: string
 	senderId: string
 	channelId: string

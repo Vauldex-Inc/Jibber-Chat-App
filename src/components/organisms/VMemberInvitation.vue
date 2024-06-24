@@ -16,7 +16,7 @@
         placeholder="Enter name..."
         size="md"
       />
-      <VInput type="submit" hidden />
+      <input type="submit" hidden />
     </form>
     <div
       class="absolute left-0 top-40 w-full rounded-md bg-white px-2 py-5 shadow-md hover:border-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-600 dark:focus:border-indigo-600"
@@ -57,12 +57,9 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useUserStore } from "@/stores/useUserStore";
-
 import type { User } from "@/types/User";
 import type { Profile } from "@/types/Profile";
-
 import { useChannelUserStore } from "@/stores/useChannelUserStore";
-
 import VInput from "@/components/atoms/VInput.vue";
 import VButton from "@/components/atoms/VButton.vue";
 
@@ -76,9 +73,9 @@ const users = computed(() => {
 });
 
 const invitedUsers = ref<string[]>([]);
-const checkInviteStatus = (userId) => invitedUsers.value.includes(userId);
+const checkInviteStatus = (userId: string) => invitedUsers.value.includes(userId);
 
-const selectedUserName = (userId) => {
+const selectedUserName = (userId: string) => {
   invitedUsers.value.push(userId);
   emits("action", userId);
 };
@@ -87,7 +84,7 @@ const inputUserName = ref<string>("");
 
 const filteredUserName = computed(() => {
   return users.value
-    .filter((userProfile: [User, Profile]) => {
+    .filter((userProfile: [User, Profile | undefined]) => {
       const [user, profile] = userProfile;
       const currentName = inputUserName.value.toLowerCase();
       return userStore
@@ -95,7 +92,7 @@ const filteredUserName = computed(() => {
         .toLowerCase()
         .includes(currentName);
     })
-    .map((userProfile: [User, Profile]) => {
+    .map((userProfile: [User, Profile | undefined]) => {
       const [user, profile] = userProfile;
       return [user.id, userStore.getUserNameById(user.id)];
     });

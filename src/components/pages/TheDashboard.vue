@@ -141,7 +141,7 @@ const privateChannels = computed(() => {
   });
 });
 
-const isChatInfoOpen = ref<boolean>(true);
+const isChatInfoOpen = ref<boolean>(false);
 
 const toggleChatInfo = () => {
   isChatInfoOpen.value = !isChatInfoOpen.value;

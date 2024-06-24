@@ -87,11 +87,7 @@
             class="aspect-square h-8 dark:invert"
           />
           <p>
-            {{
-              channelUserStore.getChannelUsersCount(channel.id) > 1
-                ? `${count} members`
-                : `${count} member`
-            }}
+            {{ count && count > 1 ? `${count} members` : `${count} member` }}
           </p>
         </div>
       </VSection>

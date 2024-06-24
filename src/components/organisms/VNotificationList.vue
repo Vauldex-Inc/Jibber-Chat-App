@@ -42,31 +42,38 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import VIconButton from "@/components/atoms/VIconButton.vue";
-import VModal from "@/components/atoms/VModal.vue";
 import VNotificationListItem from "@/components/organisms/VNotificationListItem.vue";
 import { useNotificationStore } from "@/stores/useNotificationStore";
 import { useChannelStore } from "@/stores/useChannelStore";
 
 const notificationStore = useNotificationStore();
 const channelStore = useChannelStore();
-
+const notifications = notificationStore.getNotifications();
 const displayNotification = ref<boolean>(false);
+
 const toggleNotifications = () => {
   displayNotification.value = !displayNotification.value;
 };
 
 const unSeenCount = computed(() => {
-  return notificationsCopy.value.filter((n) => n.seenAt === undefined).length;
+  if (notificationsCopy.value !== undefined) {
+    return notificationsCopy.value.filter((n) => n.seenAt === undefined).length;
+  } else {
+    return 0
+  }
 });
 
 const notificationsCopy = computed(() => {
-  return notifications.value
-    .filter((n) => {
-      const channel = channelStore.getChannelById(n.channelId);
-
-      return channel.channelType !== "SNG";
-    })
-    .reverse();
+  if (notifications.value !== undefined) {
+    return notifications.value
+      .filter((n) => {
+        const channel = channelStore.getChannelById(n.channelId);
+        if (channel !== undefined)
+          return channel.channelType !== "SNG";
+      })
+      .reverse();
+  } else {
+    return []
+  }
 });
-const notifications = notificationStore.getNotifications();
 </script>

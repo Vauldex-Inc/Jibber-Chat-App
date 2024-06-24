@@ -1,8 +1,13 @@
-interface User {
-	id: string;
-	username: string;
-	createdAt: string;
-	activeAt: string;
-}
+import { z } from "zod";
+
+const userSchema = z.object({
+	id: z.string(),
+	username: z.string(),
+	createdAt: z.string(),
+	activeAt: z.string()
+})
+
+type User = z.infer<typeof userSchema>
 
 export type { User }
+export { userSchema }

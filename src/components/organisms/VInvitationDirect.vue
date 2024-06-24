@@ -16,7 +16,7 @@
         placeholder="Enter name..."
         size="md"
       />
-      <VInput type="submit" hidden />
+      <input type="submit" hidden />
     </form>
     <div
       class="absolute left-0 top-40 w-full rounded-md bg-white px-2 py-5 shadow-md hover:border-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-600 dark:focus:border-indigo-600"
@@ -50,10 +50,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useFetch } from "@/composables/useFetch.ts";
+import { useFetch } from "@/composables/useFetch";
 import { useUserStore } from "@/stores/useUserStore";
+import { userSchema  } from "@/types/User";
 import type { User } from "@/types/User";
 import type { Profile } from "@/types/Profile";
+import type { Channel } from "@/types/Channel";
+import { errorSchema } from "@/types/Error"
 import VInput from "@/components/atoms/VInput.vue";
 import VButton from "@/components/atoms/VButton.vue";
 import { useUser } from "@/composables/useUser";
@@ -69,19 +72,10 @@ const emits = defineEmits<{
   submit: [channel: Channel | undefined];
 }>();
 
-const singleChannels = channelStore.getSingleChannels();
-
-const privateChannels = computed(() => {
-  return singleChannels.value.filter((s) => {
-    const users = s.title.split("/");
-
-    return users.some((u) => u === loggedUser.id);
-  });
-});
-
 const userStore = useUserStore();
 const users = userStore.getUsers();
 const loggedUser = useUser();
+const loggedUserId = userSchema.safeParse(loggedUser).data?.id
 const inputUserName = ref<string>("");
 const invitedUsers = ref<string[]>([]);
 
@@ -89,7 +83,7 @@ const isInvited = (userId: string) => invitedUsers.value.includes(userId);
 
 const filteredUserName = computed(() => {
   return users.value
-    .filter((userProfile: [User, Profile]) => {
+    .filter((userProfile: [User, Profile | undefined]) => {
       const [user, profile] = userProfile;
       const currentName = inputUserName.value.toLowerCase();
       return (
@@ -99,7 +93,7 @@ const filteredUserName = computed(() => {
           .includes(currentName) && !isInvited(user.id)
       );
     })
-    .map((userProfile: [User, Profile]) => {
+    .map((userProfile: [User, Profile | undefined]) => {
       const [user, profile] = userProfile;
       return [user.id, userStore.getUserNameById(user.id)];
     });
@@ -110,7 +104,7 @@ const create = async (userId: string, name: string) => {
     const response = await useFetch("/channels", {
       method: "POST",
       body: JSON.stringify({
-        title: `${loggedUser.id}/${userId}`,
+        title: `${loggedUserId}/${userId}`,
         channelType: "SNG",
       }),
     });
@@ -128,14 +122,15 @@ const create = async (userId: string, name: string) => {
       invitedUsers.value.push(userId);
       emits("submit", channel);
     }
-  } catch (err) {
+  } catch (error) {
     emits("submit", undefined);
-    throw new Error(err);
+    const errorMessage = errorSchema.safeParse(error).data?.message
+    throw new Error(errorMessage);
   }
 };
 
 onMounted(() => {
-  privateChannels.value.forEach((s) => {
+  channelStore.privateChannels.forEach((s) => {
     const users = s.title.split("/");
 
     users.forEach((u) => invitedUsers.value.push(u));

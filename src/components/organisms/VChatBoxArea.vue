@@ -47,7 +47,7 @@ onUpdated(() => {
   }
 });
 
-const props = defineProps<{
+defineProps<{
   messages: Message[];
   channel: Channel;
 }>();

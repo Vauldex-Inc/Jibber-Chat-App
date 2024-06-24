@@ -74,7 +74,6 @@ export const useUserStore = defineStore("users", () => {
 		if (!profile) {
 			return undefined
 		}
-
 		return profile.image
 	}
 
@@ -110,30 +109,44 @@ export const useUserStore = defineStore("users", () => {
 		return dateFormatter.format(message.sentAt, options);
 	};
 
-	const senderName = (message: Message) => {
-		return getUserNameById(message.userId);
+	const senderName = (userId: string) => {
+		return getUserNameById(userId);
 	};
 
-	const senderProfile = (message: Message) => {
-		return getUserImageById(message.userId);
+	const senderProfile = (userId?: string) => {
+		if (userId)
+			return getUserImageById(userId);
 	};
 
-	const senderStatus = (message: Message) => {
-		return getOnlineUsers().value.includes(message.userId)
-			? "online"
-			: "offline";
+	const senderStatus = (userId: string) => {
+		if (userId)
+			return getOnlineUsers().value.includes(userId)
+				? "online"
+				: "offline";
 	};
 
-	const getStatus = (sender?: string) => {
-		console.log("here", sender)
-		if (sender)
-			return getOnlineUsers().value.indexOf(sender) !== -1
+	const getStatus = (userId: string) => {
+		if (userId)
+			return getOnlineUsers().value.includes(userId)
 				? "online"
 				: "offline";
 	}
 
+	const inviteMember = async (channelId: string, senderId: string) => {
+		try {
+			await useFetch(`/channels/${channelId}/invites`, {
+				method: "POST",
+				body: JSON.stringify({
+					userId: senderId,
+				}),
+			});
+		} catch (error) {
+			throw new Error(`Error: ${error}`);
+		}
+	};
+
 	return {
 		users, init, getUserById, getUsers, getUserNameById,
-		getUserImageById, addUserProfile, updateUserOnlineAt, onlineUsers, getOnlineUsers, addNewUser, sentAtFormatter, senderName, senderProfile, senderStatus, getStatus
+		getUserImageById, addUserProfile, updateUserOnlineAt, onlineUsers, getOnlineUsers, addNewUser, sentAtFormatter, senderName, senderProfile, senderStatus, getStatus, inviteMember
 	}
 })

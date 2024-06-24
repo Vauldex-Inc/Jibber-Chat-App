@@ -1,6 +1,7 @@
 import { ref, computed } from "vue"
 import { defineStore } from "pinia"
-import type { ChannelUser } from "@/types/Channel.ts"
+import type { ChannelUser } from "@/types/Channel"
+import type { Channel } from "@/types/Channel"
 import { useFetch } from "@/composables/useFetch"
 
 
@@ -51,8 +52,9 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 		}
 	}
 
-	const getChannelUsersCount = () => {
-		return channelUsersCount;
+	const getChannelUsersCount = (channelId: string) => {
+		const userCountAndChannel = channelUsersCount.value.find((ch) => ch[0] === channelId);
+		return userCountAndChannel ? userCountAndChannel[1] : 0;
 	}
 
 	const isMember = (channelId: string, userId: string) => {
@@ -61,5 +63,18 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 		return users && users[1].find(u => u.userId === userId) !== undefined
 	}
 
-	return { channelUsers, getChannelUsers, isMember, addNewChannelUser, getChannelUsersCount }
+	const setChannelColor = async (channel: Channel, color: string): Promise<boolean> => {
+		const res = await useFetch(`/channels/${channel.id}`, {
+			method: "PUT",
+			body: JSON.stringify({
+				title: channel.title,
+				channelType: channel.channelType,
+				color: color,
+			}),
+		});
+		return res.status === 200
+	}
+
+
+	return { channelUsers, getChannelUsers, isMember, addNewChannelUser, getChannelUsersCount, setChannelColor }
 })

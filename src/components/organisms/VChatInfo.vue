@@ -13,22 +13,23 @@
           <div>
             <VAvatar
               size="lg"
-              :image="senderProfile"
-              :status="senderStatus"
+              :status="sender ? userStore.senderStatus(sender) : 'offline'"
               @click="openDisplayProfile"
             />
             <p
               class="mt-2 rounded-md p-1 text-center text-sm capitalize"
               :class="
-                senderStatus === 'online'
+                sender && userStore.senderStatus(sender) === 'online'
                   ? 'bg-emerald-100 text-emerald-600 dark:bg-slate-900'
                   : 'bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
               "
             >
-              {{ senderStatus }}
+              {{ sender ? userStore.senderStatus(sender) : "offline" }}
             </p>
           </div>
-          <p class="font-semibold">{{ senderName }}</p>
+          <p class="font-semibold">
+            {{ sender && userStore.senderName(sender) }}
+          </p>
           <VModal @close="closeDisplayProfile" :is-open="stateDisplayProfile">
             <VProfileForm :sender="sender" :viewOnly="true" />
           </VModal>
@@ -86,7 +87,11 @@
             class="aspect-square h-8 dark:invert"
           />
           <p>
-            {{ count && count > 1 ? `${count} members` : `${count} member` }}
+            {{
+              channelUserStore.getChannelUsersCount(channel.id) > 1
+                ? `${count} members`
+                : `${count} member`
+            }}
           </p>
         </div>
       </VSection>
@@ -97,7 +102,7 @@
         :color="channel.color"
         class="p-5"
         title="Images"
-        :actionButton="images.length ? 'View All' : null"
+        :actionButton="images.length ? 'View All' : undefined"
         @click="openDisplayImages"
       >
         <div class="p-3">
@@ -128,7 +133,7 @@
 
     <VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
       <VMemberInvitation
-        @action="inviteMember"
+        @action="sender && userStore.inviteMember(channel.id, sender)"
         :color="curColorTheme"
         :channel-id="channel.id"
       />
@@ -154,13 +159,15 @@ import VMemberInvitation from "@/components/organisms/VMemberInvitation.vue";
 import VDisplayAllMembers from "@/components/organisms/VDisplayAllMembers.vue";
 import VImageViewer from "@/components/organisms/VImageViewer.vue";
 import VProfileForm from "@/components/organisms/VProfileForm.vue";
-import type { Message } from "@/types/Message.ts";
+import type { Message } from "@/types/Message";
+import type { Channel } from "@/types/Channel";
 import { ref, computed } from "vue";
-import { useUserStore } from "@/stores/useUserStore.ts";
-import { useFetch } from "@/composables/useFetch.ts";
+import { useUserStore } from "@/stores/useUserStore";
 import { useChannelUserStore } from "@/stores/useChannelUserStore";
 
 const userStore = useUserStore();
+const channelUserStore = useChannelUserStore();
+const channelUsersCount = channelUserStore.getChannelUsersCount();
 
 interface VChatInfoProps {
   chatMessages: Message[];
@@ -175,32 +182,12 @@ const images = computed(() => {
     .filter((img) => img != undefined);
 });
 
-const channelUserStore = useChannelUserStore();
-const channelUsersCount = channelUserStore.getChannelUsersCount();
-
 const count = computed(() => {
   const userCount = channelUsersCount.value.find(
     (ch) => ch[0] === props.channel.id,
   );
 
   return userCount ? userCount[1] : 0;
-});
-
-const senderName = computed(() => {
-  if (!props.sender) return "";
-  return userStore.getUserNameById(props.sender);
-});
-
-const senderProfile = computed(() => {
-  if (!props.sender) return undefined;
-  return userStore.getUserImageById(props.sender);
-});
-
-const senderStatus = computed(() => {
-  if (!props.sender) return undefined;
-  return userStore.getOnlineUsers().value.indexOf(props.sender) !== -1
-    ? "online"
-    : "offline";
 });
 
 const channelAbbr = computed(() => {
@@ -235,27 +222,8 @@ const closeDisplayProfile = () => (stateDisplayProfile.value = false);
 
 const selectColor = async (color: string) => {
   stateThemeSelector.value = false;
-  const res = await useFetch(`/channels/${props.channel.id}`, {
-    method: "PUT",
-    body: JSON.stringify({
-      title: props.channel.title,
-      channelType: props.channel.channelType,
-      color: color,
-    }),
-  });
-
-  if (res.status === 200) {
+  (await channelUserStore.setChannelColor(props.channel, color)) &&
     emits("colorUpdate", color);
-  }
-};
-
-const inviteMember = async (id: string) => {
-  const res = await useFetch(`/channels/${props.channel.id}/invites`, {
-    method: "POST",
-    body: JSON.stringify({
-      userId: id,
-    }),
-  });
 };
 
 const props = defineProps<VChatInfoProps>();

@@ -6,8 +6,8 @@
   >
     <VAvatar
       v-if="message.userId !== loggedUser.id"
-      :image="userStore.senderProfile(message)"
-      :status="userStore.senderStatus(message)"
+      :image="userStore.senderProfile(message.userId)"
+      :status="userStore.senderStatus(message.userId)"
     />
     <div class="flex flex-col items-start gap-2">
       <div
@@ -15,7 +15,7 @@
         class="flex items-center gap-1"
       >
         <template v-if="message.userId !== loggedUser.id">
-          <p class="text-xs">{{ userStore.senderName(message) }}</p>
+          <p class="text-xs">{{ userStore.senderName(message.userId) }}</p>
           <p class="text-xs">•</p>
         </template>
         <p class="text-xs">{{ userStore.sentAtFormatter(message) }}</p>

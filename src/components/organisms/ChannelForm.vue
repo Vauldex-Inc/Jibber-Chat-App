@@ -43,6 +43,11 @@ import VButton from "@/components/atoms/VButton.vue";
 import type { Channel } from "@/types/Channel";
 import { useFetch } from "@/composables/useFetch";
 import { ref } from "vue";
+import { z } from "zod";
+
+const errorSchema = z.object({
+  message: z.string(),
+});
 
 interface ChannelData {
   title: string;
@@ -96,9 +101,10 @@ const create = async () => {
         error.value = "Please provide a name.";
       }
     }
-  } catch (err) {
+  } catch (error) {
     emits("submit", undefined);
-    if (typeof err === "string") throw new Error(err);
+    const errorMessage = errorSchema.safeParse(error).data?.message;
+    throw new Error(`Error: ${errorMessage}`);
   } finally {
     setTimeout(() => {
       error.value = "";

@@ -3,7 +3,7 @@
     <VInvitationDirect color="bg-indigo-600" @submit="newDirect" />
   </VModal>
   <VModal :is-open="variant === 'MPU'" @close="variant = undefined">
-    <VChannelForm :variant="variant" @submit="newChannel" />
+    <ChannelForm :variant="variant" @submit="newChannel" />
   </VModal>
   <VModal :is-open="invitationModalOpen" @close="closeInvitationModal">
     <VChatInvitation
@@ -89,25 +89,25 @@ import VChatTitle from "@/components/organisms/VChatTitle.vue";
 import VChatInfo from "@/components/organisms/VChatInfo.vue";
 import VChatBox from "@/components/organisms/VChatBox.vue";
 import VChatBoxArea from "@/components/organisms/VChatBoxArea.vue";
-import VChannelForm from "@/components/organisms/VChannelForm.vue";
+import ChannelForm from "@/components/organisms/ChannelForm.vue";
 import VModal from "@/components/atoms/VModal.vue";
 import VInvitationDirect from "@/components/organisms/VInvitationDirect.vue";
 import VNotificationList from "@/components/organisms/VNotificationList.vue";
-import { useUserStore } from "@/stores/useUserStore.ts";
-import { useChannelStore } from "@/stores/useChannelStore.ts";
-import { useMessageStore } from "@/stores/useMessageStore.ts";
+import { useUserStore } from "@/stores/useUserStore";
+import { useChannelStore } from "@/stores/useChannelStore";
+import { useMessageStore } from "@/stores/useMessageStore";
 import { onMounted, ref, watch, computed, onUnmounted } from "vue";
 import type { Message } from "@/types/Message.ts";
 import type { Channel } from "@/types/Channel.ts";
-import { useUser } from "@/composables/useUser.ts";
-import { useChannelUserStore } from "@/stores/useChannelUserStore.ts";
+import type { Notification } from "@/types/Notification";
+import type { User } from "@/types/User";
+import { useUser } from "@/composables/useUser";
+import { useChannelUserStore } from "@/stores/useChannelUserStore";
 import { useFetch } from "@/composables/useFetch";
-import { useSocket } from "@/composables/useSocket.ts";
+import { useSocket } from "@/composables/useSocket";
 import { useNotificationStore } from "@/stores/useNotificationStore";
 import VToast from "@/components/molecules/VToast.vue";
-import type { Notification } from "@/types/Notification";
 import VChatInvitation from "@/components/organisms/VChatInvitation.vue";
-import type { Invitation } from "@/types/Invitation";
 import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore";
 
 const notifAudio = new Audio("./src/assets/slack_sound.mp3");
@@ -137,7 +137,7 @@ const privateChannels = computed(() => {
   return singleChannels.value.filter((s) => {
     const users = s.title.split("/");
 
-    return users.some((u) => u === loggedUser.id);
+    return users.some((u) => u === loggedUser?.id);
   });
 });
 
@@ -226,7 +226,7 @@ watch(selectedChannel, async (channel) => {
     messages.value = await messageStore.getChannelMessages(channel.id);
 
     if (channel.channelType === "SNG") {
-      const sender = users.find((u) => u.userId !== loggedUser.id);
+      const sender = users.find((u: User) => u.userId !== loggedUser.id);
       senderId.value = sender.userId;
     }
     if (activeSocket.value) {

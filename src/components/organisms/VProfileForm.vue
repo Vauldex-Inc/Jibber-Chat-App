@@ -29,7 +29,7 @@
             : './src/assets/images/default-avatar.svg'
         "
         size="lg"
-        :status="getStatus()"
+        :status="getStatus(sender)"
       />
       <input
         @change="attachFile"
@@ -127,6 +127,8 @@ import VInput from "@/components/atoms/VInput.vue";
 import VButton from "@/components/atoms/VButton.vue";
 
 import type { ProfileData, Profile } from "@/types/Profile.ts";
+import type { User } from "@/types/User";
+
 import { ref, onMounted } from "vue";
 import { useFetch } from "@/composables/useFetch";
 import { useUserStore } from "@/stores/useUserStore";
@@ -153,7 +155,7 @@ const formData = ref<ProfileData>({
 });
 
 const currUser = useUser();
-const { getUserById, addUserProfile, getOnlineUsers } = useUserStore();
+const { getUserById, addUserProfile, getStatus } = useUserStore();
 
 const openFileSelector = () => {
   if (fileInput.value) {
@@ -161,11 +163,11 @@ const openFileSelector = () => {
   }
 };
 
-const getStatus = () => {
-  return getOnlineUsers().value.indexOf(props.sender) !== -1
-    ? "online"
-    : "offline";
-};
+// const getStatus = () => {
+//   return getOnlineUsers().value.indexOf(props.sender) !== -1
+//     ? "online"
+//     : "offline";
+// };
 
 const attachFile = () => {
   const file = fileInput.value.files[0];
@@ -209,7 +211,7 @@ const create = async () => {
       error.value = "Oops, something went wrong.";
     }
   } catch (e) {
-    throw new Error(e);
+    if (typeof e === "string") throw new Error(e);
   } finally {
     setTimeout(() => {
       error.value = "";
@@ -219,7 +221,7 @@ const create = async () => {
 
 const doesExist = () => {
   if (currUser) {
-    const [user, profile] = getUserById(
+    const [user, profile]: [User, Profile][] = getUserById(
       props.sender ? props.sender : currUser.id,
     );
 

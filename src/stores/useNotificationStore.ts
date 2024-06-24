@@ -1,10 +1,10 @@
 import { ref } from "vue"
 import { defineStore } from "pinia"
 import { useFetch } from "@/composables/useFetch"
-import type { Invitation } from "@/types/Channel"
+import type { Invitation } from "@/types/Notification"
 
 const useNotificationStore = defineStore("notifications", () => {
-	const notifications = ref([])
+	const notifications = ref<Invitation[] | undefined>([])
 	const selectedInvitation = ref<Invitation | undefined>(undefined)
 
 	const init = async () => {
@@ -13,7 +13,7 @@ const useNotificationStore = defineStore("notifications", () => {
 			const data = (await res.json()).notifications
 			notifications.value = data
 		} catch (error) {
-			throw new Error(error)
+			if (typeof error == "string") throw new Error(error)
 		}
 
 	}
@@ -31,22 +31,21 @@ const useNotificationStore = defineStore("notifications", () => {
 	}
 
 	const addNewNotification = (notification: Invitation) => {
-		notifications.value.push(notification)
+		notifications.value?.push(notification)
 	}
 
 	const updateNotification = async (id: string) => {
 		try {
-			const response = await useFetch(`/users/invites/${id}`, {"method": "POST"})
-			if(response.status === 200) {
-				const foundNotif = notifications.value.find((n) => {
-					return n.id === id
-				})
-				foundNotif.seenAt = new Date().toISOString()
+			const response = await useFetch(`/users/invites/${id}`, { "method": "POST" })
+			if (response.status === 200) {
+				const foundNotif = notifications.value?.find((n) => n.id === id)
+				if (foundNotif)
+					foundNotif.seenAt = new Date().toISOString()
 
 				return true
 			}
-		} catch(error) {
-			throw new Error(error)
+		} catch (error) {
+			if (typeof error == "string") throw new Error(error)
 		}
 
 	}

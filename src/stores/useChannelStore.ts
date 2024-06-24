@@ -1,7 +1,7 @@
-import {ref,computed} from "vue"
-import {defineStore} from "pinia"
-import type {Channel} from "@/types/Channel.ts"
-import {useFetch} from "@/composables/useFetch.ts"
+import { ref, computed } from "vue"
+import { defineStore } from "pinia"
+import type { Channel } from "@/types/Channel.ts"
+import { useFetch } from "@/composables/useFetch"
 
 
 export const useChannelStore = defineStore("channels", () => {
@@ -12,7 +12,7 @@ export const useChannelStore = defineStore("channels", () => {
 	})
 	const singleChannels = computed(() => {
 		const copy = [...channels.value]
-		return copy.filter(ch => ch.channelType === "SNG").sort((a, b) =>  a.title.localeCompare(b.title))
+		return copy.filter(ch => ch.channelType === "SNG").sort((a, b) => a.title.localeCompare(b.title))
 	})
 
 	const init = async () => {
@@ -38,16 +38,16 @@ export const useChannelStore = defineStore("channels", () => {
 		channels.value.push(channel)
 	}
 
-	const updateChannel = (channelId: string,color?: string, archivedAt?: string) => {
+	const updateChannel = (channelId: string, color?: string, archivedAt?: string) => {
 		channels.value.map(c => {
-			if(c.id === channelId) {
-				c.color = color? color : c.color
-				c.archivedAt = archivedAt? archivedAt : c.archivedAt
+			if (c.id === channelId) {
+				c.color = color ? color : c.color
+				c.archivedAt = archivedAt ? archivedAt : c.archivedAt
 			}
 
 			return c
 		})
 	}
 
-	return {channels,multiChannels,singleChannels,init,getMultiChannels,getSingleChannels,getChannelById,addNewChannel,updateChannel}
+	return { channels, multiChannels, singleChannels, init, getMultiChannels, getSingleChannels, getChannelById, addNewChannel, updateChannel }
 })

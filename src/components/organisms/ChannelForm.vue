@@ -42,8 +42,7 @@ import VInput from "@/components/atoms/VInput.vue";
 import VButton from "@/components/atoms/VButton.vue";
 import type { Channel } from "@/types/Channel";
 import { useFetch } from "@/composables/useFetch";
-import { useRouter } from "vue-router";
-import { ref, computed } from "vue";
+import { ref } from "vue";
 
 interface ChannelData {
   title: string;
@@ -52,10 +51,10 @@ interface ChannelData {
   color?: string;
 }
 
-const router = useRouter();
 const emits = defineEmits<{
   submit: [value: Channel | undefined];
 }>();
+
 const props = defineProps<{
   variant: "MPU" | "MPR" | "SNG";
 }>();

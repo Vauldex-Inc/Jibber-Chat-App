@@ -1,7 +1,7 @@
-import {defineStore} from "pinia"
-import {ref} from "vue"
-import {useFetch} from "@/composables/useFetch.ts"
-import type {UnreadMessage} from "@/types/Message"
+import { defineStore } from "pinia"
+import { ref } from "vue"
+import { useFetch } from "@/composables/useFetch"
+import type { UnreadMessage } from "@/types/Message"
 
 
 export const useUnreadMessageStore = defineStore("unread-messages", () => {
@@ -27,6 +27,6 @@ export const useUnreadMessageStore = defineStore("unread-messages", () => {
 		unreadMessages.value = [...unreadMessages.value.filter(um => um.channelId !== channelId)]
 	}
 
-	return {unreadMessages,init,getUnreadMessages,addUnreadMessage,removeUnreadMessages}
+	return { unreadMessages, init, getUnreadMessages, addUnreadMessage, removeUnreadMessages }
 })
 

@@ -50,11 +50,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useFetch } from "@/composables/useFetch";
-import { useUser } from "@/composables/useUser";
-import { useUserStore } from "@/stores/useUserStore";
 
 import VIconButton from "@/components/atoms/VIconButton.vue";
 import VButton from "@/components/atoms/VButton.vue";
@@ -62,20 +60,23 @@ import VThemeSelector from "@/components/organisms/VThemeSelector.vue";
 import VModal from "@/components/atoms/VModal.vue";
 import VProfileForm from "@/components/organisms/VProfileForm.vue";
 
+import { z } from "zod";
+const errorSchema = z.object({
+  message: z.string(),
+});
+
 const router = useRouter();
 const isOpen = ref<boolean>(false);
 const formShown = ref<boolean>(false);
 
-const props = defineProps<{
+defineProps<{
   profileImage?: string | undefined;
   username: string;
 }>();
 
 const toggleSettings = () => (isOpen.value = !isOpen.value);
 
-const newProfile = () => {
-  formShown.value = false;
-};
+const newProfile = () => (formShown.value = false);
 
 const logout = async () => {
   try {
@@ -84,8 +85,9 @@ const logout = async () => {
       localStorage.removeItem("user");
       router.push("/");
     }
-  } catch (err) {
-    if (typeof err === "string") throw new Error(err);
+  } catch (error) {
+    const errorMessage = errorSchema.safeParse(error).data?.message;
+    throw new Error(`Error: ${errorMessage}`);
   }
 };
 </script>

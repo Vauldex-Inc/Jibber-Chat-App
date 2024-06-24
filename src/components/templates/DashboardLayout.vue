@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps<{
+defineProps<{
   toggleInfo: boolean;
   toggleChat: boolean;
 }>();

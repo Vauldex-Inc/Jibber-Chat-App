@@ -74,6 +74,7 @@ const emits = defineEmits<{
 onMounted(() => {
   setLoading();
 });
+
 onUnmounted(() => {
   clearInterval(timerId.value);
 });

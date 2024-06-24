@@ -147,7 +147,6 @@ const formData = ref({
 });
 const error = ref<string>("");
 const loader = ref<boolean>(false);
-const visibility = ref<boolean>(false);
 const icon = ref<string>("./src/assets/images/visibility-true.svg");
 const type = ref<"text" | "password">("password");
 const current = ref<"username" | "password">();
@@ -202,7 +201,6 @@ const register = async () => {
 
       if (response.status === 201) {
         const result = await response.json();
-
         localStorage.setItem("user", JSON.stringify(result.user));
         setTimeout(() => {
           router.push("/dashboard");
@@ -213,7 +211,7 @@ const register = async () => {
       }
     }
   } catch (e) {
-    throw new Error(e);
+    if (typeof e === "string") throw new Error(e);
   } finally {
     resetInputs();
   }

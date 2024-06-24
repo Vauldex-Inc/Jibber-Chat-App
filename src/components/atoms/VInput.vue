@@ -17,5 +17,5 @@ interface InputProps {
   size?: "sm" | "md" | "lg";
 }
 
-const props = defineProps<InputProps>();
+defineProps<InputProps>();
 </script>

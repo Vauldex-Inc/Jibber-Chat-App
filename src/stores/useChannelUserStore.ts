@@ -1,16 +1,16 @@
-import {ref,computed} from "vue"
-import {defineStore} from "pinia"
-import type {ChannelUser} from "@/types/ChannelUser.ts"
-import {useFetch} from "@/composables/useFetch.ts"
+import { ref, computed } from "vue"
+import { defineStore } from "pinia"
+import type { ChannelUser } from "@/types/Channel.ts"
+import { useFetch } from "@/composables/useFetch"
 
 
 export const useChannelUserStore = defineStore("channel-users", () => {
-	const channelUsers = ref<[string,ChannelUser[]][]>([])
+	const channelUsers = ref<[string, ChannelUser[]][]>([])
 	const channelUsersCount = computed(() => {
 		const copy = [...channelUsers.value]
 		return copy.map(ch => {
-			const [id,users] = ch
-			return [id,users.length]
+			const [id, users] = ch
+			return [id, users.length]
 		})
 	})
 
@@ -18,11 +18,11 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 	const getChannelUsers = async (channelId: string) => {
 		const users = channelUsers.value.find(c => c[0] === channelId)
 
-		if(!users) {
+		if (!users) {
 			const res = await useFetch(`/channels/${channelId}/users`)
 			const data = (await res.json()).users
 
-			channelUsers.value.push([channelId,data])
+			channelUsers.value.push([channelId, data])
 
 			return data
 		} else {
@@ -34,19 +34,19 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 	const addNewChannelUser = (user: ChannelUser) => {
 		const chanUsers = channelUsers.value.find(c => c[0] === user.channelId)
 
-		if(!chanUsers){	
-			channelUsers.value.push([user.channelId,[user]])
+		if (!chanUsers) {
+			channelUsers.value.push([user.channelId, [user]])
 		} else {
 			channelUsers.value.map(ch => {
-				const [id,users] = ch
+				const [id, users] = ch
 
-				if(id === user.channelId){
-					if(!users.find(u => u.userId === user.userId)){
+				if (id === user.channelId) {
+					if (!users.find(u => u.userId === user.userId)) {
 						users.push(user)
 					}
 				}
 
-				return [id,users]
+				return [id, users]
 			})
 		}
 	}
@@ -55,11 +55,11 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 		return channelUsersCount;
 	}
 
-	const isMember = (channelId: string,userId: string) => {
+	const isMember = (channelId: string, userId: string) => {
 		const users = channelUsers.value.find(c => c[0] === channelId)
 
 		return users && users[1].find(u => u.userId === userId) !== undefined
 	}
 
-	return {channelUsers,getChannelUsers,isMember,addNewChannelUser,getChannelUsersCount}
+	return { channelUsers, getChannelUsers, isMember, addNewChannelUser, getChannelUsersCount }
 })

@@ -124,8 +124,16 @@ export const useUserStore = defineStore("users", () => {
 			: "offline";
 	};
 
+	const getStatus = (sender?: string) => {
+		console.log("here", sender)
+		if (sender)
+			return getOnlineUsers().value.indexOf(sender) !== -1
+				? "online"
+				: "offline";
+	}
+
 	return {
 		users, init, getUserById, getUsers, getUserNameById,
-		getUserImageById, addUserProfile, updateUserOnlineAt, onlineUsers, getOnlineUsers, addNewUser, sentAtFormatter, senderName, senderProfile, senderStatus
+		getUserImageById, addUserProfile, updateUserOnlineAt, onlineUsers, getOnlineUsers, addNewUser, sentAtFormatter, senderName, senderProfile, senderStatus, getStatus
 	}
 })

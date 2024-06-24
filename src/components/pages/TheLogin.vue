@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter, RouterLink } from "vue-router";
-import { useFetch } from "@/composables/useFetch.ts";
+import { useFetch } from "@/composables/useFetch";
 import VButton from "@/components/atoms/VButton.vue";
 import VInput from "@/components/atoms/VInput.vue";
 import VIconButton from "@/components/atoms/VIconButton.vue";
@@ -125,13 +125,13 @@ const displayError = (textError: string) => {
   }, 5000);
 };
 
-const resetFields = (refData: Ref, ...fieldName: string[]) => {
+const resetFields = (refData: typeof ref, ...fieldName: string[]) => {
   for (const [key, value] of Object.entries(refData.value)) {
     if (fieldName.includes(key)) refData.value[key] = "";
   }
 };
 
-const highlightErrorFields = (...fields: Ref[]) => {
+const highlightErrorFields = (...fields: Ref<boolean>[]) => {
   errorUsername.value = false;
   errorPassword.value = false;
   fields.forEach((field) => {
@@ -184,7 +184,7 @@ const login = async () => {
       displayError("Incorrect username and password combination");
     }
   } catch (error) {
-    throw new Error(error);
+    if (typeof error === "string") throw new Error(error);
   } finally {
     isLoading.value = false;
   }

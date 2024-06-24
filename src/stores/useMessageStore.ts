@@ -1,7 +1,7 @@
-import {defineStore} from "pinia"
-import {useFetch} from "@/composables/useFetch.ts"
-import {ref} from "vue"
-import type {Message} from "@/types/Message"
+import { defineStore } from "pinia"
+import { useFetch } from "@/composables/useFetch"
+import { ref } from "vue"
+import type { Message } from "@/types/Message"
 
 
 export const useMessageStore = defineStore("messages", () => {
@@ -15,12 +15,12 @@ export const useMessageStore = defineStore("messages", () => {
 	}
 
 	const getChannelMessages = async (channelId: string) => {
-			const res = await useFetch(`/channels/${channelId}/messages`)
+		const res = await useFetch(`/channels/${channelId}/messages`)
 
-			return (await res.json()).messages
+		return (await res.json()).messages
 	}
 
-	const sendMessage = async (channelId:string, message: string, img: string | undefined) => {
+	const sendMessage = async (channelId: string, message: string, img: string | undefined) => {
 		const res = await useFetch(`/channels/${channelId}/messages`, {
 			method: "POST",
 			body: JSON.stringify({
@@ -29,7 +29,7 @@ export const useMessageStore = defineStore("messages", () => {
 			})
 		})
 
-		if(res.status === 200) {
+		if (res.status === 200) {
 			const data = (await res.json()).messages
 			latestMessages.value.push(data)
 		}
@@ -39,11 +39,9 @@ export const useMessageStore = defineStore("messages", () => {
 		latestMessages.value.push(message)
 	}
 
-
-
 	const getLatestMessages = () => {
 		return latestMessages
 	}
 
-	return {getChannelMessages,sendMessage,latestMessages,init,getLatestMessages,addNewLatestMessage}
+	return { getChannelMessages, sendMessage, latestMessages, init, getLatestMessages, addNewLatestMessage }
 })

@@ -49,68 +49,64 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-
-import { useFetch } from "@/composables/useFetch";
-import { useUser } from "@/composables/useUser";
-
-import { useUserStore } from "@/stores/useUserStore";
-import { useChannelStore } from "@/stores/useChannelStore";
-
-import VInput from "@/components/atoms/VInput.vue";
-import VButton from "@/components/atoms/VButton.vue";
-
-import { userSchema  } from "@/types/User";
-import type { User } from "@/types/User";
-import type { Profile } from "@/types/Profile";
-import type { Channel } from "@/types/Channel";
+import { ref, computed, onMounted } from "vue"
+import { useFetch } from "@/composables/useFetch"
+import { useUser } from "@/composables/useUser"
+import { useUserStore } from "@/stores/useUserStore"
+import { useChannelStore } from "@/stores/useChannelStore"
+import VInput from "@/components/atoms/VInput.vue"
+import VButton from "@/components/atoms/VButton.vue"
+import { userSchema  } from "@/types/User"
+import type { User } from "@/types/User"
+import type { Profile } from "@/types/Profile"
+import type { Channel } from "@/types/Channel"
 import { errorSchema } from "@/types/Error"
 
-const channelStore = useChannelStore();
+const channelStore = useChannelStore()
 
 defineProps<{
-  color: string;
+  color: string
 }>();
 
 const emits = defineEmits<{
-  submit: [channel: Channel | undefined];
+  submit: [channel: Channel | undefined]
 }>();
 
-const userStore = useUserStore();
-const users = userStore.getUsers();
-const loggedUser = useUser();
+const userStore = useUserStore()
+const users = userStore.getUsers()
+const loggedUser = useUser()
 const loggedUserId = userSchema.safeParse(loggedUser).data?.id
 
-const inputUserName = ref<string>("");
-const invitedUsers = ref<string[]>([]);
+const inputUserName = ref<string>("")
+const invitedUsers = ref<string[]>([])
 
-const isInvited = (userId: string) => invitedUsers.value.includes(userId);
+const isInvited = (userId: string) => invitedUsers.value.includes(userId)
 
 const filteredUserName = computed(() => {
   return users.value
     .filter((userProfile: [User, Profile | undefined]) => {
-      const [user, profile] = userProfile;
-      const currentName = inputUserName.value.toLowerCase();
+      const [user, _] = userProfile
+      const currentName = inputUserName.value.toLowerCase()
       return (
         userStore
           .getUserNameById(user.id)
           .toLowerCase()
           .includes(currentName) && !isInvited(user.id)
-      );
+      )
     })
     .map((userProfile: [User, Profile | undefined]) => {
-      const [user, profile] = userProfile;
-      return [user.id, userStore.getUserNameById(user.id)];
-    });
-});
+      const [user, _] = userProfile
+      return [user.id, userStore.getUserNameById(user.id)]
+    })
+})
 
 onMounted(() => {
   channelStore.privateChannels.forEach((s) => {
-    const users = s.title.split("/");
+    const users = s.title.split("/")
 
-    users.forEach((u) => invitedUsers.value.push(u));
-  });
-});
+    users.forEach((u) => invitedUsers.value.push(u))
+  })
+})
 
 const create = async (userId: string, name: string) => {
   try {
@@ -120,25 +116,25 @@ const create = async (userId: string, name: string) => {
         title: `${loggedUserId}/${userId}`,
         channelType: "SNG",
       }),
-    });
+    })
 
     if (response.status === 200) {
-      const result = await response.json();
+      const result = await response.json()
 
-      const channel = result.channel;
+      const channel = result.channel
 
-      const res = await useFetch(`/channels/${channel.id}/users`, {
+      await useFetch(`/channels/${channel.id}/users`, {
         method: "POST",
         body: JSON.stringify({ userId }),
-      });
+      })
 
-      invitedUsers.value.push(userId);
-      emits("submit", channel);
+      invitedUsers.value.push(userId)
+      emits("submit", channel)
     }
   } catch (error) {
-    emits("submit", undefined);
+    emits("submit", undefined)
     const errorMessage = errorSchema.safeParse(error).data?.message
-    throw new Error(errorMessage);
+    throw new Error(errorMessage)
   }
-};
+}
 </script>

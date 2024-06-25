@@ -25,7 +25,7 @@
         <VNotificationListItem
           v-for="notification in notificationsCopy"
           :key="notification.id"
-          :notification="notification"
+          :invitation="notification"
           @close="toggleNotifications"
         />
       </ul>
@@ -41,41 +41,35 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-
+import VIconButton from "@/components/atoms/VIconButton.vue";
+import VModal from "@/components/atoms/VModal.vue";
+import VNotificationListItem from "@/components/organisms/VNotificationListItem.vue";
 import { useNotificationStore } from "@/stores/useNotificationStore";
 import { useChannelStore } from "@/stores/useChannelStore";
-
-import VIconButton from "@/components/atoms/VIconButton.vue";
-import VNotificationListItem from "@/components/organisms/VNotificationListItem.vue";
+import { invitationSchema, notificationSchema } from "@/types/Notification";
 
 const notificationStore = useNotificationStore();
 const channelStore = useChannelStore();
-const notifications = notificationStore.getNotifications();
+
 const displayNotification = ref<boolean>(false);
-
-const unSeenCount = computed(() => {
-  if (notificationsCopy.value !== undefined) {
-    return notificationsCopy.value.filter((n) => n.seenAt === undefined).length;
-  } else {
-    return 0
-  }
-});
-
-const notificationsCopy = computed(() => {
-  if (notifications.value !== undefined) {
-    return notifications.value
-      .filter((n) => {
-        const channel = channelStore.getChannelById(n.channelId);
-        if (channel !== undefined)
-          return channel.channelType !== "SNG";
-      })
-      .reverse();
-  } else {
-    return []
-  }
-});
-
 const toggleNotifications = () => {
   displayNotification.value = !displayNotification.value;
 };
+
+const unSeenCount = computed(() => {
+  return notificationsCopy.value.filter((n) => n.seenAt === undefined).length;
+});
+
+const notificationsCopy = computed(() => {
+  const parsedNotifs =  invitationSchema.array().safeParse(notifications.value).data
+  if (parsedNotifs?.length !== undefined) {
+    return parsedNotifs
+      .filter((n) => {
+        const channel = channelStore.getChannelById(n.channelId);
+        return channel.channelType !== "SNG";
+      })
+      .reverse();
+  }
+});
+const notifications = notificationStore.getNotifications();
 </script>

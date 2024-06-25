@@ -55,59 +55,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-
-import { useUserStore } from "@/stores/useUserStore";
-import { useChannelUserStore } from "@/stores/useChannelUserStore";
-
-import VInput from "@/components/atoms/VInput.vue";
-import VButton from "@/components/atoms/VButton.vue";
-
-import type { User } from "@/types/User";
-import type { Profile } from "@/types/Profile";
+import { ref, computed } from "vue"
+import { useUserStore } from "@/stores/useUserStore"
+import { useChannelUserStore } from "@/stores/useChannelUserStore"
+import VInput from "@/components/atoms/VInput.vue"
+import VButton from "@/components/atoms/VButton.vue"
+import type { User } from "@/types/User"
+import type { Profile } from "@/types/Profile"
 
 const props = defineProps<{
-  color: string;
-  channelId: string;
-}>();
+  color: string
+  channelId: string
+}>()
 
 const emits = defineEmits<{
-  action: [value: string];
-}>();
+  action: [value: string]
+}>()
 
-const userStore = useUserStore();
-const channelUserStore = useChannelUserStore();
+const userStore = useUserStore()
+const channelUserStore = useChannelUserStore()
 
-const invitedUsers = ref<string[]>([]);
-const inputUserName = ref<string>("");
+const invitedUsers = ref<string[]>([])
+const inputUserName = ref<string>("")
 
 const users = computed(() => {
-  const appUsers = userStore.getUsers();
+  const appUsers = userStore.getUsers()
   return appUsers.value.filter(
     (cu) => !channelUserStore.isMember(props.channelId, cu[0].id),
-  );
-});
+  )
+})
 
 const filteredUserName = computed(() => {
   return users.value
     .filter((userProfile: [User, Profile | undefined]) => {
-      const [user, profile] = userProfile;
-      const currentName = inputUserName.value.toLowerCase();
+      const [user, _] = userProfile
+      const currentName = inputUserName.value.toLowerCase()
       return userStore
         .getUserNameById(user.id)
         .toLowerCase()
-        .includes(currentName);
+        .includes(currentName)
     })
     .map((userProfile: [User, Profile | undefined]) => {
-      const [user, profile] = userProfile;
-      return [user.id, userStore.getUserNameById(user.id)];
-    });
-});
+      const [user, _] = userProfile
+      return [user.id, userStore.getUserNameById(user.id)]
+    })
+})
 
-const checkInviteStatus = (userId: string) => invitedUsers.value.includes(userId);
+const checkInviteStatus = (userId: string) => invitedUsers.value.includes(userId)
 
 const selectedUserName = (userId: string) => {
-  invitedUsers.value.push(userId);
-  emits("action", userId);
-};
+  invitedUsers.value.push(userId)
+  emits("action", userId)
+}
 </script>

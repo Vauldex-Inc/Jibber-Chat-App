@@ -1,7 +1,10 @@
-import { defineStore } from "pinia"
 import { ref } from "vue"
+
+import { defineStore } from "pinia"
+
 import { useFetch } from "@/composables/useFetch"
-import type { UnreadMessage } from "@/types/Message"
+
+import { UnreadMessageSchema, type UnreadMessage } from "@/types/Message"
 
 
 export const useUnreadMessageStore = defineStore("unread-messages", () => {
@@ -9,10 +12,22 @@ export const useUnreadMessageStore = defineStore("unread-messages", () => {
 	const unreadMessages = ref<UnreadMessage[]>([])
 
 	const init = async () => {
-		const res = await useFetch("/users/unread-messages")
-		const data = (await res.json()).unreadMessages
+		try {
+			const res = await useFetch("/users/unread-messages")
+			const data = (await res.json()).unreadMessages
+			const validation = UnreadMessageSchema.array().safeParse(data)
 
-		unreadMessages.value = data
+			if (validation.success) {
+				unreadMessages.value = validation.data
+			} else {
+				throw new Error("Unknown Format")
+			}
+
+		} catch (error) {
+			if (error instanceof Error) {
+				console.error(error.message)
+			}
+		}
 	}
 
 	const addUnreadMessage = (message: UnreadMessage) => {

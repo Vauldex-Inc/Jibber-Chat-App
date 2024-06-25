@@ -30,8 +30,8 @@ export const useChannelStore = defineStore("channels", () => {
 
 	const init = async () => {
 		const res = await useFetch("/channels")
-		const data = (await res.json()).channels
-
+		const data = (await res.json())
+		
 		channels.value = data
 	}
 

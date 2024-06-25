@@ -110,12 +110,11 @@ export const useUserStore = defineStore("users", () => {
 	};
 
 	const senderName = (userId: string) => {
-		return getUserNameById(userId);
+		return userId ? getUserNameById(userId) : "Anonymous";
 	};
 
-	const senderProfile = (userId?: string) => {
-		if (userId)
-			return getUserImageById(userId);
+	const senderProfile = (userId: string) => {
+		return userId ? getUserImageById(userId) : undefined;
 	};
 
 	const senderStatus = (userId: string) => {
@@ -147,6 +146,8 @@ export const useUserStore = defineStore("users", () => {
 
 	return {
 		users, init, getUserById, getUsers, getUserNameById,
-		getUserImageById, addUserProfile, updateUserOnlineAt, onlineUsers, getOnlineUsers, addNewUser, sentAtFormatter, senderName, senderProfile, senderStatus, getStatus, inviteMember
+		getUserImageById, addUserProfile, updateUserOnlineAt, onlineUsers,
+		getOnlineUsers, addNewUser, sentAtFormatter, senderName, senderProfile, 
+		senderStatus, getStatus, inviteMember
 	}
 })

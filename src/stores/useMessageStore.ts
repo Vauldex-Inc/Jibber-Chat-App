@@ -1,17 +1,30 @@
-import { defineStore } from "pinia"
-import { useFetch } from "@/composables/useFetch"
 import { ref } from "vue"
-import type { Message } from "@/types/Message"
 
+import { defineStore } from "pinia"
+
+import { useFetch } from "@/composables/useFetch"
+
+import { MessageSchema, type Message } from "@/types/Message"
 
 export const useMessageStore = defineStore("messages", () => {
 	const latestMessages = ref<(Message | null)[]>([])
 
 	const init = async () => {
-		const res = await useFetch("/channels/latest-messages")
-		const data = (await res.json())
+		try {
+			const res = await useFetch("/channels/latest-messages")
+			const data = (await res.json())
+			const validation = MessageSchema.array().safeParse(data.filter((m: Message) => m !== null))
+			if (validation.success) {
+				latestMessages.value = validation.data
+			} else {
+				throw new Error("Unsupported Format")
+			}
 
-		latestMessages.value = data
+		} catch (error) {
+			if (error instanceof Error) {
+				console.error(error.message)
+			}
+		}
 	}
 
 	const getChannelMessages = async (channelId: string) => {
@@ -43,5 +56,12 @@ export const useMessageStore = defineStore("messages", () => {
 		return latestMessages
 	}
 
-	return { getChannelMessages, sendMessage, latestMessages, init, getLatestMessages, addNewLatestMessage }
+	return { 
+		getChannelMessages, 
+		sendMessage, 
+		latestMessages, 
+		init, 
+		getLatestMessages, 
+		addNewLatestMessage 
+	}
 })

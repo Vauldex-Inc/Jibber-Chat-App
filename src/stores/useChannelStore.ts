@@ -1,8 +1,11 @@
 import { ref, computed } from "vue"
+
 import { defineStore } from "pinia"
-import type { Channel } from "@/types/Channel.ts"
+
 import { useFetch } from "@/composables/useFetch"
 import { useUser } from "@/composables/useUser"
+
+import type { Channel } from "@/types/Channel.ts"
 import { userSchema  } from "@/types/User";
 
 
@@ -12,12 +15,16 @@ export const useChannelStore = defineStore("channels", () => {
 
 	const multiChannels = computed(() => {
 		const copy = [...channels.value]
-		return copy.filter(ch => ch.channelType !== "SNG").sort((a, b) => a.title.localeCompare(b.title))
+		return copy.filter(ch => 
+			ch.channelType !== "SNG").sort((a, b) => a.title.localeCompare(b.title)
+		)
 	})
 
 	const singleChannels = computed(() => {
 		const copy = [...channels.value]
-		return copy.filter(ch => ch.channelType === "SNG").sort((a, b) => a.title.localeCompare(b.title))
+		return copy.filter(ch => 
+			ch.channelType === "SNG").sort((a, b) => a.title.localeCompare(b.title)
+		)
 	})
 
 	const privateChannels = computed(() => {
@@ -62,5 +69,16 @@ export const useChannelStore = defineStore("channels", () => {
 		})
 	}
 
-	return { channels, multiChannels, singleChannels, privateChannels, init, getMultiChannels, getSingleChannels, getChannelById, addNewChannel, updateChannel }
+	return { 
+		channels, 
+		multiChannels, 
+		singleChannels, 
+		privateChannels, 
+		init, 
+		getMultiChannels,
+		getSingleChannels, 
+		getChannelById, 
+		addNewChannel, 
+		updateChannel 
+	}
 })

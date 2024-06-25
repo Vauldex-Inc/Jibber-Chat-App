@@ -5,7 +5,7 @@
         {{ title }}
       </p>
       <VButton
-        size="sm"
+        size="small"
         @click="emits('click')"
         class="rounded-md font-semibold capitalize hover:bg-indigo-100 dark:hover:bg-slate-900"
         v-if="actionButton"
@@ -23,22 +23,22 @@
 </template>
 
 <script lang="ts" setup>
-import VButton from "@/components/atoms/VButton.vue";
-import { computed } from "vue";
+import { computed } from "vue"
+import VButton from "@/components/atoms/VButton.vue"
+
+const props = defineProps<VSectionProps>()
 
 interface VSectionProps {
-  title: string;
-  actionButton?: string;
-  color?: string;
+  title: string
+  actionButton?: string
+  color?: string
 }
 
-const curColorTheme = computed(() => {
-  return props.color ? props.color : "bg-slate-600 dark:bg-slate-300";
-});
-
-const props = defineProps<VSectionProps>();
-
 const emits = defineEmits<{
-  click: [];
-}>();
+  click: []
+}>()
+
+const curColorTheme = computed(() => {
+  return props.color ? props.color : "bg-slate-600 dark:bg-slate-300"
+})
 </script>

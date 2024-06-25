@@ -10,16 +10,16 @@
 </template>
 
 <script setup lang="ts">
-import { sizeClass } from "@/composables/useSize";
+import { sizeClass } from "@/composables/useSize"
 
 interface ButtonProps {
-  size?: "sm" | "md" | "lg";
-  action?: "submit" | "button";
+  size?: "small" | "medium" | "large"
+  action?: "submit" | "button"
 }
 
-defineProps<ButtonProps>();
+defineProps<ButtonProps>()
 
 const emits = defineEmits<{
-  click: [];
-}>();
+  click: []
+}>()
 </script>

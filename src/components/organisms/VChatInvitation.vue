@@ -15,7 +15,8 @@
         <img src="@/assets/images/notif.svg" class="aspect-square h-8" />
       </span>
       <p class="text-center dark:text-gray-400">
-        {{ senderName }} invited you to join his/her channel.
+        {{ userStore.senderName(notification.senderId) }} invited you to join
+        his/her channel.
       </p>
     </div>
     <hr class="border-0 border-b border-b-indigo-300 dark:border-b-slate-800" />
@@ -27,7 +28,7 @@
       >
       <VButton
         class="rounded-md border bg-indigo-600 text-white dark:border-slate-800"
-        @click="emits('view', notif.channelId)"
+        @click="emits('view', notification.channelId)"
         >Take a Look</VButton
       >
     </footer>
@@ -35,23 +36,18 @@
 </template>
 
 <script setup lang="ts">
-import VButton from "@/components/atoms/VButton.vue";
-import { useUserStore } from "@/stores/useUserStore";
-import { computed } from "vue";
-import type { Invitation } from "@/types/Invitation";
+import { useUserStore } from "@/stores/useUserStore"
+import VButton from "@/components/atoms/VButton.vue"
+import type { Invitation } from "@/types/Notification"
 
-const userStore = useUserStore();
-
-const props = defineProps<{
-  notif: Invitation;
-}>();
-
-const senderName = computed(() => {
-  return userStore.getUserNameById(props.notif.senderId);
-});
+defineProps<{
+  notification: Invitation
+}>()
 
 const emits = defineEmits<{
-  close: [];
-  view: [value: string];
-}>();
+  close: []
+  view: [value: string]
+}>()
+
+const userStore = useUserStore()
 </script>

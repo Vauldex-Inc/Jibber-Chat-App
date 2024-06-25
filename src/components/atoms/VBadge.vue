@@ -9,13 +9,13 @@
 
 <script lang="ts" setup>
 interface VBadgeProps {
-  color?: string;
-  count: number;
+  color?: string
+  count: number
 }
+
+defineProps<VBadgeProps>()
 
 defineOptions({
   inheritAttrs: false,
-});
-
-defineProps<VBadgeProps>();
+})
 </script>

@@ -23,6 +23,10 @@
 </template>
 
 <script setup lang="ts">
+const emits = defineEmits<{
+  color: [value: string]
+}>()
+
 const colorOptions = [
   "bg-red-600",
   "bg-orange-600",
@@ -39,9 +43,5 @@ const colorOptions = [
   "bg-violet-600",
   "bg-purple-600",
   "bg-fuchsia-600",
-];
-
-const emits = defineEmits<{
-  color: [value: string];
-}>();
+]
 </script>

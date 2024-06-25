@@ -12,7 +12,7 @@
         <template v-if="channel.channelType === 'SNG'">
           <div>
             <VAvatar
-              size="lg"
+              size="small"
               :status="sender ? userStore.senderStatus(sender) : 'offline'"
               @click="openDisplayProfile"
             />
@@ -87,7 +87,7 @@
             class="aspect-square h-8 dark:invert"
           />
           <p>
-            {{ count && count > 1 ? `${count} members` : `${count} member` }}
+            {{ channelUserStore.getChannelUsersCount(channel.id) }}
           </p>
         </div>
       </VSection>
@@ -124,7 +124,7 @@
     </div>
 
     <VModal @close="closeDisplayImages" :is-open="stateDisplayImages">
-      <VImageViewer :chatImages="images" />
+      <VImageViewer v-if="typeof images === 'string'" :chatImages="images" />
     </VModal>
 
     <VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
@@ -146,85 +146,76 @@
 </template>
 
 <script lang="ts" setup>
-import VSection from "@/components/molecules/VSection.vue";
-import VAvatar from "@/components/atoms/VAvatar.vue";
-import VIconButton from "@/components/atoms/VIconButton.vue";
-import VModal from "@/components/atoms/VModal.vue";
-import VChatColorSelector from "@/components/organisms/VChatColorSelector.vue";
-import VMemberInvitation from "@/components/organisms/VMemberInvitation.vue";
-import VDisplayAllMembers from "@/components/organisms/VDisplayAllMembers.vue";
-import VImageViewer from "@/components/organisms/VImageViewer.vue";
-import VProfileForm from "@/components/organisms/VProfileForm.vue";
-import type { Message } from "@/types/Message";
-import type { Channel } from "@/types/Channel";
-import { ref, computed } from "vue";
-import { useUserStore } from "@/stores/useUserStore";
-import { useChannelUserStore } from "@/stores/useChannelUserStore";
+import { ref, computed } from "vue"
+import { useUserStore } from "@/stores/useUserStore"
+import { useChannelUserStore } from "@/stores/useChannelUserStore"
+import VSection from "@/components/molecules/VSection.vue"
+import VAvatar from "@/components/atoms/VAvatar.vue"
+import VIconButton from "@/components/atoms/VIconButton.vue"
+import VModal from "@/components/atoms/VModal.vue"
+import VChatColorSelector from "@/components/organisms/VChatColorSelector.vue"
+import VMemberInvitation from "@/components/organisms/VMemberInvitation.vue"
+import VDisplayAllMembers from "@/components/organisms/VDisplayAllMembers.vue"
+import VImageViewer from "@/components/organisms/VImageViewer.vue"
+import VProfileForm from "@/components/organisms/VProfileForm.vue"
+import type { Message } from "@/types/Message"
+import type { Channel } from "@/types/Channel"
 
-const userStore = useUserStore();
-const channelUserStore = useChannelUserStore();
-const channelUsersCount = channelUserStore.getChannelUsersCount();
+const props = defineProps<VChatInfoProps>()
 
 interface VChatInfoProps {
-  chatMessages: Message[];
-  channel: Channel;
-  title: string;
-  sender?: string;
+  chatMessages: Message[]
+  channel: Channel
+  title: string
+  sender?: string
 }
+
+const emits = defineEmits<{
+  colorUpdate: [value: string]
+}>()
+
+const userStore = useUserStore()
+const channelUserStore = useChannelUserStore()
 
 const images = computed(() => {
   return props.chatMessages
     .map((m) => m.image)
-    .filter((img) => img != undefined);
-});
-
-const count = computed(() => {
-  const userCount = channelUsersCount.value.find(
-    (ch) => ch[0] === props.channel.id,
-  );
-
-  return userCount ? userCount[1] : 0;
-});
+    .filter((img) => img !== undefined)
+})
 
 const channelAbbr = computed(() => {
-  return props.channel.title.slice(0, 1);
-});
+  return props.channel.title.slice(0, 1)
+})
 
 const curColorTheme = computed(() => {
-  return props.channel.color ? props.channel.color : "bg-slate-800";
-});
+  return props.channel.color ? props.channel.color : "bg-slate-800"
+})
 
-const stateMemberInvite = ref<boolean>(false);
-const openMemberInvite = () => (stateMemberInvite.value = true);
-const closeMemberInvite = () => (stateMemberInvite.value = false);
+const stateMemberInvite = ref<boolean>(false)
+const openMemberInvite = () => (stateMemberInvite.value = true)
+const closeMemberInvite = () => (stateMemberInvite.value = false)
 
-const stateThemeSelector = ref<boolean>(false);
-const openThemeSelector = () => (stateThemeSelector.value = true);
-const closeThemeSelector = () => (stateThemeSelector.value = false);
+const stateThemeSelector = ref<boolean>(false)
+const openThemeSelector = () => (stateThemeSelector.value = true)
+const closeThemeSelector = () => (stateThemeSelector.value = false)
 
-const stateDisplayAllMembers = ref<boolean>(false);
-const openDisplayAllMembers = () => (stateDisplayAllMembers.value = true);
-const closeDisplayAllMembers = () => (stateDisplayAllMembers.value = false);
+const stateDisplayAllMembers = ref<boolean>(false)
+const openDisplayAllMembers = () => (stateDisplayAllMembers.value = true)
+const closeDisplayAllMembers = () => (stateDisplayAllMembers.value = false)
 const closeFromProfile = (isOpen: boolean) =>
-  (stateDisplayAllMembers.value = isOpen);
+  (stateDisplayAllMembers.value = isOpen)
 
-const stateDisplayImages = ref<boolean>(false);
-const openDisplayImages = () => (stateDisplayImages.value = true);
-const closeDisplayImages = () => (stateDisplayImages.value = false);
+const stateDisplayImages = ref<boolean>(false)
+const openDisplayImages = () => (stateDisplayImages.value = true)
+const closeDisplayImages = () => (stateDisplayImages.value = false)
 
-const stateDisplayProfile = ref<boolean>(false);
-const openDisplayProfile = () => (stateDisplayProfile.value = true);
-const closeDisplayProfile = () => (stateDisplayProfile.value = false);
+const stateDisplayProfile = ref<boolean>(false)
+const openDisplayProfile = () => (stateDisplayProfile.value = true)
+const closeDisplayProfile = () => (stateDisplayProfile.value = false)
 
 const selectColor = async (color: string) => {
-  stateThemeSelector.value = false;
-  (await channelUserStore.setChannelColor(props.channel, color)) &&
-    emits("colorUpdate", color);
-};
-
-const props = defineProps<VChatInfoProps>();
-
-const emits = defineEmits<{
-  colorUpdate: [value: string];
-}>();
+  stateThemeSelector.value = false
+  ;(await channelUserStore.setChannelColor(props.channel, color)) &&
+    emits("colorUpdate", color)
+}
 </script>

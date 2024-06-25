@@ -43,16 +43,16 @@
 </template>
 
 <script lang="ts" setup>
-import type { Message } from "@/types/Message.ts";
-import { useUser } from "@/composables/useUser";
-import { useUserStore } from "@/stores/useUserStore";
-import VAvatar from "@/components/atoms/VAvatar.vue";
-
-const userStore = useUserStore();
-const loggedUser = useUser();
+import { useUser } from "@/composables/useUser"
+import { useUserStore } from "@/stores/useUserStore"
+import VAvatar from "@/components/atoms/VAvatar.vue"
+import type { Message } from "@/types/Message.ts"
 
 defineProps<{
-  message: Message;
-  color?: string;
-}>();
+  message: Message
+  color?: string
+}>()
+
+const userStore = useUserStore()
+const loggedUser = useUser()
 </script>

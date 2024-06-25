@@ -12,7 +12,7 @@
             @click="emits('close')"
             class="absolute right-0 top-0 -translate-x-1/2 translate-y-1/2"
             icon="./src/assets/images/close.svg"
-            size="sm"
+            size="small"
             :invert="true"
           />
         </div>
@@ -22,18 +22,18 @@
 </template>
 
 <script setup lang="ts">
-import VIconButton from "./VIconButton.vue";
-
-const emits = defineEmits<{ close: [] }>();
+import VIconButton from "./VIconButton.vue"
 
 defineProps<{
-  isOpen: boolean;
-  closeButton?: boolean;
-}>();
+  isOpen: boolean
+  closeButton?: boolean
+}>()
+
+const emits = defineEmits<{ close: [] }>()
 
 defineOptions({
   inheritAttrs: false,
-});
+})
 </script>
 
 <style scoped>

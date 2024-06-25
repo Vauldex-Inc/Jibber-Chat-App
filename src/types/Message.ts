@@ -1,6 +1,6 @@
-import { z } from "zod"
+import { z } from 'zod'
 
-const messageSchema = z.object({
+const MessageSchema = z.object({
 	id: z.string(),
 	channelId: z.string(),
 	userId: z.string(),
@@ -9,9 +9,7 @@ const messageSchema = z.object({
 	sentAt: z.string()
 })
 
-type Message = z.infer<typeof messageSchema>
-
-const unreadMessageSchema = z.object({
+const UnreadMessageSchema = z.object({
 	messageId: z.string(),
 	channelId: z.string(),
 	userId: z.string(),
@@ -21,6 +19,12 @@ const unreadMessageSchema = z.object({
 	text: z.string()
 })
 
-type UnreadMessage = z.infer<typeof unreadMessageSchema>
+type Message = z.infer<typeof MessageSchema>
+type UnreadMessage = z.infer<typeof UnreadMessageSchema> 
 
-export { type Message, type UnreadMessage, messageSchema, unreadMessageSchema }
+export {
+	type Message,
+	type UnreadMessage,
+	MessageSchema,
+	UnreadMessageSchema
+}

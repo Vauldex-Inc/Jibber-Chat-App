@@ -30,7 +30,12 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	const getUserById = (id: string) => {
-		return users.value.find(u => u[0].id === id)
+		const user = users.value.find(u => u[0].id === id)?.[0]
+		const profile = users.value.find(u => u[0].id === id)?.[1]
+		return {
+			user: user,
+			profile: profile
+		}
 	}
 
 	const getUsers = () => {
@@ -44,19 +49,20 @@ export const useUserStore = defineStore("users", () => {
 			return "Anonymous"
 		}
 
-		const [user, profile] = userProfile
+		const user = userProfile.user
+		const profile = userProfile.profile
 
 		if (!profile) {
-			return user.username
+			return user?.username
 		}
 
 		if (!profile.firstName && !profile.lastName) {
-			return user.username
+			return user?.username
 		}
 
 
 		if (profile.firstName?.trim() === "" || profile.lastName?.trim() === "") {
-			return user.username
+			return user?.username
 		}
 
 		return `${profile.firstName} ${profile.lastName}`
@@ -69,7 +75,8 @@ export const useUserStore = defineStore("users", () => {
 			return undefined
 		}
 
-		const [user, profile] = userProfile
+		const user = userProfile.user
+		const profile = userProfile.profile
 
 		if (!profile) {
 			return undefined

@@ -34,56 +34,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import type { Invitation } from "@/types/Notification";
-import { useUserStore } from "@/stores/useUserStore";
-import { useChannelStore } from "@/stores/useChannelStore";
-import { useNotificationStore } from "@/stores/useNotificationStore";
-import { formatSentAt } from "@/utils/formatSentAt";
-import { useDateFormatter } from "@/composables/useDateFormatter";
+import { ref, computed } from "vue"
+import { useDateFormatter } from "@/composables/useDateFormatter"
+import { useUserStore } from "@/stores/useUserStore"
+import { useChannelStore } from "@/stores/useChannelStore"
+import { useNotificationStore } from "@/stores/useNotificationStore"
+import type { Invitation } from "@/types/Notification"
+import { formatSentAt } from "@/utils/formatSentAt"
 
 const props = defineProps<{
-  invitation: Invitation;
-}>();
+  invitation: Invitation
+}>()
 
 const emit = defineEmits<{
-  close: [];
-}>();
+  close: []
+}>()
 
-const userStore = useUserStore();
-const channelStore = useChannelStore();
-const notificationStore = useNotificationStore();
-const dateFormatter = useDateFormatter();
+const userStore = useUserStore()
+const channelStore = useChannelStore()
+const notificationStore = useNotificationStore()
+const dateFormatter = useDateFormatter()
 
 const options: Intl.DateTimeFormatOptions = {
   weekday: "long",
   hour: "numeric",
   hour12: true,
-};
+}
 
 const isRead = computed(() => {
-  const seenStatus = props.invitation.seenAt;
+  const seenStatus = props.invitation.seenAt
   if (seenStatus) {
-    return dateFormatter.format(seenStatus, options);
+    return dateFormatter.format(seenStatus, options)
   }
-  return seenStatus;
-});
+  return seenStatus
+})
 
 const channelName = computed(() => {
-  return channelStore.getChannelById(props.invitation.channelId).title;
-});
+  return channelStore.getChannelById(props.invitation.channelId).title
+})
 
 const formattedSentAtDate = computed(() => {
-  return formatSentAt(props.invitation.sentAt);
-});
+  return formatSentAt(props.invitation.sentAt)
+})
 
 const sender = computed(() => {
-  return userStore.getUserNameById(props.invitation.senderId);
-});
+  return userStore.getUserNameById(props.invitation.senderId)
+})
 
 const viewNotifInvite = () => {
-  notificationStore.setSelectedInvitation(props.invitation);
-  notificationStore.updateNotification(props.invitation.id);
-  emit("close");
-};
+  notificationStore.setSelectedInvitation(props.invitation)
+  notificationStore.updateNotification(props.invitation.id)
+  emit("close")
+}
 </script>

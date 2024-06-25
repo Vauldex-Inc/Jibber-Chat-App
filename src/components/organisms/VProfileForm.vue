@@ -122,7 +122,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
-import { z } from "zod"
 import { useFetch } from "@/composables/useFetch"
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
@@ -131,9 +130,6 @@ import VIconButton from "@/components/atoms/VIconButton.vue"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
 import type { ProfileData, Profile } from "@/types/Profile"
-import { profileSchema, profileDataSchema } from "@/types/Profile"
-import type { User } from "@/types/User"
-import { userSchema } from "@/types/User"
 
 const emits = defineEmits<{
   submit: []
@@ -145,10 +141,13 @@ const props = defineProps<{
 
 const currUser = useUser()
 const { getUserById, addUserProfile, getStatus } = useUserStore()
+const vFocus = {
+  mounted: (el: HTMLInputElement) => el.focus()
+}
 
 const method = ref<"POST" | "PUT" | undefined>()
 const error = ref<string>("")
-const fileInput = ref<HTMLInputElement | undefined>()
+const fileInput = ref<HTMLInputElement>()
 const onAvatar = ref<boolean>(false)
 const formData = ref<ProfileData>({
   nickName: "",
@@ -158,6 +157,9 @@ const formData = ref<ProfileData>({
   email: "",
 })
 
+onMounted(() => {
+  doesExist()
+})
 
 const openFileSelector = () => {
   if (fileInput.value) {
@@ -186,7 +188,7 @@ const removeImage = () => {
 const create = async () => {
   try {
     const response = await useFetch("/profiles", {
-      method: method.value ? method.value : "POST",
+      method: method.value,
       body: JSON.stringify(formData.value),
     })
 
@@ -217,31 +219,21 @@ const create = async () => {
 
 const doesExist = () => {
   if (currUser) {
-    const userProfileSchema = z.intersection(userSchema, profileSchema).optional()
-    // const [user, profile]: [User, Profile | undefined] = getUserById(
-    //   props.sender ? props.sender : currUser.id,
-    // )
-    const userProfile = userProfileSchema.safeParse(getUserById(props.sender ? props.sender : currUser.id)).data
+    const userProfile = getUserById(props.sender ? props.sender : currUser.id)
+    const user = userProfile.user
+    const profile = userProfile.profile
 
-    if (userProfile?.userId) {
+    if (profile) {
       method.value = "PUT"
-      formData.value.nickName = userProfile.nickName
-      formData.value.firstName = userProfile.firstName
-      formData.value.lastName = userProfile.lastName
-      formData.value.image = userProfile.image
-      formData.value.email = userProfile.email
-    } else if (userProfile?.id) {
+      formData.value.nickName = profile.nickName
+      formData.value.firstName = profile.firstName
+      formData.value.lastName = profile.lastName
+      formData.value.image = profile.image
+      formData.value.email = profile.email
+    } else {
       method.value = "POST"
-      formData.value.nickName = userProfile.username
+      formData.value.nickName = user?.username
     }
   }
 }
-
-const vFocus = {
-  mounted: (el: HTMLInputElement) => el.focus(),
-}
-
-onMounted(() => {
-  doesExist()
-})
 </script>

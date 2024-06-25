@@ -40,36 +40,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import VIconButton from "@/components/atoms/VIconButton.vue";
-import VModal from "@/components/atoms/VModal.vue";
-import VNotificationListItem from "@/components/organisms/VNotificationListItem.vue";
-import { useNotificationStore } from "@/stores/useNotificationStore";
-import { useChannelStore } from "@/stores/useChannelStore";
-import { invitationSchema, notificationSchema } from "@/types/Notification";
+import { ref, computed } from "vue"
+import VIconButton from "@/components/atoms/VIconButton.vue"
+import VNotificationListItem from "@/components/organisms/VNotificationListItem.vue"
+import { useNotificationStore } from "@/stores/useNotificationStore"
+import { useChannelStore } from "@/stores/useChannelStore"
 
-const notificationStore = useNotificationStore();
-const channelStore = useChannelStore();
+const notificationStore = useNotificationStore()
+const channelStore = useChannelStore()
 
-const displayNotification = ref<boolean>(false);
-const toggleNotifications = () => {
-  displayNotification.value = !displayNotification.value;
-};
+const displayNotification = ref<boolean>(false)
 
 const unSeenCount = computed(() => {
-  return notificationsCopy.value.filter((n) => n.seenAt === undefined).length;
-});
+  return notificationsCopy.value.filter((n) => n.seenAt === undefined).length
+})
 
 const notificationsCopy = computed(() => {
-  const parsedNotifs =  invitationSchema.array().safeParse(notifications.value).data
-  if (parsedNotifs?.length !== undefined) {
-    return parsedNotifs
-      .filter((n) => {
-        const channel = channelStore.getChannelById(n.channelId);
-        return channel.channelType !== "SNG";
-      })
-      .reverse();
-  }
-});
-const notifications = notificationStore.getNotifications();
+  return notifications.value
+    .filter((n) => {
+      const channel = channelStore.getChannelById(n.channelId)
+
+      return channel.channelType !== "SNG"
+    })
+    .reverse()
+})
+
+const toggleNotifications = () => {
+  displayNotification.value = !displayNotification.value
+}
+
+const notifications = notificationStore.getNotifications()
 </script>

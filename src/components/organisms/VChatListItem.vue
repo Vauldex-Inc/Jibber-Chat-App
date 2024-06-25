@@ -61,7 +61,6 @@ import VBadge from "@/components/atoms/VBadge.vue"
 import VTextGroup from "@/components/molecules/VTextGroup.vue"
 
 import type { Channel } from "@/types/Channel"
-import { MessageSchema, UnreadMessageSchema } from "@/types/Message"
 import { formatSentAt } from "@/utils/formatSentAt"
 
 const prop = defineProps<{ item: Channel }>()
@@ -96,10 +95,7 @@ const channelAbbr = computed(() => {
 
 const latestMessage = computed(() => {
   if (unReadMessages.value.length > 0) {
-    const result = UnreadMessageSchema.safeParse(
-      unReadMessages.value[unReadMessages.value.length - 1]
-    )
-    return result.success ? result.data : console.error(new Error("Unknown Format"))
+    return unReadMessages.value[unReadMessages.value.length - 1]
   }
 
   const messages = messageStore.getLatestMessages().value.filter((m) => {
@@ -109,8 +105,7 @@ const latestMessage = computed(() => {
   })
 
   if (messages.length > 0) {
-    const result = MessageSchema.safeParse(messages[messages.length - 1])
-    return result.success ? result.data : console.error(new Error("Unknown format"))
+    return messages[messages.length - 1]
   }
 })
 
@@ -122,8 +117,6 @@ const openChannel = () => {
   unreadMessageStore.removeUnreadMessages(prop.item.id)
   emits("open", prop.item.id)
 }
-
-
 
 onMounted(async () => {
   await channelUserStore.getChannelUsers(prop.item.id)

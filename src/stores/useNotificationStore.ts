@@ -1,6 +1,9 @@
 import { ref } from "vue"
+
 import { defineStore } from "pinia"
+
 import { useFetch } from "@/composables/useFetch"
+
 import type { Invitation } from "@/types/Notification"
 
 const useNotificationStore = defineStore("notifications", () => {

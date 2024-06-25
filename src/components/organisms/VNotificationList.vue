@@ -41,19 +41,17 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import VIconButton from "@/components/atoms/VIconButton.vue";
-import VNotificationListItem from "@/components/organisms/VNotificationListItem.vue";
+
 import { useNotificationStore } from "@/stores/useNotificationStore";
 import { useChannelStore } from "@/stores/useChannelStore";
+
+import VIconButton from "@/components/atoms/VIconButton.vue";
+import VNotificationListItem from "@/components/organisms/VNotificationListItem.vue";
 
 const notificationStore = useNotificationStore();
 const channelStore = useChannelStore();
 const notifications = notificationStore.getNotifications();
 const displayNotification = ref<boolean>(false);
-
-const toggleNotifications = () => {
-  displayNotification.value = !displayNotification.value;
-};
 
 const unSeenCount = computed(() => {
   if (notificationsCopy.value !== undefined) {
@@ -76,4 +74,8 @@ const notificationsCopy = computed(() => {
     return []
   }
 });
+
+const toggleNotifications = () => {
+  displayNotification.value = !displayNotification.value;
+};
 </script>

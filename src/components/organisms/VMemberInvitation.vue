@@ -56,31 +56,37 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
+
 import { useUserStore } from "@/stores/useUserStore";
-import type { User } from "@/types/User";
-import type { Profile } from "@/types/Profile";
 import { useChannelUserStore } from "@/stores/useChannelUserStore";
+
 import VInput from "@/components/atoms/VInput.vue";
 import VButton from "@/components/atoms/VButton.vue";
 
+import type { User } from "@/types/User";
+import type { Profile } from "@/types/Profile";
+
+const props = defineProps<{
+  color: string;
+  channelId: string;
+}>();
+
+const emits = defineEmits<{
+  action: [value: string];
+}>();
+
 const userStore = useUserStore();
 const channelUserStore = useChannelUserStore();
+
+const invitedUsers = ref<string[]>([]);
+const inputUserName = ref<string>("");
+
 const users = computed(() => {
   const appUsers = userStore.getUsers();
   return appUsers.value.filter(
     (cu) => !channelUserStore.isMember(props.channelId, cu[0].id),
   );
 });
-
-const invitedUsers = ref<string[]>([]);
-const checkInviteStatus = (userId: string) => invitedUsers.value.includes(userId);
-
-const selectedUserName = (userId: string) => {
-  invitedUsers.value.push(userId);
-  emits("action", userId);
-};
-
-const inputUserName = ref<string>("");
 
 const filteredUserName = computed(() => {
   return users.value
@@ -98,12 +104,10 @@ const filteredUserName = computed(() => {
     });
 });
 
-const props = defineProps<{
-  color: string;
-  channelId: string;
-}>();
+const checkInviteStatus = (userId: string) => invitedUsers.value.includes(userId);
 
-const emits = defineEmits<{
-  action: [value: string];
-}>();
+const selectedUserName = (userId: string) => {
+  invitedUsers.value.push(userId);
+  emits("action", userId);
+};
 </script>

@@ -50,21 +50,25 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+
 import { useFetch } from "@/composables/useFetch";
+import { useUser } from "@/composables/useUser";
+
 import { useUserStore } from "@/stores/useUserStore";
+import { useChannelStore } from "@/stores/useChannelStore";
+
+import VInput from "@/components/atoms/VInput.vue";
+import VButton from "@/components/atoms/VButton.vue";
+
 import { userSchema  } from "@/types/User";
 import type { User } from "@/types/User";
 import type { Profile } from "@/types/Profile";
 import type { Channel } from "@/types/Channel";
 import { errorSchema } from "@/types/Error"
-import VInput from "@/components/atoms/VInput.vue";
-import VButton from "@/components/atoms/VButton.vue";
-import { useUser } from "@/composables/useUser";
-import { useChannelStore } from "@/stores/useChannelStore";
 
 const channelStore = useChannelStore();
 
-const props = defineProps<{
+defineProps<{
   color: string;
 }>();
 
@@ -76,6 +80,7 @@ const userStore = useUserStore();
 const users = userStore.getUsers();
 const loggedUser = useUser();
 const loggedUserId = userSchema.safeParse(loggedUser).data?.id
+
 const inputUserName = ref<string>("");
 const invitedUsers = ref<string[]>([]);
 
@@ -97,6 +102,14 @@ const filteredUserName = computed(() => {
       const [user, profile] = userProfile;
       return [user.id, userStore.getUserNameById(user.id)];
     });
+});
+
+onMounted(() => {
+  channelStore.privateChannels.forEach((s) => {
+    const users = s.title.split("/");
+
+    users.forEach((u) => invitedUsers.value.push(u));
+  });
 });
 
 const create = async (userId: string, name: string) => {
@@ -128,12 +141,4 @@ const create = async (userId: string, name: string) => {
     throw new Error(errorMessage);
   }
 };
-
-onMounted(() => {
-  channelStore.privateChannels.forEach((s) => {
-    const users = s.title.split("/");
-
-    users.forEach((u) => invitedUsers.value.push(u));
-  });
-});
 </script>

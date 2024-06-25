@@ -9,7 +9,7 @@ const useNotificationStore = defineStore("notifications", () => {
 
 	const init = async () => {
 		try {
-			const res = await useFetch("/users/invites")
+			const res = await useFetch("/notifications")
 			const data = (await res.json()).notifications
 			notifications.value = data
 		} catch (error) {
@@ -36,7 +36,7 @@ const useNotificationStore = defineStore("notifications", () => {
 
 	const updateNotification = async (id: string) => {
 		try {
-			const response = await useFetch(`/users/invites/${id}`, { "method": "POST" })
+			const response = await useFetch(`/channels/${id}/notifications`, { "method": "POST" })
 			if (response.status === 200) {
 				const foundNotif = notifications.value?.find((n) => n.id === id)
 				if (foundNotif)

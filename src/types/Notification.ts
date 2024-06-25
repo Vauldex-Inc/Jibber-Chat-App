@@ -1,15 +1,23 @@
-export interface Notification {
-	id: string
-	title: string
-	message: string
-}
+import { z } from "zod"
 
-export interface Invitation {
-	id: string
-	notificationType: "INV" | "NEW"
-	userId: string
-	senderId: string
-	channelId: string
-	sentAt: string
-	seenAt: string
-}
+const notificationSchema = z.object({
+	id: z.string(),
+	title: z.string(),
+	message: z.string(),
+})
+
+type Notification = z.infer<typeof notificationSchema>
+
+const invitationSchema = z.object({
+	id: z.string(),
+	notification: z.enum(["INV", "NEW"]),
+	userId: z.string(),
+	senderId: z.string(),
+	channelId: z.string(),
+	sentAt: z.string(),
+	seenAt: z.string()
+})
+
+type Invitation = z.infer<typeof invitationSchema>
+
+export { type Notification, type Invitation, notificationSchema, invitationSchema }

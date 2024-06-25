@@ -9,5 +9,4 @@ const userSchema = z.object({
 
 type User = z.infer<typeof userSchema>
 
-export type { User }
-export { userSchema }
+export { type User, userSchema }

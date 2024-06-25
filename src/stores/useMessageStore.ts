@@ -9,7 +9,7 @@ export const useMessageStore = defineStore("messages", () => {
 
 	const init = async () => {
 		const res = await useFetch("/channels/latest-messages")
-		const data = (await res.json()).latestMessages
+		const data = (await res.json())
 
 		latestMessages.value = data
 	}

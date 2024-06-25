@@ -1,9 +1,11 @@
 import { ref, computed } from "vue"
+
 import { defineStore } from "pinia"
-import type { ChannelUser } from "@/types/Channel"
-import type { Channel } from "@/types/Channel"
+
 import { useFetch } from "@/composables/useFetch"
 
+import { ChannelUserSchema, type ChannelUser } from "@/types/Channel"
+import type { Channel } from "@/types/Channel"
 
 export const useChannelUserStore = defineStore("channel-users", () => {
 	const channelUsers = ref<[string, ChannelUser[]][]>([])
@@ -21,12 +23,23 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 		const users = channelUsers.value.find(c => c[0] === channelId)
 
 		if (!users) {
-			const res = await useFetch(`/channels/${channelId}/users`)
-			const data = (await res.json()).users
 
-			channelUsers.value.push([channelId, data])
+			try {
+				const res = await useFetch(`/channels/${channelId}/users`)
+				const data = (await res.json()).users
+				const validation = ChannelUserSchema.array().safeParse(data)
 
-			return data
+				if(validation.success) {
+					channelUsers.value.push([channelId, data])
+					return data
+				} else {
+					throw new Error("Unsupported Format")
+				}
+			} catch (error) {
+				if(error instanceof Error) {
+					console.error(error.message)
+				}
+			}
 		} else {
 			return users[1]
 		}
@@ -65,18 +78,31 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 		return users && users[1].find(u => u.userId === userId) !== undefined
 	}
 
-	const setChannelColor = async (channel: Channel, color: string): Promise<boolean> => {
-		const res = await useFetch(`/channels/${channel.id}`, {
-			method: "PUT",
-			body: JSON.stringify({
-				title: channel.title,
-				channelType: channel.channelType,
-				color: color,
-			}),
-		})
-		return res.status === 200
+	const setChannelColor = async (channel: Channel, color: string): Promise<boolean | void> => {
+		try {
+			const res = await useFetch(`/channels/${channel.id}`, {
+				method: "PUT",
+				body: JSON.stringify({
+					title: channel.title,
+					channelType: channel.channelType,
+					color: color,
+				}),
+			});
+			return res.status === 200
+		} catch (error) {
+			if (error instanceof Error) {
+				console.error(error.message)
+			}
+		}
 	}
 
 
-	return { channelUsers, getChannelUsers, isMember, addNewChannelUser, getChannelUsersCount, setChannelColor }
+	return { 
+		channelUsers, 
+		getChannelUsers, 
+		isMember, 
+		addNewChannelUser, 
+		getChannelUsersCount, 
+		setChannelColor 
+	}
 })

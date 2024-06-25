@@ -27,21 +27,21 @@
 </template>
 
 <script lang="ts" setup>
-import VChatListItem from "@/components/organisms/VChatListItem.vue";
-import VIconButton from "@/components/atoms/VIconButton.vue";
-import type { Channel } from "@/types/Channel.ts";
+import VChatListItem from "@/components/organisms/VChatListItem.vue"
+import VIconButton from "@/components/atoms/VIconButton.vue"
+import type { Channel } from "@/types/Channel.ts"
 
 defineProps<{
-  title: string;
-  items: Channel[];
-}>();
+  title: string
+  items: Channel[]
+}>()
 
 const openChannel = (id: string) => {
-  emits("open", id);
-};
+  emits("open", id)
+}
 
 const emits = defineEmits<{
-  open: [value: string];
-  click: [];
-}>();
+  open: [value: string]
+  click: []
+}>()
 </script>

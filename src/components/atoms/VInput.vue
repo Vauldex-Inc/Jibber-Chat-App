@@ -8,14 +8,14 @@
 </template>
 
 <script setup lang="ts">
-import { inputSizeClass } from "@/composables/useSize";
-
-const value = defineModel<string>();
+import { inputSizeClass } from "@/composables/useSize"
 
 interface InputProps {
-  type?: "text" | "file" | "password";
-  size?: "sm" | "md" | "lg";
+  type?: "text" | "file" | "password"
+  size?: "small" | "medium" | "large"
 }
 
-defineProps<InputProps>();
+defineProps<InputProps>()
+
+const value = defineModel<string>()
 </script>

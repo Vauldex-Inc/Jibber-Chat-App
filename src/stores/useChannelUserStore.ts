@@ -16,6 +16,7 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 	})
 
 
+
 	const getChannelUsers = async (channelId: string) => {
 		const users = channelUsers.value.find(c => c[0] === channelId)
 
@@ -52,8 +53,10 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 		}
 	}
 
-	const getChannelUsersCount = () => {
-		return channelUsersCount;
+	const getChannelUsersCount = (channelId: string) => {
+		const userCountAndChannel = channelUsersCount.value.find((ch) => ch[0] === channelId)
+		if (userCountAndChannel)
+			return userCountAndChannel[1] as number > 1 ? `${userCountAndChannel[1] as number} members` : `0 member`
 	}
 
 	const isMember = (channelId: string, userId: string) => {
@@ -70,10 +73,9 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 				channelType: channel.channelType,
 				color: color,
 			}),
-		});
+		})
 		return res.status === 200
 	}
-
 
 
 	return { channelUsers, getChannelUsers, isMember, addNewChannelUser, getChannelUsersCount, setChannelColor }

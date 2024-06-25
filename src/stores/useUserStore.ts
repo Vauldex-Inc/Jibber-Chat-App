@@ -4,7 +4,7 @@ import type { User } from "@/types/User.ts"
 import type { Profile } from "@/types/Profile.ts"
 import type { Message } from "@/types/Message"
 import { useFetch } from "@/composables/useFetch"
-import { useDateFormatter } from "@/composables/useDateFormatter";
+import { useDateFormatter } from "@/composables/useDateFormatter"
 
 const dateFormatter = useDateFormatter()
 
@@ -15,11 +15,11 @@ const defaultOptions: Intl.DateTimeFormatOptions = {
 	hour: "numeric",
 	minute: "numeric",
 	hour12: true,
-};
+}
 
 export const useUserStore = defineStore("users", () => {
 	const users = ref<[User, Profile | undefined][]>([])
-	
+
 	const onlineUsers = ref<string[]>([])
 
 	const init = async () => {
@@ -106,8 +106,8 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	const sentAtFormatter = (message: Message, options: Intl.DateTimeFormatOptions = defaultOptions) => {
-		return dateFormatter.format(message.sentAt, options);
-	};
+		return dateFormatter.format(message.sentAt, options)
+	}
 
 	const senderName = (userId: string) => {
 		return userId ? getUserNameById(userId) : "Anonymous";
@@ -117,18 +117,18 @@ export const useUserStore = defineStore("users", () => {
 		return userId ? getUserImageById(userId) : undefined;
 	};
 
-	const senderStatus = (userId: string) => {
-		if (userId)
-			return getOnlineUsers().value.includes(userId)
-				? "online"
-				: "offline";
-	};
+	const senderStatus = (userId?: string) => {
+		if (userId && getOnlineUsers().value.includes(userId)) {
+			return "online"
+		}
+		return "offline"
+	}
 
 	const getStatus = (userId: string) => {
 		if (userId)
 			return getOnlineUsers().value.includes(userId)
 				? "online"
-				: "offline";
+				: "offline"
 	}
 
 	const inviteMember = async (channelId: string, senderId: string) => {
@@ -138,16 +138,16 @@ export const useUserStore = defineStore("users", () => {
 				body: JSON.stringify({
 					userId: senderId,
 				}),
-			});
+			})
 		} catch (error) {
-			throw new Error(`Error: ${error}`);
+			throw new Error(`Error: ${error}`)
 		}
-	};
+	}
 
 	return {
 		users, init, getUserById, getUsers, getUserNameById,
 		getUserImageById, addUserProfile, updateUserOnlineAt, onlineUsers,
-		getOnlineUsers, addNewUser, sentAtFormatter, senderName, senderProfile, 
+		getOnlineUsers, addNewUser, sentAtFormatter, senderName, senderProfile,
 		senderStatus, getStatus, inviteMember
 	}
 })

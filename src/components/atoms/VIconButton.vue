@@ -26,25 +26,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { sizeClass, customImageSizeClass } from "@/composables/useSize";
+import { computed } from "vue"
+import { sizeClass, customImageSizeClass } from "@/composables/useSize"
 
-const roundedClass = computed(() => {
-  return props.rounded ? "rounded-full" : "rounded-md";
-});
+const props = defineProps<IconButtonProps>()
 
 interface IconButtonProps {
-  size?: "sm" | "md" | "lg" | "xl";
-  icon: string;
-  invert?: boolean;
-  rounded?: boolean;
-  hasPadding?: boolean;
-  toolTip?: string;
+  size?: "small" | "medium" | "large" | "extraLarge"
+  icon: string
+  invert?: boolean
+  rounded?: boolean
+  hasPadding?: boolean
+  toolTip?: string
 }
 
-const props = defineProps<IconButtonProps>();
-
 const emits = defineEmits<{
-  click: [];
-}>();
+  click: []
+}>()
+
+const roundedClass = computed(() => {
+  return props.rounded ? "rounded-full" : "rounded-md"
+})
 </script>

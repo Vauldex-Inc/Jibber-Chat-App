@@ -20,8 +20,8 @@
     />
     <VAvatar
       v-if="channel.channelType === 'SNG'"
-      :image="senderProfile"
-      :status="senderStatus"
+      :image="userStore.senderProfile(sender)"
+      :status="userStore.senderStatus(sender)"
     />
     <div
       v-else
@@ -34,13 +34,15 @@
       <div>
         <template v-if="channel.channelType === 'SNG'">
           <p class="font-semibold text-gray-700 dark:text-gray-300">
-            {{ senderName }}
+            {{ sender ? userStore.senderName(sender) : "" }}
           </p>
           <p
             class="text-sm capitalize"
-            :class="{ 'text-emerald-600': senderStatus === 'online' }"
+            :class="{
+              'text-emerald-600': userStore.senderStatus(sender) === 'online',
+            }"
           >
-            {{ senderStatus }}
+            {{ sender && userStore.senderStatus(sender) }}
           </p>
         </template>
         <template v-else>
@@ -48,14 +50,14 @@
             {{ channel.title }}
           </p>
           <p class="text-sm">
-            {{ count && count > 1 ? `${count} members` : `${count} member` }}
+            {{ channelUserStore.getChannelUsersCount(channel.id) }}
           </p>
         </template>
       </div>
     </div>
     <div class="ml-auto flex gap-4">
       <VIconButton
-        @click="achiveChannel"
+        @click="archiveChannel"
         v-if="sender && channel.userId === sender && !channel.archivedAt"
         :class="curColorTheme"
         tool-tip="archive chat"
@@ -72,54 +74,39 @@
 </template>
 
 <script lang="ts" setup>
-import VAvatar from "@/components/atoms/VAvatar.vue";
-import VIconButton from "@/components/atoms/VIconButton.vue";
-import type { Channel } from "@/types/Channel.ts";
-import type { User } from "@/types/User.ts";
-import { useUserStore } from "@/stores/useUserStore.ts";
-import { computed, ref } from "vue";
-import { useFetch } from "@/composables/useFetch.ts";
-import { useChannelUserStore } from "@/stores/useChannelUserStore";
+import { computed } from "vue"
+import { useFetch } from "@/composables/useFetch"
+import { useUserStore } from "@/stores/useUserStore"
+import { useChannelUserStore } from "@/stores/useChannelUserStore"
+import VAvatar from "@/components/atoms/VAvatar.vue"
+import VIconButton from "@/components/atoms/VIconButton.vue"
+import type { Channel } from "@/types/Channel"
 
-const userStore = useUserStore();
-const channelUserStore = useChannelUserStore();
-const channelUsersCount = channelUserStore.getChannelUsersCount();
+const props = defineProps<{
+  channel: Channel
+  sender?: string
+  collapse: boolean
+}>()
 
-const count = computed(() => {
-  const userCount = channelUsersCount.value.find(
-    (ch) => ch[0] === props.channel.id,
-  );
+const emits = defineEmits<{
+  archive: [value: { color: string | undefined; archivedAt: string }]
+  toggleInfo: []
+  toggleChat: []
+}>()
 
-  return userCount ? userCount[1] : 0;
-});
-
-const senderName = computed(() => {
-  if (!props.sender) return "";
-  return userStore.getUserNameById(props.sender);
-});
-
-const senderProfile = computed(() => {
-  if (!props.sender) return undefined;
-  return userStore.getUserImageById(props.sender);
-});
-
-const senderStatus = computed(() => {
-  if (!props.sender) return undefined;
-  return userStore.getOnlineUsers().value.indexOf(props.sender) !== -1
-    ? "online"
-    : "offline";
-});
+const userStore = useUserStore()
+const channelUserStore = useChannelUserStore()
 
 const channelAbbr = computed(() => {
-  return props.channel.title.slice(0, 1);
-});
+  return props.channel.title.slice(0, 1)
+})
 
 const curColorTheme = computed(() => {
-  return props.channel.color ? props.channel.color : "bg-slate-800";
-});
+  return props.channel.color ? props.channel.color : "bg-slate-800"
+})
 
-const achiveChannel = async () => {
-  const archivedAt = new Date().toISOString();
+const archiveChannel = async () => {
+  const archivedAt = new Date().toISOString()
 
   const res = await useFetch(`/channels/${props.channel.id}`, {
     method: "PUT",
@@ -129,22 +116,10 @@ const achiveChannel = async () => {
       color: undefined,
       archivedAt: archivedAt,
     }),
-  });
+  })
 
   if (res.status === 200) {
-    emits("archive", { color: undefined, archivedAt });
+    emits("archive", { color: undefined, archivedAt })
   }
-};
-
-const props = defineProps<{
-  channel: Channel;
-  sender?: string;
-  collapse: boolean;
-}>();
-
-const emits = defineEmits<{
-  archive: [value: string];
-  toggleInfo: [];
-  toggleChat: [];
-}>();
+}
 </script>

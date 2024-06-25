@@ -31,24 +31,24 @@
 </template>
 
 <script lang="ts" setup>
-import type { Message } from "@/types/Message.ts";
-import type { Channel } from "@/types/Channel.ts";
-import VChatBalloon from "@/components/organisms/VChatBalloon.vue";
-import { onUpdated, ref } from "vue";
+import { onUpdated, ref } from "vue"
+import VChatBalloon from "@/components/organisms/VChatBalloon.vue"
+import type { Message } from "@/types/Message.ts"
+import type { Channel } from "@/types/Channel.ts"
 
-const chatList = ref<HTMLElement | undefined>(undefined);
+const chatList = ref<HTMLElement | undefined>(undefined)
 
 onUpdated(() => {
   if (chatList.value) {
     chatList.value.scrollTo({
       behavior: "smooth",
       top: chatList.value.scrollHeight,
-    });
+    })
   }
-});
+})
 
 defineProps<{
-  messages: Message[];
-  channel: Channel;
-}>();
+  messages: Message[]
+  channel: Channel
+}>()
 </script>

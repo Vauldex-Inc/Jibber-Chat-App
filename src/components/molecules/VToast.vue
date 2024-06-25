@@ -34,7 +34,7 @@
           :invert="true"
           class="ml-4 flex-1 rounded-full p-1"
           icon="./src/assets/images/close.svg"
-          size="sm"
+          size="small"
         />
       </div>
     </div>
@@ -42,40 +42,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
-import VIconButton from "@/components/atoms/VIconButton.vue";
-
-const loadingPercentage = ref<number>(0);
-const timerId = ref<number | undefined>(undefined);
-
-const setLoading = () => {
-  loadingPercentage.value = 0;
-
-  timerId.value = setInterval(() => {
-    loadingPercentage.value += (0.74 / 380) * 100;
-  }, 10);
-
-  setTimeout(() => {
-    clearInterval(timerId.value);
-    emits("close", props.toastId);
-  }, 5_000);
-};
+import { ref, onMounted, onUnmounted } from "vue"
+import VIconButton from "@/components/atoms/VIconButton.vue"
 
 const props = defineProps<{
-  toastId: string;
-  message: string;
-  title: string;
-}>();
+  toastId: string
+  message: string
+  title: string
+}>()
 
 const emits = defineEmits<{
-  close: [value: string];
-}>();
+  close: [value: string]
+}>()
+
+const loadingPercentage = ref<number>(0)
+const timerId = ref<number | undefined>(undefined)
 
 onMounted(() => {
-  setLoading();
-});
+  setLoading()
+})
 
 onUnmounted(() => {
-  clearInterval(timerId.value);
-});
+  clearInterval(timerId.value)
+})
+
+const setLoading = () => {
+  loadingPercentage.value = 0
+
+  timerId.value = setInterval(() => {
+    loadingPercentage.value += (0.74 / 380) * 100
+  }, 10)
+
+  setTimeout(() => {
+    clearInterval(timerId.value)
+    emits("close", props.toastId)
+  }, 5_000)
+}
 </script>

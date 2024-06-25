@@ -21,11 +21,11 @@
 
 <script lang="ts" setup>
 interface VTextGroupProps {
-  title: string;
-  text: string;
-  subText?: string;
-  isBold?: boolean;
+  title: string
+  text: string
+  subText?: string
+  isBold?: boolean
 }
 
-defineProps<VTextGroupProps>();
+defineProps<VTextGroupProps>()
 </script>

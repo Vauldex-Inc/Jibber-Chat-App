@@ -1,10 +1,13 @@
 import { ref } from "vue"
+
 import { defineStore } from "pinia"
+
+import { useFetch } from "@/composables/useFetch"
+import { useDateFormatter } from "@/composables/useDateFormatter"
+
 import type { User } from "@/types/User.ts"
 import type { Profile } from "@/types/Profile.ts"
 import type { Message } from "@/types/Message"
-import { useFetch } from "@/composables/useFetch"
-import { useDateFormatter } from "@/composables/useDateFormatter"
 
 const dateFormatter = useDateFormatter()
 
@@ -112,7 +115,10 @@ export const useUserStore = defineStore("users", () => {
 		users.value.push([user, undefined])
 	}
 
-	const sentAtFormatter = (message: Message, options: Intl.DateTimeFormatOptions = defaultOptions) => {
+	const sentAtFormatter = (
+		message: Message, 
+		options: Intl.DateTimeFormatOptions = defaultOptions
+	) => {
 		return dateFormatter.format(message.sentAt, options)
 	}
 
@@ -140,7 +146,7 @@ export const useUserStore = defineStore("users", () => {
 
 	const inviteMember = async (channelId: string, senderId: string) => {
 		try {
-			await useFetch(`/channels/${channelId}/invites`, {
+			await useFetch(`/channels/${channelId}/users`, {
 				method: "POST",
 				body: JSON.stringify({
 					userId: senderId,

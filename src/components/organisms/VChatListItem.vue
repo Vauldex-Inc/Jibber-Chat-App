@@ -56,7 +56,7 @@ import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import { useUserStore } from "@/stores/useUserStore"
 
-import VAvatar from "@/components/atoms/VAvatar.vue"
+import VAvatar from "@/components/molecules/VAvatar.vue"
 import VBadge from "@/components/atoms/VBadge.vue"
 import VTextGroup from "@/components/molecules/VTextGroup.vue"
 

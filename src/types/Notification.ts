@@ -10,14 +10,19 @@ type Notification = z.infer<typeof notificationSchema>
 
 const invitationSchema = z.object({
 	id: z.string(),
+	notificationType: z.enum(["INV", "NEW"]),
 	userId: z.string(),
 	senderId: z.string(),
 	channelId: z.string(),
-	notificationType: z.enum(["INV", "NEW"]),
 	sentAt: z.string(),
 	seenAt: z.string()
 })
 
 type Invitation = z.infer<typeof invitationSchema>
 
-export { type Notification, type Invitation, notificationSchema, invitationSchema }
+export { 
+	type Notification,
+	type Invitation,
+	notificationSchema,
+	invitationSchema 
+}

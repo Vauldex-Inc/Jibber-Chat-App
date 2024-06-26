@@ -7,13 +7,13 @@ import { useFetch } from "@/composables/useFetch"
 import { MessageSchema, type Message } from "@/types/Message"
 
 export const useMessageStore = defineStore("messages", () => {
-	const latestMessages = ref<(Message | null)[]>([])
+	const latestMessages = ref<Array<Message>>([])
 
 	const init = async () => {
 		try {
 			const res = await useFetch("/channels/latest-messages")
 			const data = (await res.json())
-			const validation = MessageSchema.array().safeParse(data.filter((m: Message) => m !== null))
+			const validation = MessageSchema.array().safeParse(data)
 			if (validation.success) {
 				latestMessages.value = validation.data
 			} else {

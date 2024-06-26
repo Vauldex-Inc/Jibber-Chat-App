@@ -26,13 +26,13 @@ const imageSizeClass = (size?: string) => {
 
 const customImageSizeClass = (size?: string) => {
   switch (size) {
-    case "sm":
+    case "small":
       return "h-4";
-    case "md":
+    case "medium":
       return "h-6";
-    case "lg":
+    case "large":
       return "h-8";
-    case "xl":
+    case "xlarge":
       return "h-12";
     default:
       return "h-6";

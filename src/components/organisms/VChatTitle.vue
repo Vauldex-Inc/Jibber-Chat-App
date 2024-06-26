@@ -78,7 +78,7 @@ import { computed } from "vue"
 import { useFetch } from "@/composables/useFetch"
 import { useUserStore } from "@/stores/useUserStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
-import VAvatar from "@/components/atoms/VAvatar.vue"
+import VAvatar from "@/components/molecules/VAvatar.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
 import type { Channel } from "@/types/Channel"
 

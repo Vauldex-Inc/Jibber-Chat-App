@@ -70,8 +70,4 @@ const toggleNotifications = () => {
 }
 
 const notifications = notificationStore.getNotifications()
-
-onMounted(() => {
-  console.log(notificationsCopy)
-})
 </script>

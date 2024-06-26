@@ -247,7 +247,6 @@ watch(selectedChannel, async (channel) => {
 });
 
 onMounted(async () => {
-  console.log(invitationNotif.value)
   await userStore.init();
   await channelStore.init();
   await messageStore.init();

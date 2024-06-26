@@ -34,7 +34,7 @@ import VImage from "@/components/atoms/VImage.vue"
 const props = defineProps<IconButtonProps>()
 
 interface IconButtonProps {
-  size: Size
+  size?: Size
   icon: string
   invert?: boolean
   rounded?: boolean

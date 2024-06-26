@@ -14,7 +14,7 @@
         v-model="inputUserName"
         type="text"
         placeholder="Enter name..."
-        size="md"
+        size="medium"
       />
       <input type="submit" hidden />
     </form>
@@ -33,8 +33,8 @@
               {{ name }}
             </span>
             <VButton
-              @click="create(id, name)"
-              size="sm"
+              @click="create(id)"
+              size="small"
               :class="color"
               class="cursor-pointer rounded-md text-gray-100"
             >
@@ -72,8 +72,8 @@ const emits = defineEmits<{
   submit: [channel: Channel | undefined]
 }>();
 
-const userStore = useUserStore()
-const users = userStore.getUsers()
+const { getUsers, getUserNameById } = useUserStore()
+const users = getUsers()
 const loggedUser = useUser()
 const loggedUserId = userSchema.safeParse(loggedUser).data?.id
 
@@ -87,16 +87,13 @@ const filteredUserName = computed(() => {
     .filter((userProfile: [User, Profile | undefined]) => {
       const [user, _] = userProfile
       const currentName = inputUserName.value.toLowerCase()
-      return (
-        userStore
-          .getUserNameById(user.id)
-          .toLowerCase()
+      return getUserNameById(user.id)
+          ?.toLowerCase()
           .includes(currentName) && !isInvited(user.id)
-      )
     })
     .map((userProfile: [User, Profile | undefined]) => {
       const [user, _] = userProfile
-      return [user.id, userStore.getUserNameById(user.id)]
+      return [user.id, getUserNameById(user.id)]
     })
 })
 
@@ -108,7 +105,7 @@ onMounted(() => {
   })
 })
 
-const create = async (userId: string, name: string) => {
+const create = async (userId?: string) => {
   try {
     const response = await useFetch("/channels", {
       method: "POST",
@@ -128,8 +125,10 @@ const create = async (userId: string, name: string) => {
         body: JSON.stringify({ userId }),
       })
 
-      invitedUsers.value.push(userId)
-      emits("submit", channel)
+      if (userId) {
+        invitedUsers.value.push(userId)
+        emits("submit", channel)
+      }
     }
   } catch (error) {
     emits("submit", undefined)

@@ -6,7 +6,7 @@
     <div class="absolute left-5">
       <VIconButton
         tool-tip="previous"
-        size="lg"
+        size="large"
         @click="leftMove"
         icon="./src/assets/images/left-button.svg"
       />
@@ -14,7 +14,7 @@
     <div class="absolute right-5">
       <VIconButton
         tool-tip="next"
-        size="lg"
+        size="large"
         @click="rightMove"
         icon="./src/assets/images/right-button.svg"
       />

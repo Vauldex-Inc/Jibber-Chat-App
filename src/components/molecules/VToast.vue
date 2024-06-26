@@ -43,17 +43,26 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue"
+import { z, ZodError } from "zod"
 import VIconButton from "@/components/atoms/VIconButton.vue"
 
-const props = defineProps<{
+interface Prop {
   toastId: string
   message: string
   title: string
-}>()
+}
+
+const prop = defineProps<Prop>()
 
 const emits = defineEmits<{
   close: [value: string]
 }>()
+
+const PropSchema = z.object({
+  toastId: z.string(),
+  message: z.string(),
+  title: z.string(),
+})
 
 const loadingPercentage = ref<number>(0)
 const timerId = ref<number | undefined>(undefined)
@@ -75,7 +84,18 @@ const setLoading = () => {
 
   setTimeout(() => {
     clearInterval(timerId.value)
-    emits("close", props.toastId)
+    emits("close", prop.toastId)
   }, 5_000)
+}
+
+try {
+  PropSchema.parse({
+    toastId: prop.toastId,
+    message: prop.message,
+    title: prop.title,
+  })
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.issues)
 }
 </script>

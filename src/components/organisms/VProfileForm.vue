@@ -11,7 +11,7 @@
       <VIconButton
         v-if="viewOnly ? false : true"
         @click="removeImage"
-        size="sm"
+        size="small"
         rounded
         icon="./src/assets/images/close.svg"
         class="scale-75"
@@ -28,7 +28,7 @@
             ? formData.image
             : './src/assets/images/default-avatar.svg'
         "
-        size="lg"
+        size="large"
         :status="getStatus(sender)"
       />
       <input
@@ -41,7 +41,7 @@
       <VIconButton
         v-if="viewOnly ? false : true"
         @click="openFileSelector"
-        size="sm"
+        size="small"
         icon="./src/assets/images/edit.svg"
         rounded
         class="absolute bottom-0 right-32 z-20 -translate-x-2 translate-y-0.5 bg-indigo-600 focus:border-indigo-600 dark:bg-slate-700 dark:bg-slate-800 dark:focus:border-indigo-600"
@@ -93,7 +93,7 @@
     <label for="email">Email</label>
     <VInput
       id="email"
-      size="md"
+      size="medium"
       v-model.trim="formData.email"
       class="rounded-md border-2 border-gray-300 bg-gray-50 outline-none dark:border-slate-700 dark:bg-slate-800"
       :class="
@@ -142,7 +142,7 @@ const props = defineProps<{
 const currUser = useUser()
 const { getUserById, addUserProfile, getStatus } = useUserStore()
 const vFocus = {
-  mounted: (el: HTMLInputElement) => el.focus()
+  mounted: (el: HTMLInputElement) => el.focus(),
 }
 
 const method = ref<"POST" | "PUT" | undefined>()

@@ -105,7 +105,8 @@ const filteredUserName = computed(() => {
     })
 })
 
-const checkInviteStatus = (userId: string) => invitedUsers.value.includes(userId)
+const checkInviteStatus = (userId: string) =>
+  invitedUsers.value.includes(userId)
 
 const selectedUserName = (userId: string) => {
   invitedUsers.value.push(userId)

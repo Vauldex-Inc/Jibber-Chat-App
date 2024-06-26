@@ -56,7 +56,7 @@ import { useUserStore } from "@/stores/useUserStore"
 import { useChannelStore } from "@/stores/useChannelStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-import { userSchema  } from "@/types/User"
+import { userSchema } from "@/types/User"
 import type { User } from "@/types/User"
 import type { Profile } from "@/types/Profile"
 import type { Channel } from "@/types/Channel"
@@ -66,11 +66,11 @@ const channelStore = useChannelStore()
 
 defineProps<{
   color: string
-}>();
+}>()
 
 const emits = defineEmits<{
   submit: [channel: Channel | undefined]
-}>();
+}>()
 
 const userStore = useUserStore()
 const users = userStore.getUsers()
@@ -87,9 +87,12 @@ const filteredUserName = computed(() => {
     .filter((userProfile: [User, Profile | undefined]) => {
       const [user, _] = userProfile
       const currentName = inputUserName.value.toLowerCase()
-      return userStore.getUserNameById(user.id)
+      return (
+        userStore
+          .getUserNameById(user.id)
           ?.toLowerCase()
           .includes(currentName) && !isInvited(user.id)
+      )
     })
     .map((userProfile: [User, Profile | undefined]) => {
       const [user, _] = userProfile

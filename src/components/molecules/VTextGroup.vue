@@ -20,12 +20,33 @@
 </template>
 
 <script lang="ts" setup>
-interface VTextGroupProps {
+import { z, ZodError } from "zod"
+
+interface Prop {
   title: string
   text: string
   subText?: string
   isBold?: boolean
 }
 
-defineProps<VTextGroupProps>()
+const prop = defineProps<Prop>()
+
+const PropSchema = z.object({
+  title: z.string(),
+  text: z.string(),
+  subText: z.string().optional(),
+  isBold: z.boolean().optional(),
+})
+
+try {
+  PropSchema.parse({
+    title: prop.title,
+    text: prop.text,
+    subText: prop.subText,
+    isBold: prop.isBold,
+  })
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.issues)
+}
 </script>

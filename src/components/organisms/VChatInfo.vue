@@ -124,7 +124,7 @@
     </div>
 
     <VModal @close="closeDisplayImages" :is-open="stateDisplayImages">
-      <VImageViewer v-if="typeof images === 'string'" :chatImages="images" />
+      <VImageViewer :chatImages="images" />
     </VModal>
 
     <VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
@@ -180,7 +180,7 @@ const channelUserStore = useChannelUserStore()
 const images = computed(() => {
   return props.chatMessages
     .map((m) => m.image)
-    .filter((img) => img !== undefined)
+    .filter((img) => img !== undefined) as string[]
 })
 
 const addMember = async (receiverId: string) => {

@@ -53,7 +53,7 @@
           <VInput
             id="password"
             :type="type"
-            size="lg"
+            size="large"
             v-model="formData.password"
             class="w-full rounded-md border-2 border-gray-300 bg-gray-50 pr-12 outline-none hover:border-indigo-600 focus:border-indigo-600"
             @focus="current = 'password'"
@@ -61,7 +61,7 @@
             required
           />
           <VIconButton
-            size="sm"
+            size="small"
             :icon="icon"
             tabindex="20"
             class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600"
@@ -73,13 +73,13 @@
           <VInput
             id="confirm"
             :type="type"
-            size="lg"
+            size="large"
             v-model="formData.confirmation"
             class="w-full rounded-md border-2 border-gray-300 bg-gray-50 pr-12 outline-none hover:border-indigo-600 focus:border-indigo-600"
             required
           />
           <VIconButton
-            size="sm"
+            size="small"
             :icon="icon"
             tabindex="21"
             class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600"
@@ -89,7 +89,7 @@
         <VButton
           v-if="!loader"
           action="submit"
-          size="md"
+          size="medium"
           class="text-md mt-4 rounded-md bg-indigo-600 text-white"
           @click="register"
         >
@@ -126,30 +126,30 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink, useRouter } from "vue-router";
-import { ref, watchEffect, computed } from "vue";
-import { useFetch } from "@/composables/useFetch";
-import VInput from "@/components/atoms/VInput.vue";
-import VButton from "@/components/atoms/VButton.vue";
-import VIconButton from "@/components/atoms/VIconButton.vue";
+import { RouterLink, useRouter } from "vue-router"
+import { ref, watchEffect, computed } from "vue"
+import { useFetch } from "@/composables/useFetch"
+import VInput from "@/components/atoms/VInput.vue"
+import VButton from "@/components/atoms/VButton.vue"
+import VIconButton from "@/components/atoms/VIconButton.vue"
 
 interface Validation {
-  message: string;
-  isSuccess: boolean;
-  regex: RegExp;
+  message: string
+  isSuccess: boolean
+  regex: RegExp
 }
 
-const router = useRouter();
+const router = useRouter()
 const formData = ref({
   username: "",
   password: "",
   confirmation: "",
-});
-const error = ref<string>("");
-const loader = ref<boolean>(false);
-const icon = ref<string>("./src/assets/images/visibility-true.svg");
-const type = ref<"text" | "password">("password");
-const current = ref<"username" | "password">();
+})
+const error = ref<string>("")
+const loader = ref<boolean>(false)
+const icon = ref<string>("./src/assets/images/visibility-true.svg")
+const type = ref<"text" | "password">("password")
+const current = ref<"username" | "password">()
 const passwordValidations = ref<Validation[]>([
   {
     message: "Must be at least 8 characters long",
@@ -167,7 +167,7 @@ const passwordValidations = ref<Validation[]>([
     isSuccess: false,
     regex: /[!@#$%^&*()\\[\]{}\-_+=~|:;"'<>,.?/ ]/,
   },
-]);
+])
 const usernameValidations = ref<Validation[]>([
   {
     message: "Must be at least 8 characters long",
@@ -180,42 +180,42 @@ const usernameValidations = ref<Validation[]>([
     regex: /^[a-zA-Z0-9]+$/,
   },
   { message: "Must not have @ character", isSuccess: false, regex: /^[^@]+$/ },
-]);
+])
 
 const validUsername = computed(() => {
-  return usernameValidations.value.filter((u) => u.isSuccess !== true);
-});
+  return usernameValidations.value.filter((u) => u.isSuccess !== true)
+})
 const validPassword = computed(() => {
-  return passwordValidations.value.filter((p) => p.isSuccess !== true);
-});
+  return passwordValidations.value.filter((p) => p.isSuccess !== true)
+})
 
 const register = async () => {
   try {
-    validate();
+    validate()
     if (!error.value) {
-      loader.value = true;
+      loader.value = true
       const response = await useFetch("/users", {
         method: "POST",
         body: JSON.stringify(formData.value),
-      });
+      })
 
       if (response.status === 201) {
-        const result = await response.json();
-        localStorage.setItem("user", JSON.stringify(result.user));
+        const result = await response.json()
+        localStorage.setItem("user", JSON.stringify(result.user))
         setTimeout(() => {
-          router.push("/dashboard");
-        }, 1000);
+          router.push("/dashboard")
+        }, 1000)
       } else {
-        loader.value = false;
-        error.value = "Oops! Something went wrong. Try again.";
+        loader.value = false
+        error.value = "Oops! Something went wrong. Try again."
       }
     }
   } catch (e) {
-    if (typeof e === "string") throw new Error(e);
+    if (typeof e === "string") throw new Error(e)
   } finally {
-    resetInputs();
+    resetInputs()
   }
-};
+}
 
 const validate = () => {
   if (
@@ -223,45 +223,45 @@ const validate = () => {
     !formData.value.password ||
     !formData.value.confirmation
   ) {
-    error.value = "Input fields are empty.";
+    error.value = "Input fields are empty."
   } else if (validUsername.value.length > 0 || validPassword.value.length > 0) {
-    error.value = "Invalid Credentials.";
+    error.value = "Invalid Credentials."
   } else if (formData.value.password !== formData.value.confirmation) {
-    error.value = "Password does not match.";
+    error.value = "Password does not match."
   } else {
-    error.value = "";
+    error.value = ""
   }
-};
+}
 
 const toggle = () => {
   if (type.value === "text") {
-    type.value = "password";
-    icon.value = "./src/assets/images/visibility-true.svg";
+    type.value = "password"
+    icon.value = "./src/assets/images/visibility-true.svg"
   } else {
-    type.value = "text";
-    icon.value = "./src/assets/images/visibility-false.svg";
+    type.value = "text"
+    icon.value = "./src/assets/images/visibility-false.svg"
   }
-};
+}
 
 const resetInputs = () => {
-  validate();
-  formData.value.username = "";
-  formData.value.password = "";
-  formData.value.confirmation = "";
+  validate()
+  formData.value.username = ""
+  formData.value.password = ""
+  formData.value.confirmation = ""
   setTimeout(() => {
-    error.value = "";
-  }, 2000);
-};
+    error.value = ""
+  }, 2000)
+}
 
 watchEffect(() => {
   if (current.value === "username") {
     for (let validation of usernameValidations.value) {
-      validation.isSuccess = validation.regex.test(formData.value.username);
+      validation.isSuccess = validation.regex.test(formData.value.username)
     }
   } else {
     for (let validation of passwordValidations.value) {
-      validation.isSuccess = validation.regex.test(formData.value.password);
+      validation.isSuccess = validation.regex.test(formData.value.password)
     }
   }
-});
+})
 </script>

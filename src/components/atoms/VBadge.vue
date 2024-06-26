@@ -8,14 +8,31 @@
 </template>
 
 <script lang="ts" setup>
-interface VBadgeProps {
+import { z, ZodError } from "zod"
+
+const PropSchema = z.object({
+  color: z.string().optional(),
+  count: z.number(),
+})
+
+interface Prop {
   color?: string
   count: number
 }
 
-defineProps<VBadgeProps>()
+const prop = defineProps<Prop>()
 
 defineOptions({
   inheritAttrs: false,
 })
+
+try {
+  PropSchema.parse({
+    color: prop.color,
+    count: prop.count,
+  })
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.issues)
+}
 </script>

@@ -50,44 +50,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { useFetch } from "@/composables/useFetch";
+import { ref } from "vue"
+import { useRouter } from "vue-router"
+import { useFetch } from "@/composables/useFetch"
 
-import VIconButton from "@/components/atoms/VIconButton.vue";
-import VButton from "@/components/atoms/VButton.vue";
-import VThemeSelector from "@/components/organisms/VThemeSelector.vue";
-import VModal from "@/components/atoms/VModal.vue";
-import VProfileForm from "@/components/organisms/VProfileForm.vue";
+import VIconButton from "@/components/atoms/VIconButton.vue"
+import VButton from "@/components/atoms/VButton.vue"
+import VThemeSelector from "@/components/organisms/VThemeSelector.vue"
+import VModal from "@/components/atoms/VModal.vue"
+import VProfileForm from "@/components/organisms/VProfileForm.vue"
 
-import { z } from "zod";
+import { z } from "zod"
 const errorSchema = z.object({
   message: z.string(),
-});
+})
 
-const router = useRouter();
-const isOpen = ref<boolean>(false);
-const formShown = ref<boolean>(false);
+const router = useRouter()
+const isOpen = ref<boolean>(false)
+const formShown = ref<boolean>(false)
 
 defineProps<{
-  profileImage?: string | undefined;
-  username: string;
-}>();
+  profileImage?: string | undefined
+  username: string
+}>()
 
-const toggleSettings = () => (isOpen.value = !isOpen.value);
+const toggleSettings = () => (isOpen.value = !isOpen.value)
 
-const newProfile = () => (formShown.value = false);
+const newProfile = () => (formShown.value = false)
 
 const logout = async () => {
   try {
-    const response = await useFetch("/sessions", { method: "DELETE" });
+    const response = await useFetch("/sessions", { method: "DELETE" })
     if (response.status === 200) {
-      localStorage.removeItem("user");
-      router.push("/");
+      localStorage.removeItem("user")
+      router.push("/")
     }
   } catch (error) {
-    const errorMessage = errorSchema.safeParse(error).data?.message;
-    throw new Error(`Error: ${errorMessage}`);
+    const errorMessage = errorSchema.safeParse(error).data?.message
+    throw new Error(`Error: ${errorMessage}`)
   }
-};
+}
 </script>

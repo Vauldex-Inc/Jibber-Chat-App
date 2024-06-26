@@ -23,28 +23,28 @@
 </template>
 
 <script setup lang="ts">
-import VIconButton from "@/components/atoms/VIconButton.vue";
-import { ref, computed } from "vue";
+import VIconButton from "@/components/atoms/VIconButton.vue"
+import { ref, computed } from "vue"
 
 const props = defineProps<{
-  chatImages: string[];
-}>();
+  chatImages: string[]
+}>()
 
-const count = ref<number>(0);
+const count = ref<number>(0)
 
 const rightMove = () => {
   if (count.value >= props.chatImages.length - 1) {
-    count.value = 0;
+    count.value = 0
   } else {
-    count.value++;
+    count.value++
   }
-};
+}
 
 const leftMove = () => {
   if (count.value <= 0) {
-    count.value = props.chatImages.length - 1;
+    count.value = props.chatImages.length - 1
   } else {
-    count.value--;
+    count.value--
   }
-};
+}
 </script>

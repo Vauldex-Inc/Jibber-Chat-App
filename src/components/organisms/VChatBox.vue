@@ -112,10 +112,8 @@ const sendMessage = () => {
       message.value ? message.value : "Sent an image",
       imageForm.value.image,
     )
-  } else {
-    if (message.value) {
-      emits("send", message.value)
-    }
+  } else if (message.value) {
+    emits("send", message.value)
   }
   message.value = ""
   imageForm.value.image = ""

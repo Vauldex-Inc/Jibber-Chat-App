@@ -22,18 +22,36 @@
 </template>
 
 <script setup lang="ts">
+import { z, ZodError } from "zod"
 import VIconButton from "./VIconButton.vue"
 
-defineProps<{
+interface Prop {
   isOpen: boolean
   closeButton?: boolean
-}>()
+}
+
+const prop = defineProps<Prop>()
 
 const emits = defineEmits<{ close: [] }>()
 
 defineOptions({
   inheritAttrs: false,
 })
+
+const PropSchema = z.object({
+  isOpen: z.boolean(),
+  closeButton: z.boolean().optional(),
+})
+
+try {
+  PropSchema.parse({
+    isOpen: prop.isOpen,
+    closeButton: prop.closeButton,
+  })
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.issues)
+}
 </script>
 
 <style scoped>

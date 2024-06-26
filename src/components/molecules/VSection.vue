@@ -24,21 +24,39 @@
 
 <script lang="ts" setup>
 import { computed } from "vue"
+import { z, ZodError } from "zod"
 import VButton from "@/components/atoms/VButton.vue"
 
-const props = defineProps<VSectionProps>()
-
-interface VSectionProps {
+interface Prop {
   title: string
   actionButton?: string
   color?: string
 }
 
+const prop = defineProps<Prop>()
+
 const emits = defineEmits<{
   click: []
 }>()
 
+const PropSchema = z.object({
+  title: z.string(),
+  actionButton: z.string().optional(),
+  color: z.string().optional(),
+})
+
+try {
+  PropSchema.parse({
+    title: prop.title,
+    actionButton: prop.actionButton,
+    color: prop.color,
+  })
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.issues)
+}
+
 const curColorTheme = computed(() => {
-  return props.color ? props.color : "bg-slate-600 dark:bg-slate-300"
+  return prop.color ? prop.color : "bg-slate-600 dark:bg-slate-300"
 })
 </script>

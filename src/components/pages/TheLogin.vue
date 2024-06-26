@@ -45,7 +45,7 @@
             class="inline w-full rounded-md border-2 border-gray-300 bg-gray-50 px-5 py-3 pr-12 outline-none hover:border-indigo-400 focus:border-indigo-400"
           />
           <VIconButton
-            size="sm"
+            size="small"
             :icon="icon"
             @click="toggle"
             class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600"
@@ -81,112 +81,112 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRouter, RouterLink } from "vue-router";
-import { useFetch } from "@/composables/useFetch";
-import VButton from "@/components/atoms/VButton.vue";
-import VInput from "@/components/atoms/VInput.vue";
-import VIconButton from "@/components/atoms/VIconButton.vue";
+import { ref } from "vue"
+import { useRouter, RouterLink } from "vue-router"
+import { useFetch } from "@/composables/useFetch"
+import VButton from "@/components/atoms/VButton.vue"
+import VInput from "@/components/atoms/VInput.vue"
+import VIconButton from "@/components/atoms/VIconButton.vue"
 
-const error = ref<string>("");
-const errorUsername = ref<boolean>(false);
-const errorPassword = ref<boolean>(false);
-const router = useRouter();
-const isLoading = ref<boolean>(false);
-const passwordType = ref<"text" | "password">("password");
-const icon = ref<string>("./src/assets/images/visibility-true.svg");
+const error = ref<string>("")
+const errorUsername = ref<boolean>(false)
+const errorPassword = ref<boolean>(false)
+const router = useRouter()
+const isLoading = ref<boolean>(false)
+const passwordType = ref<"text" | "password">("password")
+const icon = ref<string>("./src/assets/images/visibility-true.svg")
 
 const formData = ref({
   username: "",
   password: "",
-});
+})
 
 const toggle = () => {
   if (passwordType.value === "text") {
-    passwordType.value = "password";
-    icon.value = "./src/assets/images/visibility-true.svg";
+    passwordType.value = "password"
+    icon.value = "./src/assets/images/visibility-true.svg"
   } else {
-    passwordType.value = "text";
-    icon.value = "./src/assets/images/visibility-false.svg";
+    passwordType.value = "text"
+    icon.value = "./src/assets/images/visibility-false.svg"
   }
-};
+}
 
-const timerId = ref<number | undefined>(undefined);
+const timerId = ref<number | undefined>(undefined)
 const displayError = (textError: string) => {
-  error.value = textError;
+  error.value = textError
   if (timerId.value) {
-    clearInterval(timerId.value);
+    clearInterval(timerId.value)
   }
 
   timerId.value = setTimeout(() => {
-    error.value = "";
-    errorUsername.value = false;
-    errorPassword.value = false;
-  }, 5000);
-};
+    error.value = ""
+    errorUsername.value = false
+    errorPassword.value = false
+  }, 5000)
+}
 
 const resetFields = (refData: typeof ref, ...fieldName: string[]) => {
   for (const [key, value] of Object.entries(refData.value)) {
-    if (fieldName.includes(key)) refData.value[key] = "";
+    if (fieldName.includes(key)) refData.value[key] = ""
   }
-};
+}
 
 const highlightErrorFields = (...fields: Ref<boolean>[]) => {
-  errorUsername.value = false;
-  errorPassword.value = false;
+  errorUsername.value = false
+  errorPassword.value = false
   fields.forEach((field) => {
-    field.value = true;
-  });
-};
+    field.value = true
+  })
+}
 
 const checkInputFields = () => {
   if (
     formData.value.username.trim() === "" &&
     formData.value.password.trim() === ""
   ) {
-    displayError("Fill up required fields.");
-    highlightErrorFields(errorUsername, errorPassword);
-    resetFields(formData, "username", "password");
-    return false;
+    displayError("Fill up required fields.")
+    highlightErrorFields(errorUsername, errorPassword)
+    resetFields(formData, "username", "password")
+    return false
   } else if (formData.value.username.trim() === "") {
-    displayError("Username is required.");
-    highlightErrorFields(errorUsername);
-    resetFields(formData, "username");
-    return false;
+    displayError("Username is required.")
+    highlightErrorFields(errorUsername)
+    resetFields(formData, "username")
+    return false
   } else if (formData.value.password.trim() === "") {
-    displayError("Password is required.");
-    highlightErrorFields(errorPassword);
-    resetFields(formData, "password");
-    return false;
+    displayError("Password is required.")
+    highlightErrorFields(errorPassword)
+    resetFields(formData, "password")
+    return false
   } else {
-    return true;
+    return true
   }
-};
+}
 
 const login = async () => {
-  if (checkInputFields() === false) return;
+  if (checkInputFields() === false) return
 
-  isLoading.value = true;
+  isLoading.value = true
   try {
     const response = await useFetch("/sessions", {
       method: "POST",
       body: JSON.stringify(formData.value),
-    });
+    })
 
     if (response.status === 200) {
-      const result = await response.json();
+      const result = await response.json()
 
-      localStorage.setItem("user", JSON.stringify(result.user));
-      resetFields(formData, "username", "password");
-      router.push("/dashboard");
+      localStorage.setItem("user", JSON.stringify(result.user))
+      resetFields(formData, "username", "password")
+      router.push("/dashboard")
     } else if (response.status === 404) {
-      highlightErrorFields();
-      displayError("Incorrect username and password combination");
+      highlightErrorFields()
+      displayError("Incorrect username and password combination")
     }
   } catch (error) {
-    if (typeof error === "string") throw new Error(error);
+    if (typeof error === "string") throw new Error(error)
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 </script>

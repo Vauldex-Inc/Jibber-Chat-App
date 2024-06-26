@@ -45,7 +45,7 @@
 <script lang="ts" setup>
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
-import VAvatar from "@/components/atoms/VAvatar.vue"
+import VAvatar from "@/components/molecules/VAvatar.vue"
 import type { Message } from "@/types/Message.ts"
 
 defineProps<{

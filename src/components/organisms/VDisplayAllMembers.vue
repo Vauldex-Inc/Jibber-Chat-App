@@ -48,7 +48,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useChannelUserStore } from "@/stores/useChannelUserStore.ts";
 import { useUserStore } from "@/stores/useUserStore.ts";
-import VAvatar from "@/components/atoms/VAvatar.vue";
+import VAvatar from "@/components/molecules/VAvatar.vue";
 import VProfileForm from "@/components/organisms/VProfileForm.vue";
 import VModal from "@/components/atoms/VModal.vue";
 

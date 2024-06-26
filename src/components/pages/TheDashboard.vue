@@ -7,8 +7,7 @@
   </VModal>
   <VModal :is-open="invitationModalOpen" @close="closeInvitationModal">
     <VChatInvitation
-      name="Jane"
-      :notif="invitationNotif"
+      :notification="invitationNotif"
       @view="viewChannel"
       @close="closeInvitationModal"
     />
@@ -222,13 +221,14 @@ watch(invitationNotif, () => {
 watch(selectedChannel, async (channel) => {
   if (channel) {
     const users = await channelUserStore.getChannelUsers(channel.id);
-
+    
     messages.value = await messageStore.getChannelMessages(channel.id);
 
     if (channel.channelType === "SNG") {
       const sender = users.find((u: User) => u.userId !== loggedUser.id);
       senderId.value = sender.userId;
     }
+
     if (activeSocket.value) {
       activeSocket.value.close();
     }
@@ -247,6 +247,7 @@ watch(selectedChannel, async (channel) => {
 });
 
 onMounted(async () => {
+  console.log(invitationNotif.value)
   await userStore.init();
   await channelStore.init();
   await messageStore.init();

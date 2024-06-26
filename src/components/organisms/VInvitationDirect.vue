@@ -72,8 +72,8 @@ const emits = defineEmits<{
   submit: [channel: Channel | undefined]
 }>();
 
-const { getUsers, getUserNameById } = useUserStore()
-const users = getUsers()
+const userStore = useUserStore()
+const users = userStore.getUsers()
 const loggedUser = useUser()
 const loggedUserId = userSchema.safeParse(loggedUser).data?.id
 
@@ -87,13 +87,13 @@ const filteredUserName = computed(() => {
     .filter((userProfile: [User, Profile | undefined]) => {
       const [user, _] = userProfile
       const currentName = inputUserName.value.toLowerCase()
-      return getUserNameById(user.id)
+      return userStore.getUserNameById(user.id)
           ?.toLowerCase()
           .includes(currentName) && !isInvited(user.id)
     })
     .map((userProfile: [User, Profile | undefined]) => {
       const [user, _] = userProfile
-      return [user.id, getUserNameById(user.id)]
+      return [user.id, userStore.getUserNameById(user.id)]
     })
 })
 

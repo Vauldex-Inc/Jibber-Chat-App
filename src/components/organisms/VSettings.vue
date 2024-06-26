@@ -6,7 +6,7 @@
     <VIconButton
       class="bg-gray-100 dark:bg-slate-900"
       :hasPadding="true"
-      size="xl"
+      size="extraLarge"
       :icon="
         profileImage ? profileImage : './src/assets/images/default-avatar.svg'
       "

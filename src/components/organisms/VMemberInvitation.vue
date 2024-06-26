@@ -14,7 +14,7 @@
         v-model="inputUserName"
         type="text"
         placeholder="Enter name..."
-        size="md"
+        size="medium"
       />
       <input type="submit" hidden />
     </form>
@@ -40,7 +40,7 @@
             <VButton
               v-else
               @click="selectedUserName(id)"
-              size="sm"
+              size="small"
               :class="color"
               class="cursor-pointer rounded-md text-gray-100"
             >
@@ -90,14 +90,18 @@ const filteredUserName = computed(() => {
     .filter((userProfile: [User, Profile | undefined]) => {
       const [user, _] = userProfile
       const currentName = inputUserName.value.toLowerCase()
-      return userStore
-        .getUserNameById(user.id)
-        .toLowerCase()
+      return userStore.getUserNameById(user.id)
+        ?.toLowerCase()
         .includes(currentName)
     })
     .map((userProfile: [User, Profile | undefined]) => {
       const [user, _] = userProfile
-      return [user.id, userStore.getUserNameById(user.id)]
+      const fullname = userStore.getUserNameById(user.id)
+      if (fullname) {
+        return [user.id, fullname]
+      } else {
+        return [user.id, user.username]
+      }
     })
 })
 

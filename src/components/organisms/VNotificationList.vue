@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
 import VNotificationListItem from "@/components/organisms/VNotificationListItem.vue"
 import { useNotificationStore } from "@/stores/useNotificationStore"
@@ -60,7 +60,7 @@ const notificationsCopy = computed(() => {
     .filter((n) => {
       const channel = channelStore.getChannelById(n.channelId)
 
-      return channel.channelType !== "SNG"
+      return channel?.channelType !== "SNG"
     })
     .reverse()
 })
@@ -70,4 +70,8 @@ const toggleNotifications = () => {
 }
 
 const notifications = notificationStore.getNotifications()
+
+onMounted(() => {
+  console.log(notificationsCopy)
+})
 </script>

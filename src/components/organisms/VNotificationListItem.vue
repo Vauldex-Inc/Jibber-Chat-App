@@ -78,7 +78,7 @@ const formattedSentAtDate = computed(() => {
 })
 
 const sender = computed(() => {
-  return userStore.getUserNameById(props.invitation.senderId)
+  return userStore.getUserNameById(props.invitation.userId)
 })
 
 const viewNotifInvite = () => {

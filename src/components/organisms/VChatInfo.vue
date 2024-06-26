@@ -129,7 +129,7 @@
 
     <VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
       <VMemberInvitation
-        @action="sender && userStore.inviteMember(channel.id, sender)"
+        @action="addMember"
         :color="curColorTheme"
         :channel-id="channel.id"
       />
@@ -182,6 +182,10 @@ const images = computed(() => {
     .map((m) => m.image)
     .filter((img) => img !== undefined)
 })
+
+const addMember = async (receiverId: string) => {
+  await userStore.inviteMember(props.channel.id, receiverId)
+}
 
 const channelAbbr = computed(() => {
   return props.channel.title.slice(0, 1)

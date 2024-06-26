@@ -146,7 +146,7 @@ export const useUserStore = defineStore("users", () => {
 
 	const inviteMember = async (channelId: string, senderId: string) => {
 		try {
-			await useFetch(`/channels/${channelId}/users`, {
+			await useFetch(`/channels/${channelId}/notifications`, {
 				method: "POST",
 				body: JSON.stringify({
 					userId: senderId,

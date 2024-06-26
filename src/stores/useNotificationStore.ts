@@ -39,7 +39,7 @@ const useNotificationStore = defineStore("notifications", () => {
 
 	const updateNotification = async (id: string) => {
 		try {
-			const response = await useFetch(`/channels/${id}/notifications`, { "method": "POST" })
+			const response = await useFetch(`/channels/${id}/notifications`, { "method": "PUT" })
 			if (response.status === 200) {
 				const foundNotif = notifications.value?.find((n) => n.id === id)
 				if (foundNotif)

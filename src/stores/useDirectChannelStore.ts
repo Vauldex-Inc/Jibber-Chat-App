@@ -13,17 +13,18 @@ const ChannelSchema = z.object({
 
 type Channel = z.infer<typeof ChannelSchema>
 
+const CHANNEL_TYPE = "SNG" as const
+
 const useDirectChannelStore = defineStore("direct-channels", () => {
   const _channels = ref<Array<Channel>>([])
-  const resource = "/me/channels"
 
   const set = (list: Array<Channel>) => _channels.value = list
   const add = (channel:  Channel) => _channels.value.push(channel)
 
   const fetch = async () => {
     try {
-      const { data } = await axios.get(resource)
-      const list = data.map((d) => {
+      const { data } = await axios.get("/me/channels")
+      const list = data.map((d: any) => {
         return {
           id: d.id,
           color: d.color,
@@ -43,8 +44,9 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
     const uuid = z.string().uuid()
     try {
       uuid.parse(idUser)
-      const { data } = await axios.post(resource, {
-        body: { idUser }
+      const { data } = await axios.post("/channels", { 
+        channelType: CHANNEL_TYPE,
+        idUser
       })
 
       const channel = {

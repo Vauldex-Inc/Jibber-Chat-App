@@ -50,19 +50,17 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue"
-import { useFetch } from "@/composables/useFetch"
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
-import { useChannelStore } from "@/stores/useChannelStore"
+import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
 import { userSchema } from "@/types/User"
 import type { User } from "@/types/User"
 import type { Profile } from "@/types/Profile"
 import type { Channel } from "@/types/Channel"
-import { errorSchema } from "@/types/Error"
 
-const channelStore = useChannelStore()
+const directStore = useDirectChannelStore()
 
 defineProps<{
   color: string
@@ -75,12 +73,11 @@ const emits = defineEmits<{
 const userStore = useUserStore()
 const users = userStore.getUsers()
 const loggedUser = useUser()
-const loggedUserId = userSchema.safeParse(loggedUser).data?.id
 
 const inputUserName = ref<string>("")
-const invitedUsers = ref<string[]>([])
+const unInvitedUsers = ref<string[]>([])
 
-const isInvited = (userId: string) => invitedUsers.value.includes(userId)
+const isInvited = (userId: string) => unInvitedUsers.value.includes(userId)
 
 const filteredUserName = computed(() => {
   return users.value
@@ -91,7 +88,7 @@ const filteredUserName = computed(() => {
         userStore
           .getUserNameById(user.id)
           ?.toLowerCase()
-          .includes(currentName) && !isInvited(user.id)
+          .includes(currentName) && !isInvited(user.id) && user.id !== loggedUser?.id
       )
     })
     .map((userProfile: [User, Profile | undefined]) => {
@@ -101,42 +98,17 @@ const filteredUserName = computed(() => {
 })
 
 onMounted(() => {
-  channelStore.privateChannels.forEach((s) => {
-    const users = s.title.split("/")
-
-    users.forEach((u) => invitedUsers.value.push(u))
-  })
+  directStore.channels.value.forEach((s) => unInvitedUsers.value.push(s.idUser))
 })
 
-const create = async (userId?: string) => {
+const create = async (idUser?: string) => {
   try {
-    const response = await useFetch("/channels", {
-      method: "POST",
-      body: JSON.stringify({
-        title: `${loggedUserId}/${userId}`,
-        channelType: "SNG",
-      }),
-    })
-
-    if (response.status === 200) {
-      const result = await response.json()
-
-      const channel = result.channel
-
-      await useFetch(`/channels/${channel.id}/users`, {
-        method: "POST",
-        body: JSON.stringify({ userId }),
-      })
-
-      if (userId) {
-        invitedUsers.value.push(userId)
-        emits("submit", channel)
-      }
+    if(idUser) {
+      await directStore.post(idUser)
     }
-  } catch (error) {
-    emits("submit", undefined)
-    const errorMessage = errorSchema.safeParse(error).data?.message
-    throw new Error(errorMessage)
+  } catch (e) {
+    const error = e as Error
+    console.error(error.message)
   }
 }
 </script>

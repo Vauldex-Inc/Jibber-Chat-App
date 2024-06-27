@@ -19,7 +19,7 @@ const defaultOptions: Intl.DateTimeFormatOptions = {
 
 export const useUserStore = defineStore("users", () => {
 	const users = ref<[User, Profile | undefined][]>([])
-
+	
 	const onlineUsers = ref<string[]>([])
 
 	const init = async () => {

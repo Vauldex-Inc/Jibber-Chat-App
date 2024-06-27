@@ -68,7 +68,7 @@ export const useChannelStore = defineStore("channels", () => {
 			return c
 		})
 	}
-
+	
 	return { 
 		channels, 
 		multiChannels, 

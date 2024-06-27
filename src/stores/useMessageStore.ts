@@ -27,14 +27,14 @@ export const useMessageStore = defineStore("messages", () => {
 		}
 	}
 
-	const getChannelMessages = async (channelId: string) => {
-		const res = await useFetch(`/channels/${channelId}/messages`)
+	const getChannelMessages = async (idChannel: string) => {
+		const res = await useFetch(`/channels/${idChannel}/messages`)
 
 		return (await res.json()).messages
 	}
 
-	const sendMessage = async (channelId: string, message: string, img: string | undefined) => {
-		const res = await useFetch(`/channels/${channelId}/messages`, {
+	const sendMessage = async (idChannel: string, message: string, img: string | undefined) => {
+		const res = await useFetch(`/channels/${idChannel}/messages`, {
 			method: "POST",
 			body: JSON.stringify({
 				text: message,

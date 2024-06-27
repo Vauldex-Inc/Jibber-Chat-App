@@ -18,19 +18,16 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 	})
 
 
-
-	const getChannelUsers = async (channelId: string) => {
-		const users: [string, ChannelUser[]] | undefined = channelUsers.value.find(c => c[0] === channelId)
+	const getChannelUsers = async (idChannel: string) => {
+		const users: [string, ChannelUser[]] | undefined = channelUsers.value.find(c => c[0] === idChannel)
 
 		if (!users) {
-
 			try {
-				const res = await useFetch(`/channels/${channelId}/users`)
+				const res = await useFetch(`/channels/${idChannel}/users`)
 				const data: ChannelUser[] = (await res.json()).users
 				const validation = ChannelUserSchema.array().safeParse(data)
-
 				if (validation.success) {
-					channelUsers.value.push([channelId, data])
+					channelUsers.value.push([idChannel, data])
 					return data as ChannelUser[]
 				} else {
 					throw new Error("Unsupported Format")
@@ -43,39 +40,38 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 		} else {
 			return users[1] as ChannelUser[]
 		}
-
 	}
 
 	const addNewChannelUser = (user: ChannelUser) => {
-		const chanUsers = channelUsers.value.find(c => c[0] === user.channelId)
+		const chanUsers = channelUsers.value.find(c => c[0] === user.idChannel)
 
 		if (!chanUsers) {
-			channelUsers.value.push([user.channelId, [user]])
+			channelUsers.value.push([user.idChannel, [user]])
 		} else {
 			channelUsers.value.map(ch => {
 				const [id, users] = ch
 
-				if (id === user.channelId) {
-					if (!users.find(u => u.userId === user.userId)) {
+				if (id === user.idChannel) {
+					if (!users.find(u => u.idUser === user.idUser)) {
 						users.push(user)
 					}
 				}
 
-				return [id, users]
+				return [id, users] as [string, ChannelUser[]]
 			})
 		}
 	}
 
-	const getChannelUsersCount = (channelId: string) => {
-		const userCountAndChannel = channelUsersCount.value.find((ch) => ch[0] === channelId)
+	const getChannelUsersCount = (idChannel: string) => {
+		const userCountAndChannel = channelUsersCount.value.find((ch) => ch[0] === idChannel)
 		if (userCountAndChannel)
 			return userCountAndChannel[1] as number > 1 ? `${userCountAndChannel[1] as number} members` : `0 member`
 	}
 
-	const isMember = (channelId: string, userId: string) => {
-		const users = channelUsers.value.find(c => c[0] === channelId)
-
-		return users && users[1].find(u => u.userId === userId) !== undefined
+	const isMember = (idChannel: string, idUser: string) => {
+		const users = channelUsers.value.find(c => c[0] === idChannel)
+		// console.log("Here ", channelUsers.value)
+		return users && users[1].find(u => u.idUser === idUser) !== undefined
 	}
 
 	const setChannelColor = async (channel: Channel, color: string): Promise<boolean | void> => {

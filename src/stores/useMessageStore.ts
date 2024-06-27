@@ -56,12 +56,12 @@ export const useMessageStore = defineStore("messages", () => {
 		return latestMessages
 	}
 
-	return { 
-		getChannelMessages, 
-		sendMessage, 
-		latestMessages, 
-		init, 
-		getLatestMessages, 
-		addNewLatestMessage 
+	return {
+		getChannelMessages,
+		sendMessage,
+		latestMessages,
+		init,
+		getLatestMessages,
+		addNewLatestMessage
 	}
 })

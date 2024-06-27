@@ -70,7 +70,8 @@ const isRead = computed(() => {
 })
 
 const channelName = computed(() => {
-  return channelStore.getChannelById(props.invitation.channelId).title
+  const channel = channelStore.getChannelById(props.invitation.channelId)
+  return channel?.title
 })
 
 const formattedSentAtDate = computed(() => {

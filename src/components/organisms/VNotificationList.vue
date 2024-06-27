@@ -7,7 +7,7 @@
       @click="toggleNotifications"
     />
     <span
-      v-if="unSeenCount > 0"
+      v-if="unSeenCount"
       class="absolute bottom-0 right-0 rounded-full bg-red-500 px-1 py-0.5 text-xs text-white"
     >
       {{ unSeenCount }}
@@ -18,7 +18,7 @@
       class="absolute bottom-0 left-2 z-30 translate-y-full rounded-md bg-white px-2 py-5 shadow-xl dark:bg-slate-800"
     >
       <ul
-        v-if="notificationsCopy.length > 0"
+        v-if="notificationsCopy"
         @mouseleave="toggleNotifications"
         class="max-h-80 w-[28rem] divide-y overflow-y-scroll dark:divide-slate-700"
       >
@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue"
+import { ref, computed } from "vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
 import VNotificationListItem from "@/components/organisms/VNotificationListItem.vue"
 import { useNotificationStore } from "@/stores/useNotificationStore"
@@ -52,22 +52,27 @@ const channelStore = useChannelStore()
 const displayNotification = ref<boolean>(false)
 
 const unSeenCount = computed(() => {
-  return notificationsCopy.value.filter((n) => n.seenAt === undefined).length
+  return (
+    notificationsCopy.value &&
+    notificationsCopy.value.filter((n) => n.seenAt === undefined).length
+  )
 })
 
-const notificationsCopy = computed(() => {
-  return notifications.value
-    .filter((n) => {
-      const channel = channelStore.getChannelById(n.channelId)
+const notifications = notificationStore.getNotifications()
 
-      return channel?.channelType !== "SNG"
-    })
-    .reverse()
+const notificationsCopy = computed(() => {
+  if (notifications.value) {
+    return notifications.value
+      .filter((n) => {
+        const channel = channelStore.getChannelById(n.channelId)
+
+        return channel?.channelType !== "SNG"
+      })
+      .reverse()
+  }
 })
 
 const toggleNotifications = () => {
   displayNotification.value = !displayNotification.value
 }
-
-const notifications = notificationStore.getNotifications()
 </script>

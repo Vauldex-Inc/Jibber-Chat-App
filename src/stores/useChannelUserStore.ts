@@ -20,28 +20,28 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 
 
 	const getChannelUsers = async (channelId: string) => {
-		const users = channelUsers.value.find(c => c[0] === channelId)
+		const users: [string, ChannelUser[]] | undefined = channelUsers.value.find(c => c[0] === channelId)
 
 		if (!users) {
 
 			try {
 				const res = await useFetch(`/channels/${channelId}/users`)
-				const data = (await res.json()).users
+				const data: ChannelUser[] = (await res.json()).users
 				const validation = ChannelUserSchema.array().safeParse(data)
 
-				if(validation.success) {
+				if (validation.success) {
 					channelUsers.value.push([channelId, data])
-					return data
+					return data as ChannelUser[]
 				} else {
 					throw new Error("Unsupported Format")
 				}
 			} catch (error) {
-				if(error instanceof Error) {
+				if (error instanceof Error) {
 					console.error(error.message)
 				}
 			}
 		} else {
-			return users[1]
+			return users[1] as ChannelUser[]
 		}
 
 	}
@@ -97,12 +97,12 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 	}
 
 
-	return { 
-		channelUsers, 
-		getChannelUsers, 
-		isMember, 
-		addNewChannelUser, 
-		getChannelUsersCount, 
-		setChannelColor 
+	return {
+		channelUsers,
+		getChannelUsers,
+		isMember,
+		addNewChannelUser,
+		getChannelUsersCount,
+		setChannelColor
 	}
 })

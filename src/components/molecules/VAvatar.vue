@@ -1,16 +1,16 @@
 <template>
   <div class="relative inline-block">
-    <VImage type="avatar" :source="image"/>
-    <VUserStatus :status = "status"/>
+    <VImage type="avatar" :source="image" />
+    <VUserStatus :status="status" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ZodError, z } from "zod"
 
-import { SizeSchema }  from '@/types/Component'
-import VImage from '@/components/atoms/VImage.vue'
-import VUserStatus from '@/components/atoms/VUserStatus.vue'
+import { SizeSchema } from "@/types/Component"
+import VImage from "@/components/atoms/VImage.vue"
+import VUserStatus from "@/components/atoms/VUserStatus.vue"
 
 const PropSchema = z.object({
   image: z.string().optional(),
@@ -19,9 +19,9 @@ const PropSchema = z.object({
 })
 
 interface Prop {
-  image: string
-  size: string
-  status: string
+  image?: string
+  size?: string
+  status?: string
 }
 
 const prop = defineProps<Partial<Prop>>()

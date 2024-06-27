@@ -4,14 +4,14 @@
     class="flex cursor-pointer items-center gap-4 p-3 transition-all hover:bg-indigo-400/10"
   >
     <template v-if="item.channelType === 'SNG'">
-      <VAvatar 
-        :image="userStore.senderProfile(senderId)" 
-        :status="userStore.senderStatus(senderId)" 
+      <VAvatar
+        :image="userStore.senderProfile(senderId)"
+        :status="userStore.senderStatus(senderId)"
       />
       <VTextGroup
         :is-bold="unReadMessages.length > 0"
         class="flex-1"
-        :title="userStore.senderName(senderId)"
+        :title="userStore.senderName(senderId) ?? 'Anonymous'"
         :text="latestMessage ? latestMessage.text : ''"
       />
     </template>
@@ -39,8 +39,7 @@
     </div>
     <p
       v-else
-      class="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1 
-      text-xs text-red-500 dark:border-red-500/20"
+      class="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1 text-xs text-red-500 dark:border-red-500/20"
     >
       Archived
     </p>
@@ -75,7 +74,7 @@ const messageStore = useMessageStore()
 const channelUserStore = useChannelUserStore()
 const unreadMessageStore = useUnreadMessageStore()
 
-const senderId = ref<string>('')
+const senderId = ref<string>("")
 
 const unReadMessages = computed(() => {
   return unreadMessageStore

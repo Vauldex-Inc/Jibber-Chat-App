@@ -1,13 +1,10 @@
 import { ref } from "vue"
-
 import { defineStore } from "pinia"
-
+import type { User } from "@/types/User"
+import type { Profile } from "@/types/Profile"
+import type { Message } from "@/types/Message"
 import { useFetch } from "@/composables/useFetch"
 import { useDateFormatter } from "@/composables/useDateFormatter"
-
-import type { User } from "@/types/User.ts"
-import type { Profile } from "@/types/Profile.ts"
-import type { Message } from "@/types/Message"
 
 const dateFormatter = useDateFormatter()
 
@@ -35,10 +32,11 @@ export const useUserStore = defineStore("users", () => {
 	const getUserById = (id: string) => {
 		const user = users.value.find(u => u[0].id === id)?.[0]
 		const profile = users.value.find(u => u[0].id === id)?.[1]
-		return {
+		const userProfile: { user: User | undefined, profile: Profile | undefined } = {
 			user: user,
 			profile: profile
 		}
+		return userProfile
 	}
 
 	const getUsers = () => {
@@ -115,14 +113,11 @@ export const useUserStore = defineStore("users", () => {
 		users.value.push([user, undefined])
 	}
 
-	const sentAtFormatter = (
-		message: Message, 
-		options: Intl.DateTimeFormatOptions = defaultOptions
-	) => {
+	const sentAtFormatter = (message: Message, options: Intl.DateTimeFormatOptions = defaultOptions) => {
 		return dateFormatter.format(message.sentAt, options)
 	}
 
-	const senderName = (userId: string) => {
+	const senderName = (userId?: string) => {
 		return userId ? getUserNameById(userId) : "Anonymous";
 	};
 
@@ -137,16 +132,16 @@ export const useUserStore = defineStore("users", () => {
 		return "offline"
 	}
 
-	const getStatus = (userId: string) => {
-		if (userId)
-			return getOnlineUsers().value.includes(userId)
-				? "online"
-				: "offline"
+	const getStatus = (userId?: string) => {
+		if (userId && getOnlineUsers().value.includes(userId)) {
+			return "online"
+		}
+		return "offline"
 	}
 
 	const inviteMember = async (channelId: string, senderId: string) => {
 		try {
-			await useFetch(`/channels/${channelId}/notifications`, {
+			await useFetch(`/channels/${channelId}/invites`, {
 				method: "POST",
 				body: JSON.stringify({
 					userId: senderId,

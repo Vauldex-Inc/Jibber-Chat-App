@@ -40,7 +40,7 @@
         <VInput
           id="username"
           type="text"
-          size="lg"
+          size="large"
           v-model="formData.username"
           maxlength="20"
           class="rounded-md border-2 border-gray-300 bg-gray-50 outline-none hover:border-indigo-600 focus:border-indigo-600"

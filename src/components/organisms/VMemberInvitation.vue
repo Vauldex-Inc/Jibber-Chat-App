@@ -90,7 +90,8 @@ const filteredUserName = computed(() => {
     .filter((userProfile: [User, Profile | undefined]) => {
       const [user, _] = userProfile
       const currentName = inputUserName.value.toLowerCase()
-      return userStore.getUserNameById(user.id)
+      return userStore
+        .getUserNameById(user.id)
         ?.toLowerCase()
         .includes(currentName)
     })

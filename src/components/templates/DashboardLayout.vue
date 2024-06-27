@@ -42,7 +42,7 @@
 
 <script lang="ts" setup>
 defineProps<{
-  toggleInfo: boolean;
-  toggleChat: boolean;
-}>();
+  toggleInfo: boolean
+  toggleChat: boolean
+}>()
 </script>

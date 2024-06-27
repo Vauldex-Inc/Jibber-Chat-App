@@ -19,7 +19,7 @@
       icon="./src/assets/images/collapse-menu-right.svg"
     />
     <VAvatar
-      v-if="channel.channelType === 'SNG'"
+      v-if="channel.channelType === 'SNG' && typeof sender == 'string'"
       :image="userStore.senderProfile(sender)"
       :status="userStore.senderStatus(sender)"
     />

@@ -122,6 +122,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
+import { z } from "zod"
 import { useFetch } from "@/composables/useFetch"
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
@@ -131,13 +132,16 @@ import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
 import type { ProfileData, Profile } from "@/types/Profile"
 
-const emits = defineEmits<{
-  submit: []
-}>()
 const props = defineProps<{
   sender?: string
   viewOnly?: boolean
 }>()
+
+const emits = defineEmits<{
+  submit: []
+}>()
+
+const fileSchema = z.coerce.string()
 
 const currUser = useUser()
 const { getUserById, addUserProfile, getStatus } = useUserStore()
@@ -145,7 +149,7 @@ const vFocus = {
   mounted: (el: HTMLInputElement) => el.focus(),
 }
 
-const method = ref<"POST" | "PUT" | undefined>()
+const method = ref<"POST" | "PUT">()
 const error = ref<string>("")
 const fileInput = ref<HTMLInputElement>()
 const onAvatar = ref<boolean>(false)
@@ -162,33 +166,37 @@ onMounted(() => {
 })
 
 const openFileSelector = () => {
-  if (fileInput.value) {
-    fileInput.value.click()
-  }
+  fileInput.value?.click()
 }
 
 const attachFile = () => {
-  const file = fileInput.value.files[0]
-  const reader = new FileReader()
-  const isImage = /\.(jpe?g|png|gif)$/.test(file.name)
+  if (
+    fileSchema.safeParse(fileInput.value).success &&
+    fileInput.value instanceof HTMLInputElement &&
+    fileInput.value?.files
+  ) {
+    const file = fileInput.value.files[0]
+    const reader = new FileReader()
+    const isImage = /\.(jpe?g|png|gif)$/.test(file.name)
 
-  if (isImage) {
-    reader.onload = () => {
-      formData.value.image = reader.result
+    if (isImage && typeof formData.value.image == "string") {
+      reader.onload = () => {
+        formData.value.image = reader.result as string
+      }
+      reader.readAsDataURL(file)
     }
-    reader.readAsDataURL(file)
   }
 }
 
 const removeImage = () => {
   formData.value.image = ""
-  fileInput.value.value = ""
+  if (fileInput.value) fileInput.value.value = ""
 }
 
 const create = async () => {
   try {
     const response = await useFetch("/profiles", {
-      method: method.value,
+      method: method.value ?? "POST",
       body: JSON.stringify(formData.value),
     })
 

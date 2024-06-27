@@ -60,7 +60,7 @@ import VBadge from "@/components/atoms/VBadge.vue"
 import VTextGroup from "@/components/molecules/VTextGroup.vue"
 
 import type { Channel } from "@/types/Channel"
-import { formatSentAt } from "@/utils/formatSentAt"
+import { formatSentAt } from "@/composables/useDateFormatter"
 
 const prop = defineProps<{ item: Channel }>()
 

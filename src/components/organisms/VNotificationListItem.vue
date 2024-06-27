@@ -40,7 +40,7 @@ import { useUserStore } from "@/stores/useUserStore"
 import { useChannelStore } from "@/stores/useChannelStore"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import type { Invitation } from "@/types/Notification"
-import { formatSentAt } from "@/utils/formatSentAt"
+import { formatSentAt } from "@/composables/useDateFormatter"
 
 const props = defineProps<{
   invitation: Invitation

@@ -9,26 +9,26 @@
       <div
         class="flex flex-col items-center justify-center gap-5 px-5 pb-5 pt-16"
       >
-        <template v-if="channel.channelType === 'SNG'">
+        <template v-if="channelType === 'SNG'">
           <div>
             <VAvatar
               size="small"
-              :status="sender ? userStore.senderStatus(sender) : 'offline'"
+              :status="sender ? userStore.getStatus(sender) : 'offline'"
               @click="openDisplayProfile"
             />
             <p
               class="mt-2 rounded-md p-1 text-center text-sm capitalize"
               :class="
-                sender && userStore.senderStatus(sender) === 'online'
+                sender && userStore.getStatus(sender) === 'online'
                   ? 'bg-emerald-100 text-emerald-600 dark:bg-slate-900'
                   : 'bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
               "
             >
-              {{ sender ? userStore.senderStatus(sender) : "offline" }}
+              {{ sender ? userStore.getStatus(sender) : "offline" }}
             </p>
           </div>
           <p class="font-semibold">
-            {{ sender && userStore.senderName(sender) }}
+            {{ sender && userProfileStore.getName(sender) }}
           </p>
           <VModal @close="closeDisplayProfile" :is-open="stateDisplayProfile">
             <VProfileForm :sender="sender" :viewOnly="true" />
@@ -41,11 +41,11 @@
           >
             <p class="text-xl">{{ channelAbbr }}</p>
           </div>
-          <p class="font-semibold">{{ channel.title }}</p>
+          <p class="font-semibold">{{ publicChannelStore.getTitle(channel.id) }}</p>
         </template>
         <div class="flex items-center justify-center gap-4">
           <div
-            v-if="channel.channelType !== 'SNG'"
+            v-if="channelType !== 'SNG'"
             class="group flex flex-col items-center justify-center gap-2"
           >
             <VIconButton
@@ -140,7 +140,7 @@
     </VModal>
 
     <VModal @close="closeDisplayAllMembers" :is-open="stateDisplayAllMembers">
-      <VDisplayAllMembers :channel-id="channel.id" @close="closeFromProfile" />
+      <VDisplayAllMembers :id-channel="channel.id" @close="closeFromProfile" />
     </VModal>
   </div>
 </template>
@@ -163,6 +163,8 @@ import {
   type Channel,
   type DirectChannel,
 } from "@/types/Channel"
+import { useUserProfileStore } from "@/stores/useUserProfileStore"
+import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 
 const props = defineProps<VChatInfoProps>()
 
@@ -178,16 +180,26 @@ const emits = defineEmits<{
 }>()
 
 const userStore = useUserStore()
+const userProfileStore = useUserProfileStore()
 const channelUserStore = useChannelUserStore()
-
-const validation = ChannelSchema.safeParse(props.channel)
+const publicChannelStore = usePublicChannelStore()
 
 const addMember = async (receiverId: string) => {
   await userStore.inviteMember(props.channel.id, receiverId)
 }
 
+const channelType = computed(() => {
+  const typeValidation = ChannelSchema.safeParse(props.channel)
+  return typeValidation.success ? "MPU" : "SNG"
+})
+
 const channelAbbr = computed(() => {
-  return props.channel.title.slice(0, 1)
+  const abbrValidation = ChannelSchema.safeParse(props.channel)
+  if (abbrValidation.success){
+    return abbrValidation.data.title.slice(0, 1)
+  } else {
+    return userProfileStore.getName(props.channel.idUser).slice(0, 1)
+  }
 })
 
 const curColorTheme = computed(() => {
@@ -217,6 +229,7 @@ const openDisplayProfile = () => (stateDisplayProfile.value = true)
 const closeDisplayProfile = () => (stateDisplayProfile.value = false)
 
 const selectColor = async (color: string) => {
+  const validation = ChannelSchema.safeParse(props.channel)
   const channelType = validation.success ? "MPU" : "SNG"
   const editedChannel = { ...props.channel, channelType }
 

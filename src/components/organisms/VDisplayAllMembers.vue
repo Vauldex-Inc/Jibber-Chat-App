@@ -12,21 +12,21 @@
       />
     </header>
     <ul class="flex max-h-96 flex-col gap-4 overflow-y-scroll scroll-auto px-5">
-      <template v-for="{ user, profile } in users">
+      <template v-for="user in users">
         <li
           v-if="user"
           class="flex items-center justify-between rounded-md px-4 py-2 hover:bg-gray-100 hover:dark:bg-gray-800"
           @click="selectedProfile(user.id)"
         >
           <div class="flex gap-4">
-            <template v-if="profile">
-              <VAvatar :image="profile.image" :status="getStatus(user.id)" />
+            <template v-if="userProfileStore.getProfile(user.id)">
+              <VAvatar :image="userProfileStore.getImage(user.id)" :status="getStatus(user.id)" />
               <div class="flex flex-col">
                 <span class="font-semibold">{{
-                  userStore.getUserNameById(user.id)
+                  userProfileStore.getName(user.id)
                 }}</span>
-                <span v-if="profile.nickName" class="text-xs"
-                  >({{ profile.nickName }})</span
+                <span v-if="userProfileStore.getNickname(user.id)" class="text-xs"
+                  >({{ userProfileStore.getNickname(user.id) }})</span
                 >
               </div>
             </template>
@@ -56,14 +56,18 @@ import VModal from "@/components/atoms/VModal.vue"
 
 import { type User } from "@/types/User"
 import { type Profile } from "@/types/Profile"
-import { type ChannelUser } from "@/types/Channel"
+import { useUserProfileStore } from "@/stores/useUserProfileStore"
+import type { ChannelUser } from "@/types/Channel"
 
 const userStore = useUserStore()
 
 const channelUserStore = useChannelUserStore()
+const userProfileStore = useUserProfileStore()
+
 const props = defineProps<{
   idChannel: string
 }>()
+
 const emits = defineEmits<{
   close: [value: boolean]
 }>()
@@ -74,13 +78,8 @@ const getStatus = (id: string) => {
     : "offline"
 }
 
-interface Users {
-  user: User | undefined
-  profile: Profile | undefined
-}
-
 const channelUsers = ref<ChannelUser[] | undefined>([])
-const users = ref<Users[]>([])
+const users = ref<(User | undefined)[]>([])
 const sender = ref<string>("")
 
 const stateDisplayProfile = ref<boolean>(false)
@@ -103,5 +102,6 @@ onMounted(async () => {
       return userStore.getUser(channelUser.idUser)
     })
   }
+  console.log(channelUsers.value)
 })
 </script>

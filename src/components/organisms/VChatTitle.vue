@@ -19,9 +19,9 @@
       icon="./src/assets/images/collapse-menu-right.svg"
     />
     <VAvatar
-      v-if="channel.channelType === 'SNG' && typeof sender == 'string'"
-      :image="userStore.senderProfile(sender)"
-      :status="userStore.senderStatus(sender)"
+      v-if="channelType === 'SNG' && typeof sender == 'string'"
+      :image="profileStore.getImage(sender)"
+      :status="userStore.getStatus(sender)"
     />
     <div
       v-else
@@ -32,22 +32,22 @@
     </div>
     <div>
       <div>
-        <template v-if="channel.channelType === 'SNG'">
+        <template v-if="channelType === 'SNG'">
           <p class="font-semibold text-gray-700 dark:text-gray-300">
-            {{ sender ? userStore.senderName(sender) : "" }}
+            {{ sender ? profileStore.getName(sender) : "" }}
           </p>
           <p
             class="text-sm capitalize"
             :class="{
-              'text-emerald-600': userStore.senderStatus(sender) === 'online',
+              'text-emerald-600': userStore.getStatus(sender) === 'online',
             }"
           >
-            {{ sender && userStore.senderStatus(sender) }}
+            {{ sender && userStore.getStatus(sender) }}
           </p>
         </template>
         <template v-else>
           <p class="font-semibold text-gray-700 dark:text-gray-300">
-            {{ channel.title }}
+            {{ channelStore.getTitle(channel.id) }}
           </p>
           <p class="text-sm">
             {{ channelUserStore.getChannelUsersCount(channel.id) }}
@@ -75,11 +75,17 @@
 
 <script lang="ts" setup>
 import { computed } from "vue"
-import { useFetch } from "@/composables/useFetch"
+
 import { useUserStore } from "@/stores/useUserStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
+import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+
+import { useFetch } from "@/composables/useFetch"
+import { useUserProfileStore } from "@/stores/useUserProfileStore"
+
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
+
 import type { Channel, DirectChannel } from "@/types/Channel"
 import { ChannelSchema } from "@/types/Channel"
 
@@ -89,20 +95,30 @@ const props = defineProps<{
   collapse: boolean
 }>()
 
+
 const emits = defineEmits<{
   archive: [value: { color: string; archivedAt: string }]
   toggleInfo: []
   toggleChat: []
 }>()
 
+const profileStore = useUserProfileStore()
 const userStore = useUserStore()
 const channelUserStore = useChannelUserStore()
+const channelStore = usePublicChannelStore()
+
 const validation = ChannelSchema.safeParse(props.channel)
 
 const channelAbbr = computed(() => {
-  if (validation.success){
-    return validation.data.title.slice(0, 1)
-  }
+  const abbrValidation = ChannelSchema.safeParse(props.channel)
+  if (abbrValidation.success){
+    return abbrValidation.data.title.slice(0, 1)
+  } 
+})
+
+const channelType = computed(() => {
+  const typeValidation = ChannelSchema.safeParse(props.channel)
+  return typeValidation.success ? "MPU" : "SNG"
 })
 
 const curColorTheme = computed(() => {
@@ -115,8 +131,8 @@ const archiveChannel = async () => {
   const res = await useFetch(`/channels/${props.channel.id}`, {
     method: "PUT",
     body: JSON.stringify({
-      title: props.channel.title,
-      channelType: props.channel.channelType,
+      title: validation.success ? validation.data.title : undefined,
+      channelType: channelType.value,
       color: undefined,
       archivedAt: archivedAt,
     }),

@@ -23,7 +23,7 @@ const usePublicChannelStore = defineStore("public-channels", () => {
   const fetch = async () => {
     try {
       const { data } = await axios.get(resource)
-      const list = data.map((d) => {
+      const list = data.map((d:any) => {
         return {
           id: d.id,
           title: d.title,

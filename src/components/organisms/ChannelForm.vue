@@ -46,7 +46,7 @@ import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
 
 const props = defineProps<{
-  variant: "MPU" | "MPR" | "SNG"
+  variant: "MPU" | "MPR" | "SNG" | undefined
 }>()
 
 interface ChannelData {
@@ -67,7 +67,7 @@ const errorSchema = z.object({
 const error = ref<string>("")
 const channelForm = ref<ChannelData>({
   title: "",
-  channelType: props.variant,
+  channelType: props.variant!,
 })
 
 const vFocus = {

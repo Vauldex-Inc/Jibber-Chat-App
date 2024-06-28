@@ -1,12 +1,14 @@
 import { ref, computed } from "vue"
 import { defineStore } from "pinia"
-// import { useFetch } from "@/composables/useFetch"
 import axios, { AxiosError } from "axios"
-import { ChannelUserSchema, type ChannelUser } from "@/types/Channel"
-import type { Channel } from "@/types/Channel"
+import { ChannelUserSchema, type ChannelUser, ChannelSchema } from "@/types/Channel"
+import type { Channel, DirectChannel } from "@/types/Channel"
+import { useUserStore } from "./useUserStore"
 
 export const useChannelUserStore = defineStore("channel-users", () => {
 	const channelUsers = ref<[string, ChannelUser[]][]>([])
+	const userStore = useUserStore()
+
 	const channelUsersCount = computed(() => {
 		const copy = [...channelUsers.value]
 		return copy.map(ch => {
@@ -72,11 +74,12 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 		return users && users[1].find(u => u.idUser === idUser) !== undefined
 	}
 
-	const setChannelColor = async (channel: Channel, color: string): Promise<boolean | void> => {
+	const setChannelColor = async (channel: Channel | DirectChannel, color: string): Promise<boolean | void> => {
+		const validation = ChannelSchema.safeParse(channel)
 		try {
 			const { data } = await axios.put(`/channels/${channel.id}`, {
-				title: channel.title,
-				channelType: channel.channelType,
+				title: validation.success ? validation.data.title : "",
+				channelType: validation.success ? "MPU" : "SNG",
 				color: color,
 			})
 			return data.message

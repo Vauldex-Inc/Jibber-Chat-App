@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue"
-import { z } from "zod"
+import { z } from 'zod'
 import VInput from "@/components/atoms/VInput.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
 import type { Channel } from "@/types/Channel.ts"
@@ -80,7 +80,7 @@ interface ImageForm {
 }
 
 const emits = defineEmits<{
-  send: [message?: string, image?: string]
+  send: [message: string, image?: string]
 }>()
 
 const fileSchema = z.coerce.string()

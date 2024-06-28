@@ -58,7 +58,7 @@
     <div class="ml-auto flex gap-4">
       <VIconButton
         @click="archiveChannel"
-        v-if="sender && channel.userId === sender && !channel.archivedAt"
+        v-if="sender && channel.idUser === sender && !channel.archivedAt"
         :class="curColorTheme"
         tool-tip="archive chat"
         icon="./src/assets/images/archive.svg"
@@ -89,7 +89,7 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-  archive: [value: { color: string | undefined; archivedAt: string }]
+  archive: [value: { color: string; archivedAt: string }]
   toggleInfo: []
   toggleChat: []
 }>()
@@ -119,7 +119,7 @@ const archiveChannel = async () => {
   })
 
   if (res.status === 200) {
-    emits("archive", { color: undefined, archivedAt })
+    emits("archive", { color: "", archivedAt })
   }
 }
 </script>

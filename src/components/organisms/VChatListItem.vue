@@ -13,7 +13,7 @@
       <VTextGroup
         :is-bold="unReadMessages.length > 0"
         class="flex-1"
-        :title="validation.data?.title!"
+        :title="channelStore.getTitle(item.id)"
         :text="latestMessage ? latestMessage.text : ''"
       />
     </template>
@@ -49,16 +49,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue"
 
-import { useMessageStore } from "@/stores/useMessageStore"
-import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
-import { useChannelUserStore } from "@/stores/useChannelUserStore"
-import { useUserStore } from "@/stores/useUserStore"
-import { useUserProfileStore } from "@/stores/useUserProfileStore"
-
-import VAvatar from "@/components/molecules/VAvatar.vue"
-import VBadge from "@/components/atoms/VBadge.vue"
-import VTextGroup from "@/components/molecules/VTextGroup.vue"
-
 import {
   ChannelSchema,
   DirectChannelSchema,
@@ -66,6 +56,17 @@ import {
   type DirectChannel,
 } from "@/types/Channel"
 import { formatSentAt } from "@/composables/useDateFormatter"
+
+import { useMessageStore } from "@/stores/useMessageStore"
+import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
+import { useChannelUserStore } from "@/stores/useChannelUserStore"
+import { useUserStore } from "@/stores/useUserStore"
+import { useUserProfileStore } from "@/stores/useUserProfileStore"
+import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+
+import VAvatar from "@/components/molecules/VAvatar.vue"
+import VBadge from "@/components/atoms/VBadge.vue"
+import VTextGroup from "@/components/molecules/VTextGroup.vue"
 
 const prop = defineProps<{ item: Channel | DirectChannel }>()
 
@@ -78,12 +79,17 @@ const userStore = useUserStore()
 const messageStore = useMessageStore()
 const channelUserStore = useChannelUserStore()
 const unreadMessageStore = useUnreadMessageStore()
-const validation = ChannelSchema.safeParse(prop.item)
+const channelStore = usePublicChannelStore()
 
 const unReadMessages = computed(() => {
   return unreadMessageStore
     .getUnreadMessages()
     .value.filter((ur) => ur.idChannel === prop.item.id)
+})
+
+const channelType = computed(() => {
+  const typeValidation = ChannelSchema.safeParse(prop.item)
+  return typeValidation.success ? "MPU" : "SNG"
 })
 
 const color = computed(() => {
@@ -93,8 +99,9 @@ const color = computed(() => {
 })
 
 const channelAbbr = computed(() => {
-  if (validation.success) {
-    return validation.data.title.slice(0, 1)
+  const abbrValidation = ChannelSchema.safeParse(prop.item)
+  if (abbrValidation.success) {
+    return abbrValidation.data.title.slice(0, 1)
   }
 })
 
@@ -119,7 +126,8 @@ const sentAt = computed(() => {
 })
 
 const openChannel = () => {
-  if (validation.success) {
+  const channelValidation = ChannelSchema.safeParse(prop.item)
+  if (channelValidation.success) {
     unreadMessageStore.removeUnreadMessages(prop.item.id)
     emits("open", prop.item.id, "MPU")
   } else {
@@ -127,14 +135,6 @@ const openChannel = () => {
     emits("open", prop.item.id, "SNG")
   }
 }
-
-const channelType = computed(() => {
-  if (validation.success) {
-    return "MPU"
-  } else {
-    return "SNG"
-  }
-})
 
 onMounted(async () => {
   await channelUserStore.getChannelUsers(prop.item.id)

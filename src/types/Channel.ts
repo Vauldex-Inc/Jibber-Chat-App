@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 const ChannelSchema = z.object({
 	id: z.string(),
-	userId: z.string(),
+	idUser: z.string(),
 	title: z.string(),
 	channelType: z.string(),
 	color: z.string().optional(),
@@ -11,8 +11,8 @@ const ChannelSchema = z.object({
 })
 
 const ChannelUserSchema = z.object({
-	channelId: z.string(),
-	userId: z.string()
+	idChannel: z.string(),
+	idUser: z.string()
 })
 
 type Channel = z.infer<typeof ChannelSchema>

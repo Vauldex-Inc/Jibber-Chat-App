@@ -171,7 +171,7 @@ const toggleChatList = () => {
 
 const profileImage = computed(() => {
   const id = userSchema.parse(loggedUser).id
-  return userStore.getUserImageById(id)
+  return userProfileStore.getImage(id)
 })
 
 const viewChannel = (id: string) => {
@@ -183,7 +183,9 @@ const closeInvitationModal = () => {
   invitationModalOpen.value = false
 }
 
-const openChannel = (id: string, type: "SNG" | "MPU") => {
+const openChannel = async (id: string, type: "SNG" | "MPU") => {
+  await messageStore.getChannelMessages(id)
+
   if (type === "SNG") {
     selectedChannel.value = directCstore.getDirectChannel(id)
   } else {
@@ -294,7 +296,7 @@ onMounted(async () => {
       case "CHANNEL": {
         const channel = updates.content.channel
         channelStore.addNewChannel(channel)
-        const senderName = userStore.getUserNameById(channel.idUser)
+        const senderName = userProfileStore.getName(channel.idUser)
 
         if (channel.channelType !== "SNG") {
           notifications.value.push({
@@ -317,19 +319,23 @@ onMounted(async () => {
           sentAt: unreadMessage.sentAt,
         }
 
+        if (!selectedChannel.value) {
+          return
+        }
+
         messageStore.addNewLatestMessage(latestMessage)
         if (unreadMessage.idChannel !== selectedChannel.value.id) {
           unreadMessageStore.addUnreadMessage(unreadMessage)
         }
 
         if (
-          unreadMessage.senderId !== loggedUser.id &&
+          unreadMessage.senderId !== loggedUser!.id &&
           unreadMessage.channelId !== selectedChannel.value.id &&
-          channelUserStore.isMember(unreadMessage.channelId, loggedUser.id)
+          channelUserStore.isMember(unreadMessage.channelId, loggedUser!.id)
         ) {
           const channel = channelStore.getChannelById(unreadMessage.idChannel)
           if (channel) {
-            const senderName = userStore.getUserNameById(unreadMessage.idSender)
+            const senderName = userProfileStore.getName(unreadMessage.idSender)
             const title =
               channel.channelType === "SNG"
                 ? senderName
@@ -383,13 +389,13 @@ onMounted(async () => {
 
       case "NEW_PROFILE": {
         const profile = updates.content.newProfile
-        userStore.addUserProfile(profile.idUser, profile)
+        userProfileStore.addUserProfile(profile)
         break
       }
 
       case "UPDATE_PROFILE": {
         const profile = updates.content.updateProfile
-        userStore.addUserProfile(profile.idUser, profile)
+        userProfileStore.addUserProfile(profile)
         break
       }
     }

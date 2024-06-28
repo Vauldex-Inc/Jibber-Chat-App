@@ -17,7 +17,7 @@
       <VChatList
         @open="openChannel"
         @click="variant = 'SNG'"
-        :items="privateChannels"
+        :items="directChannels"
         class="h-3/6"
         title="messages"
       />
@@ -135,6 +135,7 @@ const loggedUser = useUser()
 const invitationNotif = notificationStore.getSelectedInvitation()
 const multiChannels = channelStore.getMultiChannels()
 const singleChannels = channelStore.getSingleChannels()
+const directChannels = directCstore.channels
 
 const senderId = ref<string | undefined>(undefined)
 const selectedChannel = ref<Channel | undefined>(undefined)
@@ -262,7 +263,7 @@ onMounted(async () => {
   await messageStore.init()
   await unreadMessageStore.init()
   await notificationStore.init()
-
+  
   onlineSocket.value = useSocket("/sessions", (data: MessageEvent) => {
     const updates = JSON.parse(data.data)
 

@@ -29,11 +29,11 @@
 <script lang="ts" setup>
 import VChatListItem from "@/components/organisms/VChatListItem.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
-import type { Channel } from "@/types/Channel.ts"
+import type { Channel, DirectChannel } from "@/types/Channel.ts"
 
 defineProps<{
   title: string
-  items: Channel[]
+  items: Channel[] | DirectChannel[]
 }>()
 
 const openChannel = (id: string) => {

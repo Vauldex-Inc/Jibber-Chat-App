@@ -3,19 +3,7 @@
     @click="openChannel"
     class="flex cursor-pointer items-center gap-4 p-3 transition-all hover:bg-indigo-400/10"
   >
-    <template v-if="item.channelType === 'SNG'">
-      <VAvatar
-        :image="userStore.senderProfile(senderId)"
-        :status="userStore.senderStatus(senderId)"
-      />
-      <VTextGroup
-        :is-bold="unReadMessages.length > 0"
-        class="flex-1"
-        :title="userStore.senderName(senderId) ?? 'Anonymous'"
-        :text="latestMessage ? latestMessage.text : ''"
-      />
-    </template>
-    <template v-else>
+    <template v-if="channelType === 'MPU'">
       <div
         class="flex aspect-square h-12 items-center justify-center rounded-full text-white"
         :class="color"
@@ -25,7 +13,19 @@
       <VTextGroup
         :is-bold="unReadMessages.length > 0"
         class="flex-1"
-        :title="item.title"
+        :title="validation.data?.title!"
+        :text="latestMessage ? latestMessage.text : ''"
+      />
+    </template>
+    <template v-else>
+      <VAvatar
+        :image="userStore.senderProfile(item.idUser)"
+        :status="userStore.senderStatus(item.idUser)"
+      />
+      <VTextGroup
+        :is-bold="unReadMessages.length > 0"
+        class="flex-1"
+        :title="userStore.getUserNameById(item.idUser) ?? 'Anonymous'"
         :text="latestMessage ? latestMessage.text : ''"
       />
     </template>
@@ -59,10 +59,10 @@ import VAvatar from "@/components/molecules/VAvatar.vue"
 import VBadge from "@/components/atoms/VBadge.vue"
 import VTextGroup from "@/components/molecules/VTextGroup.vue"
 
-import type { Channel } from "@/types/Channel"
+import { ChannelSchema, DirectChannelSchema, type Channel, type DirectChannel } from "@/types/Channel"
 import { formatSentAt } from "@/composables/useDateFormatter"
 
-const prop = defineProps<{ item: Channel }>()
+const prop = defineProps<{ item: Channel | DirectChannel }>()
 
 const emits = defineEmits<{
   open: [value: string]
@@ -73,13 +73,12 @@ const userStore = useUserStore()
 const messageStore = useMessageStore()
 const channelUserStore = useChannelUserStore()
 const unreadMessageStore = useUnreadMessageStore()
-
-const senderId = ref<string>("")
+const validation = ChannelSchema.safeParse(prop.item)
 
 const unReadMessages = computed(() => {
   return unreadMessageStore
     .getUnreadMessages()
-    .value.filter((ur) => ur.channelId === prop.item.id)
+    .value.filter((ur) => ur.idChannel === prop.item.id)
 })
 
 const color = computed(() => {
@@ -89,7 +88,9 @@ const color = computed(() => {
 })
 
 const channelAbbr = computed(() => {
-  return prop.item.title.slice(0, 1)
+  if (validation.success){
+    return validation.data.title.slice(0, 1)
+  }
 })
 
 const latestMessage = computed(() => {
@@ -99,7 +100,7 @@ const latestMessage = computed(() => {
 
   const messages = messageStore.getLatestMessages().value.filter((m) => {
     if (m) {
-      return m.channelId === prop.item.id
+      return m.idChannel === prop.item.id
     }
   })
 
@@ -117,16 +118,15 @@ const openChannel = () => {
   emits("open", prop.item.id)
 }
 
+const channelType = computed(() => {
+  if (validation.success) {
+    return "MPU"
+  } else {
+    return "SNG"
+  }
+})
+
 onMounted(async () => {
   await channelUserStore.getChannelUsers(prop.item.id)
-
-  if (prop.item.channelType === "SNG") {
-    const users = prop.item.title.split("/")
-    const sender = users.find((u) => u !== loggedUser?.id)
-
-    if (sender) {
-      senderId.value = sender
-    }
-  }
 })
 </script>

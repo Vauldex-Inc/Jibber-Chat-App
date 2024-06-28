@@ -44,5 +44,10 @@ export const useUserProfileStore = defineStore("userProfile", () => {
     return data ? `${data.firstName} ${data.lastName}` : "Anonymous"
 	}
 
-  return { profiles, init, getProfile, getImage, getName, addUserProfile }
+  const getNickname = (idUser: string): string | undefined => {
+    const data = validateProfile(idUser)
+    return data ? data.nickName : userStore.getUser(idUser)?.username
+  }
+
+  return { profiles, init, getProfile, getImage, getName, addUserProfile, getNickname }
 })

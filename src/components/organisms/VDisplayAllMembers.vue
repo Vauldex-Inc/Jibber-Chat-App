@@ -102,6 +102,5 @@ onMounted(async () => {
       return userStore.getUser(channelUser.idUser)
     })
   }
-  console.log(channelUsers.value)
 })
 </script>

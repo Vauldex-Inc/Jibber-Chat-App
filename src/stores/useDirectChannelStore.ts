@@ -24,7 +24,7 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
   const fetch = async () => {
     try {
       const { data } = await axios.get("/me/channels")
-      const list = data.map((d: any) => {
+      const list = data.channels.map((d: any) => {
         return {
           id: d.id,
           color: d.color,
@@ -48,12 +48,11 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
         channelType: CHANNEL_TYPE,
         idUser
       })
-
       const channel = {
-        id: data.id,
-        color: data.color,
-        archivedAt: data.archivedAt,
-        idUser: data.idUser
+        id: data.channel.id,
+        color: data.channel.color,
+        archivedAt: data.channel.archivedAt,
+        idUser: data.channel.idUser
       }
       add(channel)
     } catch (e) {

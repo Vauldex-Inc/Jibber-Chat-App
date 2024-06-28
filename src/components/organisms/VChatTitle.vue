@@ -47,7 +47,7 @@
         </template>
         <template v-else>
           <p class="font-semibold text-gray-700 dark:text-gray-300">
-            {{ channelStore.getTitle(channel.id) }}
+            {{ publicChannelStore.getTitle(channel.id) }}
           </p>
           <p class="text-sm">
             {{ channelUserStore.getChannelUsersCount(channel.id) }}
@@ -75,12 +75,9 @@
 
 <script lang="ts" setup>
 import { computed } from "vue"
-
 import { useUserStore } from "@/stores/useUserStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
-
-import { useFetch } from "@/composables/useFetch"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 
 import VAvatar from "@/components/molecules/VAvatar.vue"
@@ -88,6 +85,7 @@ import VIconButton from "@/components/atoms/VIconButton.vue"
 
 import type { Channel, DirectChannel } from "@/types/Channel"
 import { ChannelSchema } from "@/types/Channel"
+import { useChannelStore } from "@/stores/useChannelStore"
 
 const props = defineProps<{
   channel: Channel | DirectChannel
@@ -105,9 +103,8 @@ const emits = defineEmits<{
 const profileStore = useUserProfileStore()
 const userStore = useUserStore()
 const channelUserStore = useChannelUserStore()
-const channelStore = usePublicChannelStore()
-
-const validation = ChannelSchema.safeParse(props.channel)
+const publicChannelStore = usePublicChannelStore()
+const channelStore = useChannelStore()
 
 const channelAbbr = computed(() => {
   const abbrValidation = ChannelSchema.safeParse(props.channel)
@@ -126,20 +123,13 @@ const curColorTheme = computed(() => {
 })
 
 const archiveChannel = async () => {
-  const archivedAt = new Date().toISOString()
-
-  const res = await useFetch(`/channels/${props.channel.id}`, {
-    method: "PUT",
-    body: JSON.stringify({
-      title: validation.success ? validation.data.title : undefined,
-      channelType: channelType.value,
-      color: undefined,
-      archivedAt: archivedAt,
-    }),
-  })
-
-  if (res.status === 200) {
+  try {
+		const archivedAt = new Date().toISOString()
+    await channelStore.archiveChannel(props.channel, archivedAt)
     emits("archive", { color: "", archivedAt })
+  } catch (e) {
+    const error = e as Error
+    console.error(error.message)
   }
 }
 </script>

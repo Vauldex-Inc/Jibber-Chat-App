@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref , type Ref} from "vue"
 import { useRouter, RouterLink } from "vue-router"
 import { useFetch } from "@/composables/useFetch"
 import VButton from "@/components/atoms/VButton.vue"
@@ -125,7 +125,7 @@ const displayError = (textError: string) => {
   }, 5000)
 }
 
-const resetFields = (refData: typeof ref, ...fieldName: string[]) => {
+const resetFields = (refData: Ref, ...fieldName: string[]) => {
   for (const [key, value] of Object.entries(refData.value)) {
     if (fieldName.includes(key)) refData.value[key] = ""
   }

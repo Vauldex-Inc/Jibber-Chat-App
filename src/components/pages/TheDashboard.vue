@@ -7,7 +7,7 @@
   </VModal>
   <VModal :is-open="invitationModalOpen" @close="closeInvitationModal">
     <VChatInvitation
-      :notification="invitationNotif"
+      :notification="invitationNotif!"
       @view="viewChannel"
       @close="closeInvitationModal"
     />
@@ -43,14 +43,14 @@
         />
         <VChatBoxArea
           :channel="selectedChannel"
-          :messages="messages"
+          :messages="messageStore.chatMessages"
           class="flex-1"
         />
         <VChatBox @send="sendMessage" :channel="selectedChannel" />
       </template>
     </template>
     <template #actions>
-      <VSettings :profileImage="profileImage" :username="loggedUser.username" />
+      <VSettings :profileImage="profileImage" :username="loggedUser!.username" />
     </template>
     <template #notification>
       <VNotificationList />
@@ -59,7 +59,7 @@
       <template v-if="selectedChannel">
         <VChatInfo
           @color-update="updateColor"
-          :chatMessages="messages"
+          :images="messageStore.chatImages"
           :channel="selectedChannel"
           :sender="senderId"
           title="channel information"
@@ -82,6 +82,22 @@
 </template>
 
 <script lang="ts" setup>
+import { onMounted, ref, watch, computed, onUnmounted, type Ref } from "vue"
+
+import { useUser } from "@/composables/useUser"
+import { useFetch } from "@/composables/useFetch"
+import { useSocket } from "@/composables/useSocket"
+
+import { useUserStore } from "@/stores/useUserStore"
+import { useChannelStore } from "@/stores/useChannelStore"
+import { useMessageStore } from "@/stores/useMessageStore"
+import { useChannelUserStore } from "@/stores/useChannelUserStore"
+import { useNotificationStore } from "@/stores/useNotificationStore"
+import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
+import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
+import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+
+import VToast from "@/components/molecules/VToast.vue"
 import DashboardLayout from "@/components/templates/DashboardLayout.vue"
 import VChatList from "@/components/organisms/VChatList.vue"
 import VChatTitle from "@/components/organisms/VChatTitle.vue"
@@ -90,25 +106,14 @@ import VChatBox from "@/components/organisms/VChatBox.vue"
 import VChatBoxArea from "@/components/organisms/VChatBoxArea.vue"
 import ChannelForm from "@/components/organisms/ChannelForm.vue"
 import VModal from "@/components/atoms/VModal.vue"
+import VChatInvitation from "@/components/organisms/VChatInvitation.vue"
 import VInvitationDirect from "@/components/organisms/VInvitationDirect.vue"
 import VNotificationList from "@/components/organisms/VNotificationList.vue"
-import { useUserStore } from "@/stores/useUserStore"
-import { useChannelStore } from "@/stores/useChannelStore"
-import { useMessageStore } from "@/stores/useMessageStore"
-import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
-import { onMounted, ref, watch, computed, onUnmounted } from "vue"
-import type { Message } from "@/types/Message.ts"
-import type { Channel } from "@/types/Channel.ts"
+
+import type { Message } from "@/types/Message"
+import type { Channel } from "@/types/Channel"
 import type { Notification } from "@/types/Notification"
-import type { User } from "@/types/User"
-import { useUser } from "@/composables/useUser"
-import { useChannelUserStore } from "@/stores/useChannelUserStore"
-import { useFetch } from "@/composables/useFetch"
-import { useSocket } from "@/composables/useSocket"
-import { useNotificationStore } from "@/stores/useNotificationStore"
-import VToast from "@/components/molecules/VToast.vue"
-import VChatInvitation from "@/components/organisms/VChatInvitation.vue"
-import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
+import { userSchema, type User } from "@/types/User"
 
 const notifAudio = new Audio("./src/assets/slack_sound.mp3")
 
@@ -119,20 +124,24 @@ import VSettings from "@/components/organisms/VSettings.vue"
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
 const channelStore = useChannelStore()
+const publicCstore = usePublicChannelStore()
+const directCstore = useDirectChannelStore()
 const messageStore = useMessageStore()
 const channelUserStore = useChannelUserStore()
 const unreadMessageStore = useUnreadMessageStore()
 const directStore = useDirectChannelStore()
 const loggedUser = useUser()
-const messages = ref<Message[]>([])
-const senderId = ref<string | undefined>(undefined)
-
-const invitationModalOpen = ref<boolean>(false)
 
 const invitationNotif = notificationStore.getSelectedInvitation()
-
 const multiChannels = channelStore.getMultiChannels()
 const singleChannels = channelStore.getSingleChannels()
+
+const senderId = ref<string | undefined>(undefined)
+const selectedChannel = ref<Channel | undefined>(undefined)
+const activeSocket = ref<WebSocket | undefined>(undefined)
+const variant = ref<"MPU" | "MPR" | "SNG" | undefined>()
+const onlineSocket = ref<WebSocket | undefined>(undefined)
+const invitationModalOpen = ref<boolean>(false)
 
 const privateChannels = computed(() => {
   return singleChannels.value.filter((s) => {
@@ -155,7 +164,8 @@ const toggleChatList = () => {
 }
 
 const profileImage = computed(() => {
-  return userStore.getUserImageById(loggedUser.id)
+  const id = userSchema.parse(loggedUser).id
+  return userStore.getUserImageById(id)
 })
 
 const viewChannel = (id: string) => {
@@ -166,12 +176,6 @@ const viewChannel = (id: string) => {
 const closeInvitationModal = () => {
   invitationModalOpen.value = false
 }
-
-const selectedChannel = ref<Channel | undefined>(undefined)
-const activeSocket = ref<WebSocket | undefined>(undefined)
-
-const variant = ref<"MPU" | "MPR" | "SNG" | undefined>()
-const onlineSocket = ref<WebSocket | undefined>(undefined)
 
 const openChannel = (id: string) => {
   selectedChannel.value = channelStore.getChannelById(id)
@@ -192,24 +196,26 @@ const newDirect = (channel: Channel | undefined) => {
 }
 
 const updateColor = (color: string) => {
-  selectedChannel.value.color = color
-  channelStore.updateChannel(selectedChannel.id, color)
+  selectedChannel.value!.color = color
+  channelStore.updateChannel(selectedChannel.value!.id, color)
 }
 
 const updateArchived = (data: { color: string; archivedAt: string }) => {
-  selectedChannel.value.color = data.color
-  selectedChannel.value.archivedAt = data.archivedAt
-  channelStore.updateChannel(selectedChannel.id, data.color, data.archivedAt)
+  if(selectedChannel.value) {
+    selectedChannel.value.color = data.color
+    selectedChannel.value.archivedAt = data.archivedAt
+    channelStore.updateChannel(selectedChannel.value.id, data.color, data.archivedAt)
+  }
 }
 
 const sendMessage = async (message: string, img: string | undefined) => {
-  if (!channelUserStore.isMember(selectedChannel.value.id, loggedUser.id)) {
-    const res = await useFetch(`/channels/${selectedChannel.value.id}/users`, {
+  if (!channelUserStore.isMember(selectedChannel.value!.id, loggedUser!.id)) {
+    const res = await useFetch(`/channels/${selectedChannel.value!.id}/users`, {
       method: "POST",
       body: JSON.stringify({}),
     })
   }
-  await messageStore.sendMessage(selectedChannel.value.id, message, img)
+  await messageStore.sendMessage(selectedChannel.value!.id, message, img)
 }
 
 const closeToast = (id: string) => {
@@ -224,11 +230,11 @@ watch(selectedChannel, async (channel) => {
   if (channel) {
     const users = await channelUserStore.getChannelUsers(channel.id)
 
-    messages.value = await messageStore.getChannelMessages(channel.id)
+    await messageStore.getChannelMessages(channel.id)
 
     if (channel.channelType === "SNG") {
-      const sender = users.find((u: User) => u.userId !== loggedUser.id)
-      senderId.value = sender.userId
+      const sender = users?.find((u) => u.idUser !== loggedUser?.id)
+      senderId.value = sender?.idUser
     }
 
     if (activeSocket.value) {
@@ -242,7 +248,7 @@ watch(selectedChannel, async (channel) => {
 
         if (!newMessage) return
 
-        messages.value.push(newMessage)
+        messageStore.chatMessages.push(newMessage)
       },
     )
   }
@@ -251,6 +257,7 @@ watch(selectedChannel, async (channel) => {
 onMounted(async () => {
   await directStore.fetch()
   await userStore.init()
+  await publicCstore.fetch()
   await channelStore.init()
   await messageStore.init()
   await unreadMessageStore.init()
@@ -290,21 +297,21 @@ onMounted(async () => {
         const unreadMessage = updates.content.unread
         const latestMessage = {
           id: unreadMessage.messageId,
-          channelId: unreadMessage.channelId,
-          userId: unreadMessage.userId,
+          idChannel: unreadMessage.channelId,
+          idUser: unreadMessage.userId,
           text: unreadMessage.text,
           sentAt: unreadMessage.sentAt,
         }
 
         messageStore.addNewLatestMessage(latestMessage)
-        if (unreadMessage.channelId !== selectedChannel.value.id) {
+        if (unreadMessage.channelId !== selectedChannel.value!.id) {
           unreadMessageStore.addUnreadMessage(unreadMessage)
         }
 
         if (
-          unreadMessage.senderId !== loggedUser.id &&
-          unreadMessage.channelId !== selectedChannel.value.id &&
-          channelUserStore.isMember(unreadMessage.channelId, loggedUser.id)
+          unreadMessage.senderId !== loggedUser?.id &&
+          unreadMessage.channelId !== selectedChannel.value!.id &&
+          channelUserStore.isMember(unreadMessage.channelId, loggedUser!.id)
         ) {
           const channel = channelStore.getChannelById(unreadMessage.channelId)
           if (channel) {
@@ -316,8 +323,8 @@ onMounted(async () => {
 
             notifications.value.push({
               id: unreadMessage.messageId,
-              message: unreadMessage.text,
-              title: title,
+              title: title ? title : "",
+              message: unreadMessage.text
             })
             notifAudio.play()
           }

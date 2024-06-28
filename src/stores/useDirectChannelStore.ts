@@ -2,8 +2,7 @@ import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 import { z, type ZodError } from "zod"
 import axios, { AxiosError } from "axios"
-import { type DirectChannel } from "@/types/Channel"
-import type { RefSymbol } from "@vue/reactivity"
+import { type DirectChannel, DirectChannelSchema } from "@/types/Channel"
 
 const CHANNEL_TYPE = "SNG" as const
 
@@ -16,19 +15,11 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
   const fetch = async () => {
     try {
       const { data } = await axios.get("/me/channels")
-      const list = data.channels.map((d: any) => {
-        return {
-          id: d.id,
-          color: d.color,
-          createdAt: d.createdAt,
-          archivedAt: d.archivedAt,
-          idUser: d.idUser
-        }
-      })
+      const list: Array<DirectChannel> = data.channels.map((d: any) => DirectChannelSchema.parse(d))
       set(list)
     } catch (e) {
       const error = e as AxiosError
-      console.error(error)
+      console.error(error.message)
     }
   }
 
@@ -40,12 +31,7 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
         channelType: CHANNEL_TYPE,
         idUser
       })
-      const channel = {
-        id: data.channel.id,
-        color: data.channel.color,
-        archivedAt: data.channel.archivedAt,
-        idUser: data.channel.idUser
-      }
+      const channel = DirectChannelSchema.parse(data.channel)
       add(channel)
     } catch (e) {
       const error = e as AxiosError | ZodError

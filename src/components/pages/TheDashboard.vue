@@ -95,6 +95,7 @@ import VNotificationList from "@/components/organisms/VNotificationList.vue"
 import { useUserStore } from "@/stores/useUserStore"
 import { useChannelStore } from "@/stores/useChannelStore"
 import { useMessageStore } from "@/stores/useMessageStore"
+import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
 import { onMounted, ref, watch, computed, onUnmounted } from "vue"
 import type { Message } from "@/types/Message.ts"
 import type { Channel } from "@/types/Channel.ts"
@@ -121,6 +122,7 @@ const channelStore = useChannelStore()
 const messageStore = useMessageStore()
 const channelUserStore = useChannelUserStore()
 const unreadMessageStore = useUnreadMessageStore()
+const directStore = useDirectChannelStore()
 const loggedUser = useUser()
 const messages = ref<Message[]>([])
 const senderId = ref<string | undefined>(undefined)
@@ -247,6 +249,7 @@ watch(selectedChannel, async (channel) => {
 })
 
 onMounted(async () => {
+  await directStore.fetch()
   await userStore.init()
   await channelStore.init()
   await messageStore.init()

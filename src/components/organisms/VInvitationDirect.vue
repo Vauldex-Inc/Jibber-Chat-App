@@ -33,7 +33,7 @@
               {{ name }}
             </span>
             <VButton
-              @click="create(id)"
+              @click="create(id, name)"
               size="small"
               :class="color"
               class="cursor-pointer rounded-md text-gray-100"
@@ -55,7 +55,6 @@ import { useUserStore } from "@/stores/useUserStore"
 import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-import { userSchema } from "@/types/User"
 import type { User } from "@/types/User"
 import type { Profile } from "@/types/Profile"
 import type { Channel } from "@/types/Channel"
@@ -75,36 +74,41 @@ const users = userStore.getUsers()
 const loggedUser = useUser()
 
 const inputUserName = ref<string>("")
-const unInvitedUsers = ref<string[]>([])
-
-const isInvited = (userId: string) => unInvitedUsers.value.includes(userId)
+const unInvitedUsers = ref<[string, string | undefined][]>([])
+const invitedUsers = ref<string[]>([])
 
 const filteredUserName = computed(() => {
-  return users.value
-    .filter((userProfile: [User, Profile | undefined]) => {
-      const [user, _] = userProfile
+  return unInvitedUsers.value
+    .filter(([id, name]) => {
       const currentName = inputUserName.value.toLowerCase()
       return (
-        userStore
-          .getUserNameById(user.id)
+        userStore.getUserNameById(id)
           ?.toLowerCase()
-          .includes(currentName) && !isInvited(user.id) && user.id !== loggedUser?.id
+          .includes(currentName) && !isInvited(id) && id !== loggedUser?.id
       )
     })
-    .map((userProfile: [User, Profile | undefined]) => {
-      const [user, _] = userProfile
-      return [user.id, userStore.getUserNameById(user.id)]
-    })
 })
 
-onMounted(() => {
-  directStore.channels.value.forEach((s) => unInvitedUsers.value.push(s.idUser))
+const isInvited = (idUser: string) => invitedUsers.value.includes(idUser)
+
+onMounted( async () => {
+  directStore.channels.value.forEach((c) => invitedUsers.value.push(c.idUser))
+  users.value.forEach((u) => {
+    if (!(invitedUsers.value.includes(u[0].id))) {
+      const id = u[0].id
+      const name = userStore.getUserNameById(u[0].id)
+      unInvitedUsers.value.push([id, name])
+    }
+  })
 })
 
-const create = async (idUser?: string) => {
+const create = async (idUser?: string, name?: string) => {
   try {
     if(idUser) {
       await directStore.post(idUser)
+      const index = unInvitedUsers.value.indexOf([idUser, name])
+      unInvitedUsers.value.splice(index, 1)
+      invitedUsers.value.push(idUser)
     }
   } catch (e) {
     const error = e as Error

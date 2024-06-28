@@ -41,7 +41,9 @@
           >
             <p class="text-xl">{{ channelAbbr }}</p>
           </div>
-          <p class="font-semibold">{{ publicChannelStore.getTitle(channel.id) }}</p>
+          <p class="font-semibold">
+            {{ publicChannelStore.getTitle(channel.id) }}
+          </p>
         </template>
         <div class="flex items-center justify-center gap-4">
           <div
@@ -129,9 +131,9 @@
 
     <VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
       <VMemberInvitation
-        @action="addMember"
+        @action="(idUser) => userStore.inviteMember(channel.id, idUser)"
         :color="curColorTheme"
-        :channel-id="channel.id"
+        :id-channel="channel.id"
       />
     </VModal>
 
@@ -195,7 +197,7 @@ const channelType = computed(() => {
 
 const channelAbbr = computed(() => {
   const abbrValidation = ChannelSchema.safeParse(props.channel)
-  if (abbrValidation.success){
+  if (abbrValidation.success) {
     return abbrValidation.data.title.slice(0, 1)
   } else {
     return userProfileStore.getName(props.channel.idUser).slice(0, 1)

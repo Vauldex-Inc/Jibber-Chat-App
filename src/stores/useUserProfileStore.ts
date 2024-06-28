@@ -2,10 +2,8 @@ import { ref } from 'vue'
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
 import { profileDataSchema, type Profile } from "@/types/Profile"
-import { useUserStore } from './useUserStore'
 
 export const useUserProfileStore = defineStore("userProfile", () => {
-  const userStore = useUserStore()
   const profiles = ref<Profile[]>([])
 
   const init = async (): Promise<void> => {
@@ -21,7 +19,7 @@ export const useUserProfileStore = defineStore("userProfile", () => {
 
   const addUserProfile = (newProfile: Profile) => {
     profiles.value.push(newProfile)
-	}
+  }
 
   const validateProfile = (idUser: string) => {
     const profile = profiles.value.find((p: Profile) => p.idUser === idUser)
@@ -40,9 +38,9 @@ export const useUserProfileStore = defineStore("userProfile", () => {
   }
 
   const getName = (idUser: string): string => {
-		const data = validateProfile(idUser)
+    const data = validateProfile(idUser)
     return data ? `${data.firstName} ${data.lastName}` : "Anonymous"
-	}
+  }
 
   const getNickname = (idUser: string): string | undefined => {
     const data = validateProfile(idUser)

@@ -78,7 +78,7 @@ const unInvitedUsers = ref<[string, string | undefined][]>([])
 const invitedUsers = ref<string[]>([])
 
 const filteredUserName = computed(() => {
-  return unInvitedUsers.value.filter(([id, name]) => {
+  return unInvitedUsers.value.filter(([id, _]) => {
     const currentName = inputUserName.value.toLowerCase()
     return (
       userStore.getUserNameById(id)?.toLowerCase().includes(currentName) &&
@@ -93,12 +93,14 @@ const isInvited = (idUser: string) => invitedUsers.value.includes(idUser)
 onMounted(async () => {
   directStore.channels.value.forEach((c) => invitedUsers.value.push(c.idUser))
   users.value.forEach((u) => {
-    if (!invitedUsers.value.includes(u[0].id)) {
-      const id = u[0].id
-      const name = userStore.getUserNameById(u[0].id)
+    if (!invitedUsers.value.includes(u.id)) {
+      const id = u.id
+      const name = userStore.getUserNameById(u.id)
       unInvitedUsers.value.push([id, name])
     }
   })
+  console.log(unInvitedUsers.value)
+  console.log(filteredUserName.value)
 })
 
 const create = async (idUser?: string, name?: string) => {

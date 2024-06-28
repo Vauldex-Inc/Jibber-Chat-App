@@ -36,12 +36,12 @@ defineProps<{
   items: Channel[] | DirectChannel[]
 }>()
 
-const openChannel = (id: string) => {
-  emits("open", id)
+const openChannel = (id: string, type: "SNG" | "MPU") => {
+  emits("open", id, type)
 }
 
 const emits = defineEmits<{
-  open: [value: string]
+  open: [value: string, type: "SNG" | "MPU"]
   click: []
 }>()
 </script>

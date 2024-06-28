@@ -49,7 +49,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue"
 
-import { useUser } from "@/composables/useUser"
 import { useMessageStore } from "@/stores/useMessageStore"
 import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
@@ -70,10 +69,9 @@ import { formatSentAt } from "@/composables/useDateFormatter"
 const prop = defineProps<{ item: Channel | DirectChannel }>()
 
 const emits = defineEmits<{
-  open: [value: string]
+  open: [value: string, type: "SNG" | "MPU"]
 }>()
 
-const loggedUser = useUser()
 const userStore = useUserStore()
 const messageStore = useMessageStore()
 const channelUserStore = useChannelUserStore()
@@ -119,8 +117,13 @@ const sentAt = computed(() => {
 })
 
 const openChannel = () => {
-  unreadMessageStore.removeUnreadMessages(prop.item.id)
-  emits("open", prop.item.id)
+  if (validation.success) {
+    unreadMessageStore.removeUnreadMessages(prop.item.id)
+    emits("open", prop.item.id, "MPU")
+  } else {
+    unreadMessageStore.removeUnreadMessages(prop.item.id)
+    emits("open", prop.item.id, "SNG")
+  }
 }
 
 const channelType = computed(() => {

@@ -80,10 +80,11 @@ import { useUserStore } from "@/stores/useUserStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
-import type { Channel } from "@/types/Channel"
+import type { Channel, DirectChannel } from "@/types/Channel"
+import { ChannelSchema } from "@/types/Channel"
 
 const props = defineProps<{
-  channel: Channel
+  channel: Channel | DirectChannel
   sender?: string
   collapse: boolean
 }>()
@@ -96,9 +97,12 @@ const emits = defineEmits<{
 
 const userStore = useUserStore()
 const channelUserStore = useChannelUserStore()
+const validation = ChannelSchema.safeParse(props.channel)
 
 const channelAbbr = computed(() => {
-  return props.channel.title.slice(0, 1)
+  if (validation.success){
+    return validation.data.title.slice(0, 1)
+  }
 })
 
 const curColorTheme = computed(() => {

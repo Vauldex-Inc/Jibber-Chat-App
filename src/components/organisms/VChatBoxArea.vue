@@ -34,9 +34,8 @@
 import { onUpdated, ref } from "vue"
 
 import VChatBalloon from "@/components/organisms/VChatBalloon.vue"
-
-import type { Message } from "@/types/Message"
-import type { Channel } from "@/types/Channel"
+import type { Message } from "@/types/Message.ts"
+import type { Channel, DirectChannel } from "@/types/Channel.ts"
 
 const chatList = ref<HTMLElement | undefined>(undefined)
 
@@ -51,6 +50,6 @@ onUpdated(() => {
 
 defineProps<{
   messages: Message[]
-  channel: Channel
+  channel: Channel | DirectChannel
 }>()
 </script>

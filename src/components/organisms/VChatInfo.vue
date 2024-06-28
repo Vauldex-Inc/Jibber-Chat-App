@@ -158,14 +158,13 @@ import VMemberInvitation from "@/components/organisms/VMemberInvitation.vue"
 import VDisplayAllMembers from "@/components/organisms/VDisplayAllMembers.vue"
 import VImageViewer from "@/components/organisms/VImageViewer.vue"
 import VProfileForm from "@/components/organisms/VProfileForm.vue"
-import type { Message } from "@/types/Message"
-import type { Channel } from "@/types/Channel"
+import type { Channel, DirectChannel } from "@/types/Channel"
 
 const props = defineProps<VChatInfoProps>()
 
 interface VChatInfoProps {
   images: Array<string>
-  channel: Channel
+  channel: Channel | DirectChannel
   title: string
   sender?: string
 }

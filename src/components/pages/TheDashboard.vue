@@ -113,8 +113,8 @@ import VChatInvitation from "@/components/organisms/VChatInvitation.vue"
 import VInvitationDirect from "@/components/organisms/VInvitationDirect.vue"
 import VNotificationList from "@/components/organisms/VNotificationList.vue"
 
-import type { Message } from "@/types/Message"
-import type { Channel } from "@/types/Channel"
+import type { Channel, DirectChannel } from "@/types/Channel"
+import { ChannelSchema } from "@/types/Channel"
 import type { Notification } from "@/types/Notification"
 import { userSchema, type User } from "@/types/User"
 
@@ -135,7 +135,6 @@ const channelUserStore = useChannelUserStore()
 const unreadMessageStore = useUnreadMessageStore()
 const directStore = useDirectChannelStore()
 const loggedUser = useUser()
-const messages = ref<Message[]>([])
 const idSender = ref<string | undefined>(undefined)
 
 const invitationNotif = notificationStore.getSelectedInvitation()
@@ -144,7 +143,7 @@ const singleChannels = channelStore.getSingleChannels()
 const directChannels = directCstore.channels
 
 const senderId = ref<string | undefined>(undefined)
-const selectedChannel = ref<Channel | undefined>(undefined)
+const selectedChannel = ref<Channel | DirectChannel | undefined>(undefined)
 const activeSocket = ref<WebSocket | undefined>(undefined)
 const variant = ref<"MPU" | "MPR" | "SNG" | undefined>()
 const onlineSocket = ref<WebSocket | undefined>(undefined)
@@ -184,8 +183,12 @@ const closeInvitationModal = () => {
   invitationModalOpen.value = false
 }
 
-const openChannel = (id: string) => {
-  selectedChannel.value = channelStore.getChannelById(id)
+const openChannel = (id: string, type: "SNG" | "MPU") => {
+  if (type === "SNG") {
+    selectedChannel.value = directCstore.getDirectChannel(id)
+  } else {
+    selectedChannel.value = channelStore.getChannelById(id)
+  }
 }
 
 const newChannel = (channel: Channel | undefined) => {
@@ -240,12 +243,11 @@ watch(invitationNotif, () => {
 watch(selectedChannel, async (channel) => {
   if (channel) {
     const users = await channelUserStore.getChannelUsers(channel.id)
-
     await messageStore.getChannelMessages(channel.id)
-
-    if (channel.channelType === "SNG") {
-      const sender = users.find((u: User) => u.userId !== loggedUser.id)
-      senderId.value = sender.userId
+    const validation = ChannelSchema.safeParse(channel)
+    
+    if (!validation.success) {
+      senderId.value = channel.idUser
     }
 
     if (activeSocket.value) {

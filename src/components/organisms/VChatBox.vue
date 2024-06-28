@@ -68,10 +68,10 @@ import { ref, computed } from "vue"
 import { z } from 'zod'
 import VInput from "@/components/atoms/VInput.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
-import type { Channel } from "@/types/Channel"
+import type { Channel, DirectChannel } from "@/types/Channel.ts"
 
 const props = defineProps<{
-  channel: Channel
+  channel: Channel | DirectChannel
 }>()
 
 interface ImageForm {

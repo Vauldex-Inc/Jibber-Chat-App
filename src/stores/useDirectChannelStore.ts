@@ -3,6 +3,7 @@ import { defineStore } from "pinia"
 import { z, type ZodError } from "zod"
 import axios, { AxiosError } from "axios"
 import { type DirectChannel } from "@/types/Channel"
+import type { RefSymbol } from "@vue/reactivity"
 
 const CHANNEL_TYPE = "SNG" as const
 
@@ -52,11 +53,15 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
     }
   } 
   const channels = computed(() => _channels)
+  const getDirectChannel = (idChannel: string) => {
+    return _channels.value.find((c: DirectChannel) => c.id === idChannel)
+  }
 
   return {
     channels,
     fetch,
-    post
+    post,
+    getDirectChannel
   }
 })
 

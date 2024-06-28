@@ -164,7 +164,7 @@ import type { Channel } from "@/types/Channel"
 const props = defineProps<VChatInfoProps>()
 
 interface VChatInfoProps {
-  chatMessages: Message[]
+  images: Array<string>
   channel: Channel
   title: string
   sender?: string
@@ -176,12 +176,6 @@ const emits = defineEmits<{
 
 const userStore = useUserStore()
 const channelUserStore = useChannelUserStore()
-
-const images = computed(() => {
-  return props.chatMessages
-    .map((m) => m.image)
-    .filter((img) => img !== undefined) as string[]
-})
 
 const addMember = async (receiverId: string) => {
   await userStore.inviteMember(props.channel.id, receiverId)

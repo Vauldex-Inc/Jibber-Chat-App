@@ -50,13 +50,16 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue"
-import { useUser } from "@/composables/useUser"
+
 import { useUserStore } from "@/stores/useUserStore"
 import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
+
+import { useUser } from "@/composables/useUser"
+import { useUserProfileStore } from "@/stores/useUserProfileStore"
+
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-import type { User } from "@/types/User"
-import type { Profile } from "@/types/Profile"
+
 import type { Channel } from "@/types/Channel"
 
 const directStore = useDirectChannelStore()
@@ -69,6 +72,7 @@ const emits = defineEmits<{
   submit: [channel: Channel | undefined]
 }>()
 
+const profileStore = useUserProfileStore()
 const userStore = useUserStore()
 const users = userStore.getUsers()
 const loggedUser = useUser()
@@ -81,7 +85,7 @@ const filteredUserName = computed(() => {
   return unInvitedUsers.value.filter(([id, _]) => {
     const currentName = inputUserName.value.toLowerCase()
     return (
-      userStore.getUserNameById(id)?.toLowerCase().includes(currentName) &&
+      profileStore.getName(id).toLowerCase().includes(currentName) &&
       !isInvited(id) &&
       id !== loggedUser?.id
     )
@@ -95,7 +99,7 @@ onMounted(async () => {
   users.value.forEach((u) => {
     if (!invitedUsers.value.includes(u.id)) {
       const id = u.id
-      const name = userStore.getUserNameById(u.id)
+      const name = profileStore.getName(u.id)
       unInvitedUsers.value.push([id, name])
     }
   })

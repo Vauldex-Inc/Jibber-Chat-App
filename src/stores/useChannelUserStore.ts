@@ -1,6 +1,7 @@
 import { ref, computed } from "vue"
 
 import { defineStore } from "pinia"
+import axios from "axios"
 
 import { useFetch } from "@/composables/useFetch"
 
@@ -23,12 +24,12 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 
 		if (!users) {
 			try {
-				const res = await useFetch(`/channels/${idChannel}/users`)
-				const data: ChannelUser[] = (await res.json()).users
-				const validation = ChannelUserSchema.array().safeParse(data)
+				const { data } = await axios.get(`/channels/${idChannel}/users`)
+				const validation = ChannelUserSchema.array().safeParse(data.users)
+				
 				if (validation.success) {
-					channelUsers.value.push([idChannel, data])
-					return data as ChannelUser[]
+					channelUsers.value.push([idChannel, validation.data])
+					return validation.data
 				} else {
 					throw new Error("Unsupported Format")
 				}

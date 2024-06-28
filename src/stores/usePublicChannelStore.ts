@@ -20,6 +20,11 @@ const usePublicChannelStore = defineStore("public-channels", () => {
   const add = (channel: Channel) => _channels.value.push(channel)
   const set = (list: Array<Channel>) => _channels.value = list
 
+  const getTitle = (idChannel: string): string => {
+    const found = _channels.value.find((c: Channel) => c.id === idChannel)
+    return found ? found.title : "Anonymous"
+  }
+
   const fetch = async () => {
     try {
       const { data } = await axios.get(resource)
@@ -65,7 +70,8 @@ const usePublicChannelStore = defineStore("public-channels", () => {
   return {
     channels,
     fetch,
-    post
+    post,
+    getTitle
   }
 })
 

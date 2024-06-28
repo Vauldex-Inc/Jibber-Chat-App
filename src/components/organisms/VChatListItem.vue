@@ -19,13 +19,13 @@
     </template>
     <template v-else>
       <VAvatar
-        :image="userStore.senderProfile(item.idUser)"
-        :status="userStore.senderStatus(item.idUser)"
+        :image="profileStore.getImage(item.idUser)"
+        :status="userStore.getStatus(item.idUser)"
       />
       <VTextGroup
         :is-bold="unReadMessages.length > 0"
         class="flex-1"
-        :title="userStore.getUserNameById(item.idUser) ?? 'Anonymous'"
+        :title="profileStore.getName(item.idUser)"
         :text="latestMessage ? latestMessage.text : ''"
       />
     </template>
@@ -53,6 +53,7 @@ import { useMessageStore } from "@/stores/useMessageStore"
 import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import { useUserStore } from "@/stores/useUserStore"
+import { useUserProfileStore } from "@/stores/useUserProfileStore"
 
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VBadge from "@/components/atoms/VBadge.vue"
@@ -72,6 +73,7 @@ const emits = defineEmits<{
   open: [value: string, type: "SNG" | "MPU"]
 }>()
 
+const profileStore = useUserProfileStore()
 const userStore = useUserStore()
 const messageStore = useMessageStore()
 const channelUserStore = useChannelUserStore()

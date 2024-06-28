@@ -1,25 +1,16 @@
 import { ref, computed } from "vue"
-
 import { defineStore } from "pinia"
 import { z, type ZodError } from "zod"
 import axios, { AxiosError } from "axios"
-
-const ChannelSchema = z.object({
-  id: z.string().uuid().optional(),
-  color: z.string(),
-  archivedAt: z.string().datetime().nullable(),
-  idUser: z.string().uuid()
-})
-
-type Channel = z.infer<typeof ChannelSchema>
+import { type DirectChannel } from "@/types/Channel"
 
 const CHANNEL_TYPE = "SNG" as const
 
 const useDirectChannelStore = defineStore("direct-channels", () => {
-  const _channels = ref<Array<Channel>>([])
+  const _channels = ref<Array<DirectChannel>>([])
 
-  const set = (list: Array<Channel>) => _channels.value = list
-  const add = (channel:  Channel) => _channels.value.push(channel)
+  const set = (list: Array<DirectChannel>) => _channels.value = list
+  const add = (channel: DirectChannel) => _channels.value.push(channel)
 
   const fetch = async () => {
     try {

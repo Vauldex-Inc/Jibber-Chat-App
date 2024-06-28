@@ -158,7 +158,11 @@ import VMemberInvitation from "@/components/organisms/VMemberInvitation.vue"
 import VDisplayAllMembers from "@/components/organisms/VDisplayAllMembers.vue"
 import VImageViewer from "@/components/organisms/VImageViewer.vue"
 import VProfileForm from "@/components/organisms/VProfileForm.vue"
-import type { Channel, DirectChannel } from "@/types/Channel"
+import {
+  ChannelSchema,
+  type Channel,
+  type DirectChannel,
+} from "@/types/Channel"
 
 const props = defineProps<VChatInfoProps>()
 
@@ -175,6 +179,8 @@ const emits = defineEmits<{
 
 const userStore = useUserStore()
 const channelUserStore = useChannelUserStore()
+
+const validation = ChannelSchema.safeParse(props.channel)
 
 const addMember = async (receiverId: string) => {
   await userStore.inviteMember(props.channel.id, receiverId)
@@ -211,8 +217,11 @@ const openDisplayProfile = () => (stateDisplayProfile.value = true)
 const closeDisplayProfile = () => (stateDisplayProfile.value = false)
 
 const selectColor = async (color: string) => {
-  stateThemeSelector.value = false
-  ;(await channelUserStore.setChannelColor(props.channel, color)) &&
-    emits("colorUpdate", color)
+  const channelType = validation.success ? "MPU" : "SNG"
+  const editedChannel = { ...props.channel, channelType }
+
+  const res = await channelUserStore.setChannelColor(editedChannel, color)
+  res && emits("colorUpdate", color)
+  closeThemeSelector()
 }
 </script>

@@ -74,21 +74,12 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 
 	const setChannelColor = async (channel: Channel, color: string): Promise<boolean | void> => {
 		try {
-			const data = await axios.put(`/channels/${channel.id}`, {
+			const { data } = await axios.put(`/channels/${channel.id}`, {
 				title: channel.title,
 				channelType: channel.channelType,
 				color: color,
 			})
-			console.log(data)
-			// const res = await useFetch(`/channels/${channel.id}`, {
-			// 	method: "PUT",
-			// 	body: JSON.stringify({
-			// 		title: channel.title,
-			// 		channelType: channel.channelType,
-			// 		color: color,
-			// 	}),
-			// });
-			// return res.status === 200
+			return data.message
 		} catch (e) {
 			const error = e as AxiosError
 			console.error(error)

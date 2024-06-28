@@ -135,7 +135,6 @@ const channelUserStore = useChannelUserStore()
 const unreadMessageStore = useUnreadMessageStore()
 const directStore = useDirectChannelStore()
 const loggedUser = useUser()
-const idSender = ref<string | undefined>(undefined)
 
 const invitationNotif = notificationStore.getSelectedInvitation()
 const multiChannels = channelStore.getMultiChannels()
@@ -148,6 +147,10 @@ const activeSocket = ref<WebSocket | undefined>(undefined)
 const variant = ref<"MPU" | "MPR" | "SNG" | undefined>()
 const onlineSocket = ref<WebSocket | undefined>(undefined)
 const invitationModalOpen = ref<boolean>(false)
+
+const idSender = computed(() => {
+  return selectedChannel.value?.idUser
+})
 
 const privateChannels = computed(() => {
   return singleChannels.value.filter((s) => {
@@ -184,8 +187,6 @@ const closeInvitationModal = () => {
 }
 
 const openChannel = async (id: string, type: "SNG" | "MPU") => {
-  await messageStore.getChannelMessages(id)
-
   if (type === "SNG") {
     selectedChannel.value = directCstore.getDirectChannel(id)
   } else {

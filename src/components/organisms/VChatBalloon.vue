@@ -6,8 +6,8 @@
   >
     <VAvatar
       v-if="message.idUser !== loggedUser.id"
-      :image="userStore.senderProfile(message.idUser)"
-      :status="userStore.senderStatus(message.idUser)"
+      :image="profileStore.getImage(message.idUser)"
+      :status="userStore.getStatus(message.idUser)"
     />
     <div class="flex flex-col items-start gap-2">
       <div
@@ -15,7 +15,7 @@
         class="flex items-center gap-1"
       >
         <template v-if="message.idUser !== loggedUser.id">
-          <p class="text-xs">{{ userStore.senderName(message.idUser) }}</p>
+          <p class="text-xs">{{ profileStore.getName(message.idUser) }}</p>
           <p class="text-xs">•</p>
         </template>
         <p class="text-xs">{{ userStore.sentAtFormatter(message) }}</p>
@@ -46,7 +46,7 @@
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
 import VAvatar from "@/components/molecules/VAvatar.vue"
-import type { Message } from "@/types/Message.ts"
+import type { Message } from "@/types/Message"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 
 defineProps<{
@@ -55,6 +55,6 @@ defineProps<{
 }>()
 
 const userStore = useUserStore()
-const { getProfile } = useUserProfileStore()
+const profileStore = useUserProfileStore()
 const loggedUser = useUser()
 </script>

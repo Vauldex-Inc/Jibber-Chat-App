@@ -64,7 +64,7 @@ const notificationsCopy = computed(() => {
   if (notifications.value) {
     return notifications.value
       .filter((n) => {
-        const channel = channelStore.getChannelById(n.channelId)
+        const channel = channelStore.getChannelById(n.idChannel)
 
         return channel?.channelType !== "SNG"
       })

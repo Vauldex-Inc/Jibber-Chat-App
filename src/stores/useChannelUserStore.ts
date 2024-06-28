@@ -1,10 +1,7 @@
 import { ref, computed } from "vue"
-
 import { defineStore } from "pinia"
-import axios from "axios"
-
-import { useFetch } from "@/composables/useFetch"
-
+// import { useFetch } from "@/composables/useFetch"
+import axios, { AxiosError } from "axios"
 import { ChannelUserSchema, type ChannelUser } from "@/types/Channel"
 import type { Channel } from "@/types/Channel"
 
@@ -26,19 +23,19 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 			try {
 				const { data } = await axios.get(`/channels/${idChannel}/users`)
 				const validation = ChannelUserSchema.array().safeParse(data.users)
-				
+
 				if (validation.success) {
 					channelUsers.value.push([idChannel, validation.data])
 					return validation.data
 				} else {
 					throw new Error("Unsupported Format")
 				}
-			} catch (error) {
-				if (error instanceof Error) {
-					console.error(error.message)
-				}
+			} catch (e) {
+				const error = e as AxiosError
+				console.error(error)
 			}
-		} else {
+		}
+		else {
 			return users[1] as ChannelUser[]
 		}
 	}
@@ -71,25 +68,30 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 
 	const isMember = (idChannel: string, idUser: string) => {
 		const users = channelUsers.value.find(c => c[0] === idChannel)
-		// console.log("Here ", channelUsers.value)
+
 		return users && users[1].find(u => u.idUser === idUser) !== undefined
 	}
 
 	const setChannelColor = async (channel: Channel, color: string): Promise<boolean | void> => {
 		try {
-			const res = await useFetch(`/channels/${channel.id}`, {
-				method: "PUT",
-				body: JSON.stringify({
-					title: channel.title,
-					channelType: channel.channelType,
-					color: color,
-				}),
-			});
-			return res.status === 200
-		} catch (error) {
-			if (error instanceof Error) {
-				console.error(error.message)
-			}
+			const data = await axios.put(`/channels/${channel.id}`, {
+				title: channel.title,
+				channelType: channel.channelType,
+				color: color,
+			})
+			console.log(data)
+			// const res = await useFetch(`/channels/${channel.id}`, {
+			// 	method: "PUT",
+			// 	body: JSON.stringify({
+			// 		title: channel.title,
+			// 		channelType: channel.channelType,
+			// 		color: color,
+			// 	}),
+			// });
+			// return res.status === 200
+		} catch (e) {
+			const error = e as AxiosError
+			console.error(error)
 		}
 	}
 

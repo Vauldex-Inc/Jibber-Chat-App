@@ -1,9 +1,9 @@
 import { ref } from "vue"
 import { defineStore } from "pinia"
 import type { User } from "@/types/User"
-import type { Profile } from "@/types/Profile"
 import type { Message } from "@/types/Message"
 import { useFetch } from "@/composables/useFetch"
+import axios, { AxiosError } from "axios"
 import { useDateFormatter } from "@/composables/useDateFormatter"
 
 const dateFormatter = useDateFormatter()
@@ -18,33 +18,31 @@ const defaultOptions: Intl.DateTimeFormatOptions = {
 }
 
 export const useUserStore = defineStore("users", () => {
-	const users = ref<[User, Profile | undefined][]>([])
-	
+	const users = ref<User[]>([])
+
 	const onlineUsers = ref<string[]>([])
 
 	const init = async () => {
-		const res = await useFetch("/users")
-		const data = (await res.json()).users
-
-		users.value = data
-	}
-
-	const getUserById = (id: string) => {
-		const user = users.value.find(u => u[0].id === id)?.[0]
-		const profile = users.value.find(u => u[0].id === id)?.[1]
-		const userProfile: { user: User | undefined, profile: Profile | undefined } = {
-			user: user,
-			profile: profile
+		try {
+			const { data } = await axios.get("/users")
+			const result = data.users
+			users.value = result
+		} catch (e) {
+			const error = e as AxiosError
+			console.error(error)
 		}
-		return userProfile
 	}
 
 	const getUsers = () => {
 		return users
 	}
 
+	const getUser = (idUser: string) => {
+		return users.value.find((user) => user.id == idUser)
+	}
+
 	const getUserNameById = (id: string) => {
-		const userProfile = getUserById(id)
+		const userProfile = getUser(id)
 
 		if (!userProfile) {
 			return "Anonymous"
@@ -70,7 +68,7 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	const getUserImageById = (id: string) => {
-		const userProfile = getUserById(id)
+		const userProfile = getUser(id)
 
 		if (!userProfile) {
 			return undefined
@@ -139,12 +137,12 @@ export const useUserStore = defineStore("users", () => {
 		return "offline"
 	}
 
-	const inviteMember = async (channelId: string, senderId: string) => {
+	const inviteMember = async (channelId: string, idSender: string) => {
 		try {
 			await useFetch(`/channels/${channelId}/invites`, {
 				method: "POST",
 				body: JSON.stringify({
-					userId: senderId,
+					userId: idSender,
 				}),
 			})
 		} catch (error) {
@@ -153,7 +151,7 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	return {
-		users, init, getUserById, getUsers, getUserNameById,
+		users, init, getUser, getUsers, getUserNameById,
 		getUserImageById, addUserProfile, updateUserOnlineAt, onlineUsers,
 		getOnlineUsers, addNewUser, sentAtFormatter, senderName, senderProfile,
 		senderStatus, getStatus, inviteMember

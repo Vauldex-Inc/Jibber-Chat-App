@@ -15,7 +15,7 @@
         <img src="@/assets/images/notif.svg" class="aspect-square h-8" />
       </span>
       <p class="text-center dark:text-gray-400">
-        {{ userStore.senderName(notification.senderId) }} invited you to join
+        {{ userStore.senderName(notification.idSender) }} invited you to join
         his/her channel.
       </p>
     </div>
@@ -28,7 +28,7 @@
       >
       <VButton
         class="rounded-md border bg-indigo-600 text-white dark:border-slate-800"
-        @click="emits('view', notification.channelId)"
+        @click="emits('view', notification.idChannel)"
         >Take a Look</VButton
       >
     </footer>

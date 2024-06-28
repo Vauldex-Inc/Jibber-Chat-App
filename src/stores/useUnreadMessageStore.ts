@@ -16,7 +16,6 @@ export const useUnreadMessageStore = defineStore("unread-messages", () => {
 			const res = await useFetch("/users/unread-messages")
 			const data = (await res.json()).unreadMessages
 			const validation = UnreadMessageSchema.array().safeParse(data)
-
 			if (validation.success) {
 				unreadMessages.value = validation.data
 			} else {
@@ -38,8 +37,8 @@ export const useUnreadMessageStore = defineStore("unread-messages", () => {
 		return unreadMessages
 	}
 
-	const removeUnreadMessages = (channelId: string) => {
-		unreadMessages.value = [...unreadMessages.value.filter(um => um.channelId !== channelId)]
+	const removeUnreadMessages = (idChannel: string) => {
+		unreadMessages.value = [...unreadMessages.value.filter(um => um.idChannel !== idChannel)]
 	}
 
 	return { unreadMessages, init, getUnreadMessages, addUnreadMessage, removeUnreadMessages }

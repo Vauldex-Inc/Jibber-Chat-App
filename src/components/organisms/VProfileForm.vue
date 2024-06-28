@@ -121,11 +121,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed } from "vue"
 import { z } from "zod"
 import { useFetch } from "@/composables/useFetch"
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
+import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
 import VInput from "@/components/atoms/VInput.vue"
@@ -144,7 +145,8 @@ const emits = defineEmits<{
 const fileSchema = z.coerce.string()
 
 const currUser = useUser()
-const { getUserById, addUserProfile, getStatus } = useUserStore()
+const { getUser, addUserProfile, getStatus } = useUserStore()
+const { getProfile } = useUserProfileStore()
 const vFocus = {
   mounted: (el: HTMLInputElement) => el.focus(),
 }
@@ -203,7 +205,7 @@ const create = async () => {
     if (response.status === 200) {
       if (currUser) {
         const newProfile: Profile = {
-          userId: currUser.id,
+          idUser: currUser.id,
           nickName: formData.value.nickName,
           firstName: formData.value.firstName,
           lastName: formData.value.lastName,
@@ -227,17 +229,14 @@ const create = async () => {
 
 const doesExist = () => {
   if (currUser) {
-    const userProfile = getUserById(props.sender ? props.sender : currUser.id)
-    const user = userProfile.user
-    const profile = userProfile.profile
+    const userProfile = getUser(props.sender ? props.sender : currUser.id)
+    const user = userProfile?.username
 
-    if (profile) {
+    if (user) {
+      const profile = getProfile(userProfile.id)
+      console.log("Profile ", profile)
       method.value = "PUT"
-      formData.value.nickName = profile.nickName
-      formData.value.firstName = profile.firstName
-      formData.value.lastName = profile.lastName
-      formData.value.image = profile.image
-      formData.value.email = profile.email
+      formData.value = profile
     } else {
       method.value = "POST"
       formData.value.nickName = user?.username

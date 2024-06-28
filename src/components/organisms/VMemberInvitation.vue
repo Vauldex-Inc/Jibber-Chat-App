@@ -65,7 +65,7 @@ import type { Profile } from "@/types/Profile"
 
 const props = defineProps<{
   color: string
-  channelId: string
+  idChannel: string
 }>()
 
 const emits = defineEmits<{
@@ -81,7 +81,7 @@ const inputUserName = ref<string>("")
 const users = computed(() => {
   const appUsers = userStore.getUsers()
   return appUsers.value.filter(
-    (cu) => !channelUserStore.isMember(props.channelId, cu[0].id),
+    (cu) => !channelUserStore.isMember(props.idChannel, cu[0].id),
   )
 })
 
@@ -106,11 +106,11 @@ const filteredUserName = computed(() => {
     })
 })
 
-const checkInviteStatus = (userId: string) =>
-  invitedUsers.value.includes(userId)
+const checkInviteStatus = (idUser: string) =>
+  invitedUsers.value.includes(idUser)
 
-const selectedUserName = (userId: string) => {
-  invitedUsers.value.push(userId)
-  emits("action", userId)
+const selectedUserName = (idUser: string) => {
+  invitedUsers.value.push(idUser)
+  emits("action", idUser)
 }
 </script>

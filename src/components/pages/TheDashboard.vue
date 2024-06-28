@@ -39,7 +39,7 @@
           @toggle-info="toggleChatInfo"
           @archive="updateArchived"
           :channel="selectedChannel"
-          :sender="senderId"
+          :sender="idSender"
         />
         <VChatBoxArea
           :channel="selectedChannel"
@@ -50,7 +50,10 @@
       </template>
     </template>
     <template #actions>
-      <VSettings :profileImage="profileImage" :username="loggedUser!.username" />
+      <VSettings
+        :profileImage="profileImage"
+        :username="loggedUser!.username"
+      />
     </template>
     <template #notification>
       <VNotificationList />
@@ -61,7 +64,7 @@
           @color-update="updateColor"
           :images="messageStore.chatImages"
           :channel="selectedChannel"
-          :sender="senderId"
+          :sender="idSender"
           title="channel information"
         />
       </template>
@@ -96,7 +99,7 @@ import { useNotificationStore } from "@/stores/useNotificationStore"
 import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
 import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
-
+import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import VToast from "@/components/molecules/VToast.vue"
 import DashboardLayout from "@/components/templates/DashboardLayout.vue"
 import VChatList from "@/components/organisms/VChatList.vue"
@@ -123,6 +126,7 @@ import VSettings from "@/components/organisms/VSettings.vue"
 
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
+const userProfileStore = useUserProfileStore()
 const channelStore = useChannelStore()
 const publicCstore = usePublicChannelStore()
 const directCstore = useDirectChannelStore()
@@ -131,6 +135,8 @@ const channelUserStore = useChannelUserStore()
 const unreadMessageStore = useUnreadMessageStore()
 const directStore = useDirectChannelStore()
 const loggedUser = useUser()
+const messages = ref<Message[]>([])
+const idSender = ref<string | undefined>(undefined)
 
 const invitationNotif = notificationStore.getSelectedInvitation()
 const multiChannels = channelStore.getMultiChannels()
@@ -202,10 +208,14 @@ const updateColor = (color: string) => {
 }
 
 const updateArchived = (data: { color: string; archivedAt: string }) => {
-  if(selectedChannel.value) {
+  if (selectedChannel.value) {
     selectedChannel.value.color = data.color
     selectedChannel.value.archivedAt = data.archivedAt
-    channelStore.updateChannel(selectedChannel.value.id, data.color, data.archivedAt)
+    channelStore.updateChannel(
+      selectedChannel.value.id,
+      data.color,
+      data.archivedAt,
+    )
   }
 }
 
@@ -234,8 +244,8 @@ watch(selectedChannel, async (channel) => {
     await messageStore.getChannelMessages(channel.id)
 
     if (channel.channelType === "SNG") {
-      const sender = users?.find((u) => u.idUser !== loggedUser?.id)
-      senderId.value = sender?.idUser
+      const sender = users.find((u: User) => u.userId !== loggedUser.id)
+      senderId.value = sender.userId
     }
 
     if (activeSocket.value) {
@@ -258,12 +268,13 @@ watch(selectedChannel, async (channel) => {
 onMounted(async () => {
   await directStore.fetch()
   await userStore.init()
+  await userProfileStore.init()
   await publicCstore.fetch()
   await channelStore.init()
   await messageStore.init()
   await unreadMessageStore.init()
   await notificationStore.init()
-  
+
   onlineSocket.value = useSocket("/sessions", (data: MessageEvent) => {
     const updates = JSON.parse(data.data)
 
@@ -271,7 +282,7 @@ onMounted(async () => {
       case "CHANNEL_UPDATE": {
         const update = updates.content.channelUpdate
         channelStore.updateChannel(
-          updates.content.channelId,
+          updates.content.idChannel,
           update.color,
           update.archivedAt,
         )
@@ -281,7 +292,7 @@ onMounted(async () => {
       case "CHANNEL": {
         const channel = updates.content.channel
         channelStore.addNewChannel(channel)
-        const senderName = userStore.getUserNameById(channel.userId)
+        const senderName = userStore.getUserNameById(channel.idUser)
 
         if (channel.channelType !== "SNG") {
           notifications.value.push({
@@ -298,25 +309,25 @@ onMounted(async () => {
         const unreadMessage = updates.content.unread
         const latestMessage = {
           id: unreadMessage.messageId,
-          idChannel: unreadMessage.channelId,
-          idUser: unreadMessage.userId,
+          idChannel: unreadMessage.idChannel,
+          idUser: unreadMessage.idUser,
           text: unreadMessage.text,
           sentAt: unreadMessage.sentAt,
         }
 
         messageStore.addNewLatestMessage(latestMessage)
-        if (unreadMessage.channelId !== selectedChannel.value!.id) {
+        if (unreadMessage.idChannel !== selectedChannel.value.id) {
           unreadMessageStore.addUnreadMessage(unreadMessage)
         }
 
         if (
-          unreadMessage.senderId !== loggedUser?.id &&
-          unreadMessage.channelId !== selectedChannel.value!.id &&
-          channelUserStore.isMember(unreadMessage.channelId, loggedUser!.id)
+          unreadMessage.senderId !== loggedUser.id &&
+          unreadMessage.channelId !== selectedChannel.value.id &&
+          channelUserStore.isMember(unreadMessage.channelId, loggedUser.id)
         ) {
-          const channel = channelStore.getChannelById(unreadMessage.channelId)
+          const channel = channelStore.getChannelById(unreadMessage.idChannel)
           if (channel) {
-            const senderName = userStore.getUserNameById(unreadMessage.senderId)
+            const senderName = userStore.getUserNameById(unreadMessage.idSender)
             const title =
               channel.channelType === "SNG"
                 ? senderName
@@ -325,7 +336,7 @@ onMounted(async () => {
             notifications.value.push({
               id: unreadMessage.messageId,
               title: title ? title : "",
-              message: unreadMessage.text
+              message: unreadMessage.text,
             })
             notifAudio.play()
           }
@@ -353,7 +364,7 @@ onMounted(async () => {
 
       case "NOTIFICATION": {
         const notification = updates.content.notification
-        const channel = channelStore.getChannelById(notification.channelId)
+        const channel = channelStore.getChannelById(notification.idChannel)
         if (channel?.channelType !== "SNG") {
           notificationStore.addNewNotification(notification)
           notificationStore.setSelectedInvitation(notification)
@@ -370,13 +381,13 @@ onMounted(async () => {
 
       case "NEW_PROFILE": {
         const profile = updates.content.newProfile
-        userStore.addUserProfile(profile.userId, profile)
+        userStore.addUserProfile(profile.idUser, profile)
         break
       }
 
       case "UPDATE_PROFILE": {
         const profile = updates.content.updateProfile
-        userStore.addUserProfile(profile.userId, profile)
+        userStore.addUserProfile(profile.idUser, profile)
         break
       }
     }

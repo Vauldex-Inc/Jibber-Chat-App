@@ -59,7 +59,12 @@ import VAvatar from "@/components/molecules/VAvatar.vue"
 import VBadge from "@/components/atoms/VBadge.vue"
 import VTextGroup from "@/components/molecules/VTextGroup.vue"
 
-import { ChannelSchema, DirectChannelSchema, type Channel, type DirectChannel } from "@/types/Channel"
+import {
+  ChannelSchema,
+  DirectChannelSchema,
+  type Channel,
+  type DirectChannel,
+} from "@/types/Channel"
 import { formatSentAt } from "@/composables/useDateFormatter"
 
 const prop = defineProps<{ item: Channel | DirectChannel }>()
@@ -88,7 +93,7 @@ const color = computed(() => {
 })
 
 const channelAbbr = computed(() => {
-  if (validation.success){
+  if (validation.success) {
     return validation.data.title.slice(0, 1)
   }
 })

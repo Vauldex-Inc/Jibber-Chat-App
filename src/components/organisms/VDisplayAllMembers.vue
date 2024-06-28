@@ -62,7 +62,7 @@ const userStore = useUserStore()
 
 const channelUserStore = useChannelUserStore()
 const props = defineProps<{
-  channelId: string
+  idChannel: string
 }>()
 const emits = defineEmits<{
   close: [value: boolean]
@@ -91,18 +91,17 @@ const closeDisplayProfile = () => {
 }
 
 const selectedProfile = (id: string) => {
+  console.log("selectedProfile ", id)
   stateDisplayProfile.value = !stateDisplayProfile.value
   sender.value = id
 }
 
 onMounted(async () => {
-  channelUsers.value = await channelUserStore.getChannelUsers(props.channelId)
+  channelUsers.value = await channelUserStore.getChannelUsers(props.idChannel)
   if (channelUsers.value) {
-    users.value = channelUsers.value.map((channelUser, idx) => {
-      console.log("Here ", idx, channelUser)
-      return userStore.getUserById(channelUser.userId)
+    users.value = channelUsers.value.map((channelUser) => {
+      return userStore.getUser(channelUser.idUser)
     })
   }
-  console.log("Users ", users.value)
 })
 </script>

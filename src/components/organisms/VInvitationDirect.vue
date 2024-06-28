@@ -78,23 +78,22 @@ const unInvitedUsers = ref<[string, string | undefined][]>([])
 const invitedUsers = ref<string[]>([])
 
 const filteredUserName = computed(() => {
-  return unInvitedUsers.value
-    .filter(([id, name]) => {
-      const currentName = inputUserName.value.toLowerCase()
-      return (
-        userStore.getUserNameById(id)
-          ?.toLowerCase()
-          .includes(currentName) && !isInvited(id) && id !== loggedUser?.id
-      )
-    })
+  return unInvitedUsers.value.filter(([id, name]) => {
+    const currentName = inputUserName.value.toLowerCase()
+    return (
+      userStore.getUserNameById(id)?.toLowerCase().includes(currentName) &&
+      !isInvited(id) &&
+      id !== loggedUser?.id
+    )
+  })
 })
 
 const isInvited = (idUser: string) => invitedUsers.value.includes(idUser)
 
-onMounted( async () => {
+onMounted(async () => {
   directStore.channels.value.forEach((c) => invitedUsers.value.push(c.idUser))
   users.value.forEach((u) => {
-    if (!(invitedUsers.value.includes(u[0].id))) {
+    if (!invitedUsers.value.includes(u[0].id)) {
       const id = u[0].id
       const name = userStore.getUserNameById(u[0].id)
       unInvitedUsers.value.push([id, name])
@@ -104,7 +103,7 @@ onMounted( async () => {
 
 const create = async (idUser?: string, name?: string) => {
   try {
-    if(idUser) {
+    if (idUser) {
       await directStore.post(idUser)
       const index = unInvitedUsers.value.indexOf([idUser, name])
       unInvitedUsers.value.splice(index, 1)

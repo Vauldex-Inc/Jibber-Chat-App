@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 const profileSchema = z.object({
-	userId: z.string(),
+	idUser: z.string(),
 	nickName: z.string().optional(),
 	firstName: z.string().optional(),
 	lastName: z.string().optional(),

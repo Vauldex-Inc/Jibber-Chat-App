@@ -1,31 +1,31 @@
 <template>
   <li
     v-if="loggedUser"
-    :class="message.userId === loggedUser.id ? `self-end` : 'self-start'"
+    :class="message.idUser === loggedUser.id ? `self-end` : 'self-start'"
     class="flex items-start gap-4"
   >
     <VAvatar
-      v-if="message.userId !== loggedUser.id"
-      :image="userStore.senderProfile(message.userId)"
-      :status="userStore.senderStatus(message.userId)"
+      v-if="message.idUser !== loggedUser.id"
+      :image="userStore.senderProfile(message.idUser)"
+      :status="userStore.senderStatus(message.idUser)"
     />
     <div class="flex flex-col items-start gap-2">
       <div
-        :class="message.userId === loggedUser.id ? 'self-end' : ''"
+        :class="message.idUser === loggedUser.id ? 'self-end' : ''"
         class="flex items-center gap-1"
       >
-        <template v-if="message.userId !== loggedUser.id">
-          <p class="text-xs">{{ userStore.senderName(message.userId) }}</p>
+        <template v-if="message.idUser !== loggedUser.id">
+          <p class="text-xs">{{ userStore.senderName(message.idUser) }}</p>
           <p class="text-xs">•</p>
         </template>
         <p class="text-xs">{{ userStore.sentAtFormatter(message) }}</p>
       </div>
       <p
         :class="[
-          message.userId === loggedUser.id
+          message.idUser === loggedUser.id
             ? `self-end text-gray-100`
             : 'self-start text-gray-800 dark:text-gray-300',
-          message.userId === loggedUser.id && color
+          message.idUser === loggedUser.id && color
             ? color
             : 'bg-gray-300 text-gray-800 dark:bg-slate-800 dark:text-gray-300',
         ]"
@@ -47,6 +47,7 @@ import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import type { Message } from "@/types/Message.ts"
+import { useUserProfileStore } from "@/stores/useUserProfileStore"
 
 defineProps<{
   message: Message
@@ -54,5 +55,6 @@ defineProps<{
 }>()
 
 const userStore = useUserStore()
+const { getProfile } = useUserProfileStore()
 const loggedUser = useUser()
 </script>

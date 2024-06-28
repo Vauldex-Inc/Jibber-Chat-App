@@ -20,7 +20,7 @@ const UnreadMessageSchema = z.object({
 })
 
 type Message = z.infer<typeof MessageSchema>
-type UnreadMessage = z.infer<typeof UnreadMessageSchema> 
+type UnreadMessage = z.infer<typeof UnreadMessageSchema>
 
 export {
 	type Message,

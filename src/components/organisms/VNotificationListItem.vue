@@ -70,7 +70,7 @@ const isRead = computed(() => {
 })
 
 const channelName = computed(() => {
-  const channel = channelStore.getChannelById(props.invitation.channelId)
+  const channel = channelStore.getChannelById(props.invitation.idChannel)
   return channel?.title
 })
 
@@ -79,7 +79,7 @@ const formattedSentAtDate = computed(() => {
 })
 
 const sender = computed(() => {
-  return userStore.getUserNameById(props.invitation.userId)
+  return userStore.getUserNameById(props.invitation.idUser)
 })
 
 const viewNotifInvite = () => {

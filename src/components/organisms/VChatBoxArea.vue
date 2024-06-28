@@ -35,8 +35,8 @@ import { onUpdated, ref } from "vue"
 
 import VChatBalloon from "@/components/organisms/VChatBalloon.vue"
 
-import type { Message } from "@/types/Message.ts"
-import type { Channel } from "@/types/Channel.ts"
+import type { Message } from "@/types/Message"
+import type { Channel } from "@/types/Channel"
 
 const chatList = ref<HTMLElement | undefined>(undefined)
 

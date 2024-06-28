@@ -7,7 +7,7 @@ const ChannelSchema = z.object({
 	channelType: z.string().optional(),
 	color: z.string().optional(),
 	createdAt: z.string(),
-	archivedAt: z.string().optional() 
+	archivedAt: z.string().optional()
 })
 
 const ChannelUserSchema = z.object({
@@ -16,17 +16,17 @@ const ChannelUserSchema = z.object({
 })
 
 const DirectChannelSchema = z.object({
-  id: z.string().uuid(),
-  color: z.string().optional(),
-  archivedAt: z.string().datetime().nullable(),
-  idUser: z.string().uuid()
+	id: z.string().uuid(),
+	color: z.string().optional(),
+	archivedAt: z.string().datetime().nullable(),
+	idUser: z.string().uuid()
 })
 
 type Channel = z.infer<typeof ChannelSchema>
 type ChannelUser = z.infer<typeof ChannelUserSchema>
 type DirectChannel = z.infer<typeof DirectChannelSchema>
 
-export { 
+export {
 	type Channel,
 	type ChannelUser,
 	type DirectChannel,

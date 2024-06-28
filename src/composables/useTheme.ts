@@ -7,7 +7,7 @@ const curTheme = ref<Theme>("light")
 export const useTheme = () => {
 
 	const init = () => {
-		const theme = localStorage.getItem("theme")
+		const theme = localStorage.getItem("theme") as Theme
 		if (theme) {
 			setTheme(theme)
 		} else {

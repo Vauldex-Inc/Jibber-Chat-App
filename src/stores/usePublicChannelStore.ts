@@ -72,7 +72,8 @@ const usePublicChannelStore = defineStore("public-channels", () => {
     channels,
     fetch,
     post,
-    getTitle
+    getTitle,
+    add
   }
 })
 

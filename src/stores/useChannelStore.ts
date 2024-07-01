@@ -82,7 +82,7 @@ export const useChannelStore = defineStore("channels", () => {
 			const title = validation.success ? validation.data.title : userProfileStore.getName(channel.idUser)
 			const channelType = validation.success ? "MPU" : "SNG"
 
-			const { data } = await axios.put(`/channels/${channel.id}`, {
+			await axios.put(`/channels/${channel.id}`, {
 				title: title,
 				channelType: channelType,
 				color: undefined,

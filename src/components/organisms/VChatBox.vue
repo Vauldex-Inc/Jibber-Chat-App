@@ -23,7 +23,7 @@
     >
       <div
         v-if="imageForm.image"
-        class="m-1 mb-1 flex inline-flex items-center rounded-md bg-white px-1 py-1 dark:bg-slate-700"
+        class="m-1 mb-1 inline-flex items-center rounded-md bg-white px-1 py-1 dark:bg-slate-700"
       >
         <img
           v-if="typeof imageForm.image === 'string'"
@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue"
-import { z } from 'zod'
+import { z } from "zod"
 import VInput from "@/components/atoms/VInput.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
 import type { Channel, DirectChannel } from "@/types/Channel.ts"

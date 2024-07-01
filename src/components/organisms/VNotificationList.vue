@@ -45,7 +45,6 @@ import VIconButton from "@/components/atoms/VIconButton.vue"
 import VNotificationListItem from "@/components/organisms/VNotificationListItem.vue"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { useChannelStore } from "@/stores/useChannelStore"
-import { storeToRefs } from "pinia"
 import { type Invitation } from "@/types/Notification"
 
 const notificationStore = useNotificationStore()

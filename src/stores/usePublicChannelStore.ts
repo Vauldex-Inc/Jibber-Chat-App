@@ -4,31 +4,32 @@ import { ZodError, z } from "zod"
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
 
-const ChannelSchema = z.object({
+const PublicChannelSchema = z.object({
   id: z.string().uuid(),
   title: z.string(),
-  color: z.string(),
-  archivedAt: z.string().datetime().nullable()
+  color: z.string().optional(),
+  createdAt: z.string().datetime().optional(),
+  archivedAt: z.string().datetime().optional()
 })
 
-type Channel = z.infer<typeof ChannelSchema>
+type PublicChannel = z.infer<typeof PublicChannelSchema>
 
 const usePublicChannelStore = defineStore("public-channels", () => {
-  const _channels = ref<Array<Channel>>([])
+  const _channels = ref<Array<PublicChannel>>([])
   const resource = "/channels"
 
-  const add = (channel: Channel) => _channels.value.push(channel)
-  const set = (list: Array<Channel>) => _channels.value = list
+  const add = (channel: PublicChannel) => _channels.value.push(channel)
+  const set = (list: Array<PublicChannel>) => _channels.value = list
 
   const getTitle = (idChannel: string): string => {
-    const found = _channels.value.find((c: Channel) => c.id === idChannel)
+    const found = _channels.value.find((c: PublicChannel) => c.id === idChannel)
     return found ? found.title : "Anonymous"
   }
 
   const fetch = async () => {
     try {
       const { data } = await axios.get(resource)
-      const list = data.map((d:any) => {
+      const list = data.map((d: PublicChannel) => {
         return {
           id: d.id,
           title: d.title,
@@ -65,7 +66,7 @@ const usePublicChannelStore = defineStore("public-channels", () => {
     }
   }
 
-  const channels = computed(() => _channels) 
+  const channels = computed(() => _channels)
 
   return {
     channels,

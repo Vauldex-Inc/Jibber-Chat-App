@@ -2,6 +2,8 @@ import { ref } from 'vue'
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
 import { profileDataSchema, type Profile } from "@/types/Profile"
+import { useUserStore } from "@/stores/useUserStore"
+
 
 export const useUserProfileStore = defineStore("userProfile", () => {
   const profiles = ref<Profile[]>([])
@@ -43,6 +45,7 @@ export const useUserProfileStore = defineStore("userProfile", () => {
   }
 
   const getNickname = (idUser: string): string | undefined => {
+    const userStore = useUserStore()
     const data = validateProfile(idUser)
     return data ? data.nickName : userStore.getUser(idUser)?.username
   }

@@ -15,7 +15,7 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
   const fetch = async () => {
     try {
       const { data } = await axios.get("/me/channels")
-      const list: Array<DirectChannel> = data.channels.map((d: any) => DirectChannelSchema.parse(d))
+      const list: Array<DirectChannel> = data.channels.map((d: DirectChannel) => DirectChannelSchema.parse(d))
       set(list)
     } catch (e) {
       const error = e as AxiosError
@@ -27,7 +27,7 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
     const uuid = z.string().uuid()
     try {
       uuid.parse(idUser)
-      const { data } = await axios.post("/channels", { 
+      const { data } = await axios.post("/channels", {
         channelType: CHANNEL_TYPE,
         idUser
       })
@@ -37,7 +37,7 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
       const error = e as AxiosError | ZodError
       console.error(error)
     }
-  } 
+  }
   const channels = computed(() => _channels)
   const getDirectChannel = (idChannel: string) => {
     return _channels.value.find((c: DirectChannel) => c.id === idChannel)

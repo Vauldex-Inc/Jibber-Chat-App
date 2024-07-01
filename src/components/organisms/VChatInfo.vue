@@ -186,10 +186,6 @@ const userProfileStore = useUserProfileStore()
 const channelUserStore = useChannelUserStore()
 const publicChannelStore = usePublicChannelStore()
 
-const addMember = async (receiverId: string) => {
-  await userStore.inviteMember(props.channel.id, receiverId)
-}
-
 const channelType = computed(() => {
   const typeValidation = ChannelSchema.safeParse(props.channel)
   return typeValidation.success ? "MPU" : "SNG"

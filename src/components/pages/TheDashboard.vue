@@ -170,7 +170,7 @@ const privateChannels = computed(() => {
   })
 })
 
-const isChatInfoOpen = ref<boolean>(false)
+const isChatInfoOpen = ref<boolean>(true) // switch to false after
 
 const toggleChatInfo = () => {
   isChatInfoOpen.value = !isChatInfoOpen.value
@@ -260,7 +260,7 @@ watch(selectedChannel, async (channel) => {
     const users = await channelUserStore.getChannelUsers(channel.id)
     await messageStore.getChannelMessages(channel.id)
     const validation = ChannelSchema.safeParse(channel)
-    
+
     if (!validation.success) {
       senderId.value = channel.idUser
     }

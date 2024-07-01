@@ -2,7 +2,6 @@ import { ref } from "vue"
 import { defineStore } from "pinia"
 import type { User } from "@/types/User"
 import type { Message } from "@/types/Message"
-import { useFetch } from "@/composables/useFetch"
 import axios, { AxiosError } from "axios"
 import { useDateFormatter } from "@/composables/useDateFormatter"
 
@@ -136,16 +135,14 @@ export const useUserStore = defineStore("users", () => {
 		return "offline"
 	}
 
+
 	const inviteMember = async (idChannel: string, idSender: string) => {
 		try {
-			await useFetch(`/channels/${idChannel}/users`, {
-				method: "POST",
-				body: JSON.stringify({
-					idUser: idSender,
-				}),
-			})``
-		} catch (error) {
-			throw new Error(`Error: ${error}`)
+			await axios.post(`/channels/${idChannel}/users`, {
+				idUser: idSender,
+			})
+		} catch (e) {
+			throw new Error(`Error: ${e}`)
 		}
 	}
 

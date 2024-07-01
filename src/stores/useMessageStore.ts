@@ -1,9 +1,6 @@
 import { ref, computed } from "vue"
-
 import { defineStore } from "pinia"
-
 import { useFetch } from "@/composables/useFetch"
-
 import { MessageSchema, type Message } from "@/types/Message"
 import axios from "axios"
 
@@ -21,7 +18,7 @@ export const useMessageStore = defineStore("messages", () => {
 
 	const init = async () => {
 		try {
-			const {data} = await axios.get("/channels/latest-messages")
+			const { data } = await axios.get("/channels/latest-messages")
 			const validation = MessageSchema.array().safeParse(data.filter((d: Message) => d !== null))
 			if (validation.success) {
 				latestMessages.value = validation.data
@@ -44,9 +41,9 @@ export const useMessageStore = defineStore("messages", () => {
 
 	const sendMessage = async (idChannel: string, message: string, img: string | undefined) => {
 		try {
-			const { data } = await axios.post(`/channels/${idChannel}/messages`, { 
+			const { data } = await axios.post(`/channels/${idChannel}/messages`, {
 				text: message,
-				image: img 
+				image: img
 			})
 			const messageValidation = MessageSchema.safeParse(data.messages)
 

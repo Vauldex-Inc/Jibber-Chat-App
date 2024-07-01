@@ -80,32 +80,28 @@ const inputUserName = ref<string>("")
 
 const users = computed(() => {
   const appUsers = userStore.getUsers()
-  const nonMemberUsers = channelUserStore.nonMembers(
+  const nonMemberUsers = channelUserStore.getNonMembers(
     props.idChannel,
     appUsers.value,
   )
 
-  return nonMemberUsers
+  return nonMemberUsers?.map((user: User) => {
+    const userProfile = userProfileStore.getProfile(user.id)
+    if (userProfile?.firstName && userProfile?.lastName) {
+      return [user.id, `${userProfile.firstName} ${userProfile.lastName}`]
+    } else if (userProfile?.nickName) {
+      return [user.id, userProfile.nickName]
+    } else {
+      return [user.id, user.username]
+    }
+  })
 })
 
 const filteredUserName = computed(() => {
-  if (users.value) {
-    return users.value
-      .map((user: User) => {
-        const userProfile = userProfileStore.getProfile(user.id)
-        if (userProfile?.firstName && userProfile?.lastName) {
-          return [user.id, `${userProfile.firstName} ${userProfile.lastName}`]
-        } else if (userProfile?.nickName) {
-          return [user.id, userProfile.nickName]
-        } else {
-          return [user.id, user.username]
-        }
-      })
-      .filter((userName) => {
-        const searchedName = inputUserName.value.toLowerCase()
-        return userName[1].toLowerCase().includes(searchedName)
-      })
-  }
+  return users.value?.filter((userName) => {
+    const searchedName = inputUserName.value.toLowerCase()
+    return userName[1].toLowerCase().includes(searchedName)
+  })
 })
 
 const checkInviteStatus = (idUser: string) =>

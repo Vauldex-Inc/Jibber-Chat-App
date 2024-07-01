@@ -19,13 +19,13 @@
     </template>
     <template v-else>
       <VAvatar
-        :image="profileStore.getImage(item.idUser)"
-        :status="userStore.getStatus(item.idUser)"
+        :image="profileStore.getImage(user)"
+        :status="userStore.getStatus(user)"
       />
       <VTextGroup
         :is-bold="unReadMessages.length > 0"
         class="flex-1"
-        :title="profileStore.getName(item.idUser)"
+        :title="profileStore.getName(user)"
         :text="latestMessage ? latestMessage.text : ''"
       />
     </template>
@@ -56,6 +56,7 @@ import {
   type DirectChannel,
 } from "@/types/Channel"
 import { formatSentAt } from "@/composables/useDateFormatter"
+import { useUser } from "@/composables/useUser"
 
 import { useMessageStore } from "@/stores/useMessageStore"
 import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
@@ -74,6 +75,8 @@ const emits = defineEmits<{
   open: [value: string, type: "SNG" | "MPU"]
 }>()
 
+const loggedUser = useUser()
+
 const profileStore = useUserProfileStore()
 const userStore = useUserStore()
 const messageStore = useMessageStore()
@@ -90,6 +93,20 @@ const unReadMessages = computed(() => {
 const channelType = computed(() => {
   const typeValidation = ChannelSchema.safeParse(prop.item)
   return typeValidation.success ? "MPU" : "SNG"
+})
+
+const user = computed(() => {
+  const validation = DirectChannelSchema.safeParse(prop.item)
+  
+  if (validation.success) {
+    if (loggedUser?.id === validation.data.idUser) {
+      return validation.data.idReceiver
+    } else {
+      return validation.data.idUser
+    }
+  } else {
+    return prop.item.idUser
+  }
 })
 
 const color = computed(() => {

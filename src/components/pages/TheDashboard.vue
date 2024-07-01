@@ -208,7 +208,15 @@ const openChannel = async (id: string, type: "SNG" | "MPU") => {
 
 const newChannel = (channel: Channel | undefined) => {
   if (channel) {
+    const newPc = {
+      id: channel.id,
+      title: channel.title,
+      color: channel.color,
+      archivedAt: channel.archivedAt
+    }
+    
     channelStore.addNewChannel(channel)
+    publicCstore.add(newPc)
   }
   variant.value = undefined
 }

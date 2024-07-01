@@ -103,8 +103,6 @@ onMounted(async () => {
       unInvitedUsers.value.push([id, name])
     }
   })
-  console.log(unInvitedUsers.value)
-  console.log(filteredUserName.value)
 })
 
 const create = async (idUser?: string, name?: string) => {

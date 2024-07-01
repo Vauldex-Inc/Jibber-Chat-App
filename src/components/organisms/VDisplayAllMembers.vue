@@ -90,7 +90,6 @@ const closeDisplayProfile = () => {
 }
 
 const selectedProfile = (id: string) => {
-  console.log("selectedProfile ", id)
   stateDisplayProfile.value = !stateDisplayProfile.value
   sender.value = id
 }

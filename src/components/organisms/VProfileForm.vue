@@ -234,7 +234,6 @@ const doesExist = () => {
 
     if (user) {
       const profile = getProfile(userProfile.id)
-      console.log("Profile ", profile)
       method.value = "PUT"
       formData.value = profile
     } else {

@@ -18,7 +18,7 @@
       class="absolute bottom-0 left-2 z-30 translate-y-full rounded-md bg-white px-2 py-5 shadow-xl dark:bg-slate-800"
     >
       <ul
-        v-if="notificationsCopy"
+        v-if="notificationsCopy?.length !== 0"
         @mouseleave="toggleNotifications"
         class="max-h-80 w-[28rem] divide-y overflow-y-scroll dark:divide-slate-700"
       >
@@ -40,36 +40,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref, computed, onMounted, onUpdated } from "vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
 import VNotificationListItem from "@/components/organisms/VNotificationListItem.vue"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { useChannelStore } from "@/stores/useChannelStore"
+import { storeToRefs } from "pinia"
+import { type Invitation } from "@/types/Notification"
 
 const notificationStore = useNotificationStore()
+const notifications = notificationStore.getNotifications()
 const channelStore = useChannelStore()
 
 const displayNotification = ref<boolean>(false)
 
 const unSeenCount = computed(() => {
-  return (
-    notificationsCopy.value &&
-    notificationsCopy.value.filter((n) => n.seenAt === undefined).length
-  )
+  return notificationsCopy.value.filter((n) => n.seenAt === undefined).length
 })
 
-const notifications = notificationStore.getNotifications()
-
 const notificationsCopy = computed(() => {
-  if (notifications.value) {
-    return notifications.value
-      .filter((n) => {
-        const channel = channelStore.getChannelById(n.idChannel)
-
-        return channel?.channelType !== "SNG"
-      })
-      .reverse()
-  }
+  return notifications.value
+    .filter((n) => {
+      const channel = channelStore.getChannelById(n.idChannel)
+      return channel?.channelType !== "SNG"
+    })
+    .reverse()
 })
 
 const toggleNotifications = () => {

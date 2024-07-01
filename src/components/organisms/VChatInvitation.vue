@@ -15,7 +15,7 @@
         <img src="@/assets/images/notif.svg" class="aspect-square h-8" />
       </span>
       <p class="text-center dark:text-gray-400">
-        {{ userStore.senderName(notification.idSender) }} invited you to join
+        {{ name }} invited you to join
         his/her channel.
       </p>
     </div>
@@ -42,6 +42,7 @@ import type { Invitation } from "@/types/Notification"
 
 defineProps<{
   notification: Invitation
+  name: string
 }>()
 
 const emits = defineEmits<{

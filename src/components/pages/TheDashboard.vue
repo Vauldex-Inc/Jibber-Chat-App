@@ -8,6 +8,7 @@
   <VModal :is-open="invitationModalOpen" @close="closeInvitationModal">
     <VChatInvitation
       :notification="invitationNotif!"
+      :name="userProfileStore.getName(invitationNotif?.idSender!)"
       @view="viewChannel"
       @close="closeInvitationModal"
     />
@@ -173,8 +174,10 @@ const toggleChatList = () => {
 }
 
 const profileImage = computed(() => {
-  const id = userSchema.parse(loggedUser).id
-  return userProfileStore.getImage(id)
+  const userValidation = userSchema.safeParse(loggedUser)
+  if (userValidation.success) {
+    return userProfileStore.getImage(userValidation.data.id)
+  }
 })
 
 const viewChannel = (id: string) => {

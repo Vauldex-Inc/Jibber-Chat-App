@@ -1,20 +1,18 @@
-import { ref } from "vue"
+import { ref, computed } from "vue"
 
 import { defineStore } from "pinia"
-
-import { useFetch } from "@/composables/useFetch"
+import axios from "axios";
 
 import type { Invitation } from "@/types/Notification"
 
 const useNotificationStore = defineStore("notifications", () => {
-	const notifications = ref<Invitation[] | undefined>([])
+	const notifications = ref<Invitation[]>([])
 	const selectedInvitation = ref<Invitation | undefined>(undefined)
 
 	const init = async () => {
 		try {
-			const res = await useFetch("/notifications")
-			const data = (await res.json()).notifications
-			notifications.value = data
+			const { data } = await axios.get("/notifications")
+			notifications.value = data.notifications
 		} catch (error) {
 			if (typeof error == "string") throw new Error(error)
 		}
@@ -39,7 +37,7 @@ const useNotificationStore = defineStore("notifications", () => {
 
 	const updateNotification = async (id: string) => {
 		try {
-			const response = await useFetch(`/channels/${id}/notifications`, { "method": "PUT" })
+			const response = await axios.put(`/notifications/${id}`, { "method": "PUT" })
 			if (response.status === 200) {
 				const foundNotif = notifications.value?.find((n) => n.id === id)
 				if (foundNotif)

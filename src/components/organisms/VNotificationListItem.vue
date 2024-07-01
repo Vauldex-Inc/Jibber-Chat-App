@@ -34,13 +34,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { computed } from "vue"
 import { useDateFormatter } from "@/composables/useDateFormatter"
-import { useUserStore } from "@/stores/useUserStore"
 import { useChannelStore } from "@/stores/useChannelStore"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import type { Invitation } from "@/types/Notification"
 import { formatSentAt } from "@/composables/useDateFormatter"
+import { useUserProfileStore } from "@/stores/useUserProfileStore"
 
 const props = defineProps<{
   invitation: Invitation
@@ -50,7 +50,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const userStore = useUserStore()
+const userProfileStore = useUserProfileStore()
 const channelStore = useChannelStore()
 const notificationStore = useNotificationStore()
 const dateFormatter = useDateFormatter()
@@ -79,7 +79,7 @@ const formattedSentAtDate = computed(() => {
 })
 
 const sender = computed(() => {
-  return userStore.getUserNameById(props.invitation.idUser)
+  return userProfileStore.getName(props.invitation.idUser)
 })
 
 const viewNotifInvite = () => {

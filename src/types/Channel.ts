@@ -19,7 +19,8 @@ const DirectChannelSchema = z.object({
 	id: z.string().uuid(),
 	color: z.string().optional(),
 	archivedAt: z.string().datetime().optional(),
-	idUser: z.string().uuid()
+	idUser: z.string().uuid(),
+	idReceiver: z.string().uuid()
 })
 
 type Channel = z.infer<typeof ChannelSchema>

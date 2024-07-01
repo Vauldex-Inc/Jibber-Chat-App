@@ -47,6 +47,7 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
     channels,
     fetch,
     post,
+    add,
     getDirectChannel
   }
 })

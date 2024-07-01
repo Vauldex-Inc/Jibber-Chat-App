@@ -115,7 +115,7 @@ import VInvitationDirect from "@/components/organisms/VInvitationDirect.vue"
 import VNotificationList from "@/components/organisms/VNotificationList.vue"
 
 import type { Channel, DirectChannel } from "@/types/Channel"
-import { ChannelSchema } from "@/types/Channel"
+import { ChannelSchema, DirectChannelSchema } from "@/types/Channel"
 import type { Notification } from "@/types/Notification"
 import { userSchema, type User } from "@/types/User"
 
@@ -150,7 +150,16 @@ const onlineSocket = ref<WebSocket | undefined>(undefined)
 const invitationModalOpen = ref<boolean>(false)
 
 const idSender = computed(() => {
-  return selectedChannel.value?.idUser
+  const validation = DirectChannelSchema.safeParse(selectedChannel.value)
+  if (validation.success) {
+    if (loggedUser?.id === validation.data.idUser) {
+      return validation.data.idReceiver
+    } else {
+      return validation.data.idUser
+    }
+  } else {
+    return selectedChannel.value?.idUser
+  }
 })
 
 const privateChannels = computed(() => {
@@ -299,16 +308,19 @@ onMounted(async () => {
 
       case "CHANNEL": {
         const channel = updates.content.channel
-        channelStore.addNewChannel(channel)
-        const senderName = userProfileStore.getName(channel.idUser)
+        const channelValidation = ChannelSchema.safeParse(channel)
+        if (channelValidation.success) {
+          channelStore.addNewChannel(channelValidation.data) //change to add
+          const senderName = userProfileStore.getName(channelValidation.data.idUser)
 
-        if (channel.channelType !== "SNG") {
           notifications.value.push({
             id: channel.id,
             message: `${senderName} created a new channel`,
             title: "Notification",
           })
           notifAudio.play()
+        } else {
+          directCstore.add(channel)
         }
         break
       }

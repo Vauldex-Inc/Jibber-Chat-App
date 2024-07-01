@@ -22,8 +22,7 @@ export const useMessageStore = defineStore("messages", () => {
 	const init = async () => {
 		try {
 			const {data} = await axios.get("/channels/latest-messages")
-			const validation = MessageSchema.array().safeParse(data)
-
+			const validation = MessageSchema.array().safeParse(data.filter((d: Message) => d !== null))
 			if (validation.success) {
 				latestMessages.value = validation.data
 			} else {
@@ -44,17 +43,20 @@ export const useMessageStore = defineStore("messages", () => {
 	}
 
 	const sendMessage = async (idChannel: string, message: string, img: string | undefined) => {
-		const res = await useFetch(`/channels/${idChannel}/messages`, {
-			method: "POST",
-			body: JSON.stringify({
+		try {
+			const { data } = await axios.post(`/channels/${idChannel}/messages`, { 
 				text: message,
-				image: img
+				image: img 
 			})
-		})
+			const messageValidation = MessageSchema.safeParse(data.messages)
 
-		if (res.status === 200) {
-			const data = (await res.json()).messages
-			latestMessages.value.push(data)
+			if (messageValidation.success) {
+				latestMessages.value.push(messageValidation.data)
+			} else {
+				throw new Error("Unknown Format")
+			}
+		} catch (error) {
+			error instanceof Error ? console.error(error.message) : ""
 		}
 	}
 

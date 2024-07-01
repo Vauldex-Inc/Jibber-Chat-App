@@ -6,7 +6,7 @@ const MessageSchema = z.object({
 	idUser: z.string(),
 	text: z.string(),
 	image: z.string().optional(),
-	sentAt: z.string()
+	sentAt: z.string().datetime()
 })
 
 const UnreadMessageSchema = z.object({

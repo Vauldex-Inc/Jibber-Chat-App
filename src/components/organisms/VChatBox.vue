@@ -115,8 +115,10 @@ const sendMessage = () => {
   } else if (message.value) {
     emits("send", message.value)
   }
+
   message.value = ""
   imageForm.value.image = ""
+  if (fileInput.value instanceof HTMLInputElement) fileInput.value.value = ""
   isMessageWithImage.value = false
 }
 

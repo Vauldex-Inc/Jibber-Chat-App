@@ -220,11 +220,17 @@ const newChannel = (channel: Channel | undefined) => {
   variant.value = undefined
 }
 
-const newDirect = (channel: Channel | undefined) => {
+const newDirect = (channel: DirectChannel | undefined) => {
   if (channel) {
-    channelStore.addNewChannel(channel)
+    const channelValidation = DirectChannelSchema.safeParse(channel)
+    if (channelValidation.success) {
+      directCstore.add(channel)
+    } else {
+      throw new Error("Failed to create channel")
+    }
   }
-  variant.value = undefined
+  
+
 }
 
 const updateColor = (color: string) => {
@@ -314,6 +320,7 @@ onMounted(async () => {
       }
 
       case "CHANNEL": {
+        console.log(updates)
         const channel = updates.content.channel
         const channelValidation = ChannelSchema.safeParse(channel)
         if (channelValidation.success) {

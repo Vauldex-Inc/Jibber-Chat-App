@@ -3,7 +3,7 @@
     class="relative flex h-screen w-screen items-center justify-center bg-slate-900/70"
   >
     <img class="rounded-md p-1" :src="chatImages[count]" />
-    <div class="absolute left-5">
+    <div class="absolute left-5" v-if="chatImages.length > 1">
       <VIconButton
         tool-tip="previous"
         size="large"
@@ -11,7 +11,7 @@
         icon="./src/assets/images/left-button.svg"
       />
     </div>
-    <div class="absolute right-5">
+    <div class="absolute right-5" v-if="chatImages.length > 1">
       <VIconButton
         tool-tip="next"
         size="large"

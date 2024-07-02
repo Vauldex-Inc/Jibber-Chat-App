@@ -21,7 +21,7 @@ export const useNotificationStore = defineStore("notifications", () => {
 		return notifications
 	}
 
-	const setSelectedInvitation = (notification: Invitation) => {
+	const setSelectedInvitation = (notification?: Invitation) => {
 		selectedInvitation.value = notification
 	}
 
@@ -29,8 +29,8 @@ export const useNotificationStore = defineStore("notifications", () => {
 		return selectedInvitation
 	}
 
-	const addNewNotification = (notification: Invitation) => {
-		notifications.value?.push(notification)
+	const addNewNotification = (notification?: Invitation) => {
+		notifications.value?.push(notification!)
 	}
 
 	const updateNotification = async (id: string) => {
@@ -38,10 +38,9 @@ export const useNotificationStore = defineStore("notifications", () => {
 			const response = await axios.put(`/notifications/${id}`, { "method": "PUT" })
 			if (response.status === 200) {
 				const foundNotif = notifications.value?.find((n) => n.id === id)
-				if (foundNotif)
+				if (foundNotif) {
 					foundNotif.seenAt = new Date().toISOString()
-
-				return true
+				}
 			}
 		} catch (error) {
 			if (typeof error == "string") throw new Error(error)

@@ -13,7 +13,7 @@ const InvitationSchema = z.object({
 	idSender: z.string(),
 	idChannel: z.string(),
 	sentAt: z.string(),
-	seenAt: z.string()
+	seenAt: z.string().optional()
 })
 
 type Notification = z.infer<typeof NotificationSchema>

@@ -41,6 +41,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue"
+import { useUser } from "@/composables/useUser"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { useChannelStore } from "@/stores/useChannelStore"
 import VIconButton from "@/components/atoms/VIconButton.vue"
@@ -49,6 +50,7 @@ import NotificationListItem from "@/components/organisms/NotificationListItem.vu
 const notificationStore = useNotificationStore()
 const notifications = notificationStore.getNotifications()
 const channelStore = useChannelStore()
+const loggedUser = useUser()
 
 const displayNotification = ref<boolean>(false)
 
@@ -60,7 +62,7 @@ const notificationsCopy = computed(() => {
   return notifications.value
     .filter((n) => {
       const channel = channelStore.getChannelById(n.idChannel)
-      return channel?.channelType !== "SNG"
+      return channel?.channelType !== "SNG" && n.idUser === loggedUser?.id
     })
     .reverse()
 })

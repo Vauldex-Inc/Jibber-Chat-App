@@ -252,7 +252,7 @@ const updateArchived = (data: { color: string; archivedAt: string }) => {
 
 const sendMessage = async (message: string, img: string | undefined) => {
   if (!channelUserStore.isMember(selectedChannel.value!.id, loggedUser!.id)) {
-    const res = await useFetch(`/channels/${selectedChannel.value!.id}/users`, {
+    await useFetch(`/channels/${selectedChannel.value!.id}/users`, {
       method: "POST",
       body: JSON.stringify({}),
     })

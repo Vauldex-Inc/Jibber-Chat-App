@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
 import { profileDataSchema, type Profile } from "@/types/Profile"
@@ -7,6 +7,7 @@ import { useUserStore } from "@/stores/useUserStore"
 
 export const useUserProfileStore = defineStore("userProfile", () => {
   const profiles = ref<Profile[]>([])
+  const profile = ref<Profile | undefined>()
 
   const init = async (): Promise<void> => {
     try {
@@ -23,6 +24,10 @@ export const useUserProfileStore = defineStore("userProfile", () => {
     profiles.value.push(newProfile)
   }
 
+  const getProfiles = computed(() => {
+    return profiles
+  })
+
   const validateProfile = (idUser: string) => {
     const profile = profiles.value.find((p: Profile) => p.idUser === idUser)
     const validation = profileDataSchema.safeParse(profile)
@@ -30,8 +35,18 @@ export const useUserProfileStore = defineStore("userProfile", () => {
     return validation.data
   }
 
-  const getProfile = (idUser: string): Profile | undefined => {
-    return profiles.value.find((p: Profile) => p.idUser === idUser)
+  const getProfile = (idUser: string) => {
+    profile.value = profiles.value.find((p: Profile) => p.idUser === idUser)
+    return profile
+  }
+
+  const updateProfile = (profile: Profile) => {
+    profiles.value = profiles.value.map((p) => {
+      if (p.idUser === profile.idUser) {
+        return profile
+      }
+      return p
+    })
   }
 
   const getImage = (idUser: string): string | undefined => {
@@ -50,5 +65,5 @@ export const useUserProfileStore = defineStore("userProfile", () => {
     return data ? data.nickName : userStore.getUser(idUser)?.username
   }
 
-  return { profiles, init, getProfile, getImage, getName, addUserProfile, getNickname }
+  return { init, getProfile, getProfiles, getImage, getName, addUserProfile, getNickname, updateProfile }
 })

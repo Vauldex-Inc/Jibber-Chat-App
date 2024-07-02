@@ -124,6 +124,7 @@ const notifAudio = new Audio("./src/assets/slack_sound.mp3")
 const notifications = ref<Notification[]>([])
 
 import VSettings from "@/components/organisms/VSettings.vue"
+import { isLabeledStatement } from "typescript"
 
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
@@ -419,7 +420,7 @@ onMounted(async () => {
 
       case "UPDATE_PROFILE": {
         const profile = updates.content.updateProfile
-        userProfileStore.addUserProfile(profile)
+        userProfileStore.updateProfile(profile)
         break
       }
     }

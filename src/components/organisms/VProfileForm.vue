@@ -29,7 +29,7 @@
             : './src/assets/images/default-avatar.svg'
         "
         size="large"
-        :status="getStatus(sender)"
+        :status="userStore.getStatus(sender)"
       />
       <input
         @change="attachFile"
@@ -121,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue"
+import { ref, onMounted, computed, onUnmounted } from "vue"
 import { z } from "zod"
 import { useFetch } from "@/composables/useFetch"
 import { useUser } from "@/composables/useUser"
@@ -145,8 +145,8 @@ const emits = defineEmits<{
 const fileSchema = z.coerce.string()
 
 const currUser = useUser()
-const { getUser, addUserProfile, getStatus } = useUserStore()
-const { getProfile } = useUserProfileStore()
+const userStore = useUserStore()
+const userProfileStore = useUserProfileStore()
 const vFocus = {
   mounted: (el: HTMLInputElement) => el.focus(),
 }
@@ -212,7 +212,6 @@ const create = async () => {
           image: formData.value.image,
           email: formData.value.email,
         }
-        addUserProfile(currUser.id, newProfile)
       }
       emits("submit")
     } else {
@@ -229,16 +228,22 @@ const create = async () => {
 
 const doesExist = () => {
   if (currUser) {
-    const userProfile = getUser(props.sender ? props.sender : currUser.id)
+    const userProfile = userStore.getUser(props.sender ? props.sender : currUser.id)
     const user = userProfile?.username
 
     if (user) {
-      const profile = getProfile(userProfile.id)
+      const profile = userProfileStore.getProfile(userProfile.id)
       method.value = "PUT"
-      formData.value = profile
+      formData.value = {
+        nickName: profile.value?.nickName,
+        firstName: profile.value?.firstName,
+        lastName: profile.value?.lastName,
+        image: profile.value?.image,
+        email: profile.value?.email
+      }
     } else {
       method.value = "POST"
-      formData.value.nickName = user?.username
+      formData.value.nickName = user
     }
   }
 }

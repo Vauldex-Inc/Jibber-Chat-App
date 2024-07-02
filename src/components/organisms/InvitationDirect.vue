@@ -59,8 +59,6 @@ import VButton from "@/components/atoms/VButton.vue"
 
 import type { DirectChannel } from "@/types/Channel"
 
-const directStore = useDirectChannelStore()
-
 defineProps<{
   color: string
 }>()

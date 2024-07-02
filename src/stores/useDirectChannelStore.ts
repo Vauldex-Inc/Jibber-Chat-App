@@ -27,12 +27,22 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
     const uuid = z.string().uuid()
     try {
       uuid.parse(idUser)
-      const { data } = await axios.post("/channels", {
+      const response = await axios.post("/channels", {
         channelType: CHANNEL_TYPE,
         idUser
       })
+
+      const { data } = response
       const channel = DirectChannelSchema.parse(data.channel)
+
       add(channel)
+
+      if (response.status === 200) {
+        const response = await axios.post(`/channels/${channel.id}/users`, {idUser})
+        return response.status
+      } else {
+        throw new Error("Internal Server Error")
+      }
     } catch (e) {
       const error = e as AxiosError | ZodError
       console.error(error)

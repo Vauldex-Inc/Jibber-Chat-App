@@ -100,15 +100,15 @@
         :color="channel.color"
         class="p-5"
         title="Images"
-        :actionButton="images.length ? 'View All' : undefined"
+        :actionButton="sentImages.length ? 'View All' : undefined"
         @click="openDisplayImages"
       >
         <div class="p-3">
           <ul
             class="flex flex-wrap items-start justify-center gap-1 overflow-y-scroll"
-            v-if="images.length !== 0"
+            v-if="sentImages.length !== 0"
           >
-            <template v-for="image in images.reverse().slice(0, 4)">
+            <template v-for="image in sentImages.reverse().slice(0, 4)">
               <li v-if="image !== undefined">
                 <img
                   class="h-24 w-32 rounded-md border-2 border-slate-200 object-cover dark:border-slate-800"
@@ -126,7 +126,7 @@
     </div>
 
     <VModal @close="closeDisplayImages" :is-open="stateDisplayImages">
-      <VImageViewer :chatImages="images" />
+      <VImageViewer :chatImages="sentImages" />
     </VModal>
 
     <VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
@@ -180,6 +180,10 @@ interface VChatInfoProps {
 const emits = defineEmits<{
   colorUpdate: [value: string]
 }>()
+
+const sentImages = computed(() => {
+  return props.images.filter((i) => i !== "")
+})
 
 const userStore = useUserStore()
 const userProfileStore = useUserProfileStore()

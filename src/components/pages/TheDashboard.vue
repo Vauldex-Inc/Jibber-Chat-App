@@ -353,9 +353,9 @@ onMounted(async () => {
         }
 
         if (
-          unreadMessage.senderId !== loggedUser!.id &&
-          unreadMessage.channelId !== selectedChannel.value.id &&
-          channelUserStore.isMember(unreadMessage.channelId, loggedUser!.id)
+          unreadMessage.idSender !== loggedUser!.id &&
+          unreadMessage.idChannel !== selectedChannel.value.id &&
+          channelUserStore.isMember(unreadMessage.idChannel, loggedUser!.id)
         ) {
           const channel = channelStore.getChannelById(unreadMessage.idChannel)
           if (channel) {
@@ -370,8 +370,8 @@ onMounted(async () => {
               title: title ? title : "",
               message: unreadMessage.text,
             })
-            notifAudio.play()
           }
+          notifAudio.play()
         }
         break
       }

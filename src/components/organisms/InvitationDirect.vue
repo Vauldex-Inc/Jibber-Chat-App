@@ -56,14 +56,17 @@ import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-import type { Channel } from "@/types/Channel"
+
+import type { DirectChannel } from "@/types/Channel"
+
+const directStore = useDirectChannelStore()
 
 defineProps<{
   color: string
 }>()
 
 const emits = defineEmits<{
-  submit: [channel: Channel | undefined]
+  submit: [channel: DirectChannel | undefined]
 }>()
 
 const directStore = useDirectChannelStore()
@@ -103,10 +106,15 @@ onMounted(async () => {
 const create = async (idUser?: string, name?: string) => {
   try {
     if (idUser) {
-      await directStore.post(idUser)
-      const index = unInvitedUsers.value.indexOf([idUser, name])
-      unInvitedUsers.value.splice(index, 1)
-      invitedUsers.value.push(idUser)
+      const response = await directStore.post(idUser)
+
+      if (response === 200) {
+        const index = unInvitedUsers.value.indexOf([idUser, name])
+        unInvitedUsers.value.splice(index, 1)
+        invitedUsers.value.push(idUser)
+      } else {
+        throw new Error("Invite Failed")
+      }
     }
   } catch (e) {
     const error = e as Error

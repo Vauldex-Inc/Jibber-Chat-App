@@ -180,8 +180,7 @@ const attachFile = () => {
     const file = fileInput.value.files[0]
     const reader = new FileReader()
     const isImage = /\.(jpe?g|png|gif)$/.test(file.name)
-
-    if (isImage && typeof formData.value.image == "string") {
+    if (isImage) {
       reader.onload = () => {
         formData.value.image = reader.result as string
       }

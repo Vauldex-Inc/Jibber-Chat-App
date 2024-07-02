@@ -11,11 +11,11 @@ const MessageSchema = z.object({
 
 const UnreadMessageSchema = z.object({
 	idMessage: z.string(),
-	idChannel: z.string(),
-	idUser: z.string(),
+	idChannel: z.string().uuid(),
+	idUser: z.string().uuid(),
 	unreads: z.string(),
-	idSender: z.string(),
-	sentAt: z.string(),
+	idSender: z.string().uuid(),
+	sentAt: z.string().datetime(),
 	text: z.string()
 })
 

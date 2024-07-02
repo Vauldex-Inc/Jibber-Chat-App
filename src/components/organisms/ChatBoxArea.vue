@@ -4,7 +4,7 @@
     :class="{ 'opacity-50': channel.archivedAt }"
     class="flex flex-col gap-8 overflow-y-scroll border-b border-b-indigo-200 bg-gray-100 p-5 dark:border-b-slate-800 dark:bg-slate-900"
   >
-    <VChatBalloon
+    <ChatBalloon
       v-for="message in messages"
       :key="message.id"
       :message="message"
@@ -32,10 +32,14 @@
 
 <script lang="ts" setup>
 import { onUpdated, ref } from "vue"
-
-import VChatBalloon from "@/components/organisms/VChatBalloon.vue"
+import ChatBalloon from "@/components/organisms/ChatBalloon.vue"
 import type { Message } from "@/types/Message.ts"
 import type { Channel, DirectChannel } from "@/types/Channel.ts"
+
+defineProps<{
+  messages: Message[]
+  channel: Channel | DirectChannel
+}>()
 
 const chatList = ref<HTMLElement | undefined>(undefined)
 
@@ -47,9 +51,4 @@ onUpdated(() => {
     })
   }
 })
-
-defineProps<{
-  messages: Message[]
-  channel: Channel | DirectChannel
-}>()
 </script>

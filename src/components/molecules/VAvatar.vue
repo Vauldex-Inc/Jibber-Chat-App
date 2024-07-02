@@ -7,10 +7,9 @@
 
 <script setup lang="ts">
 import { ZodError, z } from "zod"
-
-import { SizeSchema } from "@/types/Component"
 import VImage from "@/components/atoms/VImage.vue"
 import VUserStatus from "@/components/atoms/VUserStatus.vue"
+import { SizeSchema } from "@/types/Component"
 
 const PropSchema = z.object({
   image: z.string().optional(),

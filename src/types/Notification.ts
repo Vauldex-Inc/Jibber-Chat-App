@@ -1,14 +1,12 @@
 import { z } from "zod"
 
-const notificationSchema = z.object({
+const NotificationSchema = z.object({
 	id: z.string(),
 	title: z.string(),
 	message: z.string(),
 })
 
-type Notification = z.infer<typeof notificationSchema>
-
-const invitationSchema = z.object({
+const InvitationSchema = z.object({
 	id: z.string(),
 	notificationType: z.enum(["INV", "NEW"]),
 	idUser: z.string(),
@@ -18,11 +16,12 @@ const invitationSchema = z.object({
 	seenAt: z.string()
 })
 
-type Invitation = z.infer<typeof invitationSchema>
+type Notification = z.infer<typeof NotificationSchema>
+type Invitation = z.infer<typeof InvitationSchema>
 
 export {
 	type Notification,
 	type Invitation,
-	notificationSchema,
-	invitationSchema
+	NotificationSchema,
+	InvitationSchema
 }

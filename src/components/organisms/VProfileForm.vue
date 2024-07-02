@@ -121,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, onUnmounted } from "vue"
+import { ref, onMounted } from "vue"
 import { z } from "zod"
 import { useFetch } from "@/composables/useFetch"
 import { useUser } from "@/composables/useUser"
@@ -143,7 +143,6 @@ const emits = defineEmits<{
 }>()
 
 const fileSchema = z.coerce.string()
-
 const currUser = useUser()
 const userStore = useUserStore()
 const userProfileStore = useUserProfileStore()

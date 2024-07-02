@@ -1,11 +1,10 @@
-type Theme = "dark" | "light"
 import { ref } from "vue"
+
+type Theme = "dark" | "light"
 
 const curTheme = ref<Theme>("light")
 
-
 export const useTheme = () => {
-
 	const init = () => {
 		const theme = localStorage.getItem("theme") as Theme
 		if (theme) {
@@ -33,5 +32,9 @@ export const useTheme = () => {
 	}
 
 
-	return { setTheme, init, getTheme }
+	return { 
+		setTheme, 
+		init, 
+		getTheme
+	}
 }

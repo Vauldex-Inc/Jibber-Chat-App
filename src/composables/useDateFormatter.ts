@@ -8,8 +8,6 @@ const useDateFormatter = () => {
   return { format };
 };
 
-
-
 const formatSentAt = (date: string) => {
   const dateToFormat = new Date(date);
   const currentDate = new Date().getTime();

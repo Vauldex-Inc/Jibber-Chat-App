@@ -1,17 +1,16 @@
 import { ref, computed } from "vue"
 import { defineStore } from "pinia"
+import type { ZodError } from "zod"
 import axios, { AxiosError } from "axios"
+import { useUserProfileStore } from "./useUserProfileStore"
 import { useUser } from "@/composables/useUser"
-
 import type { Channel, DirectChannel } from "@/types/Channel"
 import { ChannelSchema } from "@/types/Channel"
-import { userSchema } from "@/types/User";
-import type { ZodError } from "zod"
-import { useUserProfileStore } from "./useUserProfileStore"
+import { UserSchema } from "@/types/User";
 
 
 export const useChannelStore = defineStore("channels", () => {
-	const loggedUserId = userSchema.safeParse(useUser()).data?.id
+	const loggedUserId = UserSchema.safeParse(useUser()).data?.id
 	const userProfileStore = useUserProfileStore()
 	const channels = ref<Channel[]>([])
 

@@ -53,16 +53,9 @@ import { useUserStore } from "@/stores/useUserStore"
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VProfileForm from "@/components/organisms/VProfileForm.vue"
 import VModal from "@/components/atoms/VModal.vue"
-
 import { type User } from "@/types/User"
-import { type Profile } from "@/types/Profile"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import type { ChannelUser } from "@/types/Channel"
-
-const userStore = useUserStore()
-
-const channelUserStore = useChannelUserStore()
-const userProfileStore = useUserProfileStore()
 
 const props = defineProps<{
   idChannel: string
@@ -72,26 +65,19 @@ const emits = defineEmits<{
   close: [value: boolean]
 }>()
 
-const getStatus = (id: string) => {
-  return userStore.getOnlineUsers().value.indexOf(id) !== -1
-    ? "online"
-    : "offline"
-}
+const userStore = useUserStore()
+const channelUserStore = useChannelUserStore()
+const userProfileStore = useUserProfileStore()
 
 const channelUsers = ref<ChannelUser[] | undefined>([])
 const users = ref<(User | undefined)[]>([])
 const sender = ref<string>("")
-
 const stateDisplayProfile = ref<boolean>(false)
 
-const closeDisplayProfile = () => {
-  stateDisplayProfile.value = false
-  emits("close", false)
-}
-
-const selectedProfile = (id: string) => {
-  stateDisplayProfile.value = !stateDisplayProfile.value
-  sender.value = id
+const getStatus = (id: string) => {
+  return userStore.getOnlineUsers().value.indexOf(id) !== -1
+    ? "online"
+    : "offline"
 }
 
 onMounted(async () => {
@@ -102,4 +88,14 @@ onMounted(async () => {
     })
   }
 })
+
+const closeDisplayProfile = () => {
+  stateDisplayProfile.value = false
+  emits("close", false)
+}
+
+const selectedProfile = (id: string) => {
+  stateDisplayProfile.value = !stateDisplayProfile.value
+  sender.value = id
+}
 </script>

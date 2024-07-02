@@ -1,5 +1,5 @@
 <template>
-  <div
+  <li
     @click="openChannel"
     class="flex cursor-pointer items-center gap-4 p-3 transition-all hover:bg-indigo-400/10"
   >
@@ -43,31 +43,28 @@
     >
       Archived
     </p>
-  </div>
+  </li>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "vue"
-
-import {
-  ChannelSchema,
-  DirectChannelSchema,
-  type Channel,
-  type DirectChannel,
-} from "@/types/Channel"
+import { computed, onMounted } from "vue"
 import { formatSentAt } from "@/composables/useDateFormatter"
 import { useUser } from "@/composables/useUser"
-
 import { useMessageStore } from "@/stores/useMessageStore"
 import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import { useUserStore } from "@/stores/useUserStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
-
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VBadge from "@/components/atoms/VBadge.vue"
 import VTextGroup from "@/components/molecules/VTextGroup.vue"
+import {
+  ChannelSchema,
+  DirectChannelSchema,
+  type Channel,
+  type DirectChannel,
+} from "@/types/Channel"
 
 const prop = defineProps<{ item: Channel | DirectChannel }>()
 
@@ -76,7 +73,6 @@ const emits = defineEmits<{
 }>()
 
 const loggedUser = useUser()
-
 const profileStore = useUserProfileStore()
 const userStore = useUserStore()
 const messageStore = useMessageStore()

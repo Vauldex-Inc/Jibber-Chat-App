@@ -50,19 +50,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue"
-
+import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
 import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
-
-import { useUser } from "@/composables/useUser"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
-
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-
 import type { Channel } from "@/types/Channel"
-
-const directStore = useDirectChannelStore()
 
 defineProps<{
   color: string
@@ -72,6 +66,7 @@ const emits = defineEmits<{
   submit: [channel: Channel | undefined]
 }>()
 
+const directStore = useDirectChannelStore()
 const profileStore = useUserProfileStore()
 const userStore = useUserStore()
 const users = userStore.getUsers()

@@ -8,7 +8,7 @@ const userIsUser = (user: User): user is User => {
 	}
 }
 
-const useUser = () => {
+export const useUser = () => {
 	const userLocal = localStorage.getItem("user")
 
 	if(userLocal) {
@@ -21,5 +21,3 @@ const useUser = () => {
 	return undefined
 
 }
-
-export { useUser }

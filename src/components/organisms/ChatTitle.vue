@@ -93,7 +93,6 @@ const props = defineProps<{
   collapse: boolean
 }>()
 
-
 const emits = defineEmits<{
   archive: [value: { color: string; archivedAt: string }]
   toggleInfo: []

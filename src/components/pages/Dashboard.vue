@@ -1,12 +1,12 @@
 <template>
   <VModal :is-open="variant === 'SNG'" @close="variant = undefined">
-    <VInvitationDirect color="bg-indigo-600" @submit="newDirect" />
+    <InvitationDirect color="bg-indigo-600" @submit="newDirect" />
   </VModal>
   <VModal :is-open="variant === 'MPU'" @close="variant = undefined">
-    <ChannelForm :variant="variant" @submit="newChannel" />
+    <AddChannel :variant="variant" @submit="newChannel" />
   </VModal>
   <VModal :is-open="invitationModalOpen" @close="closeInvitationModal">
-    <VChatInvitation
+    <InvitationCard
       :notification="invitationNotif!"
       :name="userProfileStore.getName(invitationNotif?.idSender!)"
       @view="viewChannel"
@@ -34,7 +34,7 @@
     </template>
     <template #chatbox>
       <template v-if="selectedChannel">
-        <VChatTitle
+        <ChatTitle
           :collapse="isChatListOpen"
           @toggle-chat="toggleChatList"
           @toggle-info="toggleChatInfo"
@@ -42,26 +42,26 @@
           :channel="selectedChannel"
           :sender="idSender"
         />
-        <VChatBoxArea
+        <ChatBoxArea
           :channel="selectedChannel"
           :messages="messageStore.chatMessages"
           class="flex-1"
         />
-        <VChatBox @send="sendMessage" :channel="selectedChannel" />
+        <ChatBox @send="sendMessage" :channel="selectedChannel" />
       </template>
     </template>
     <template #actions>
-      <VSettings
+      <Settings
         :profileImage="profileImage"
         :username="loggedUser!.username"
       />
     </template>
     <template #notification>
-      <VNotificationList />
+      <NotificationList />
     </template>
     <template #chatinfo>
       <template v-if="selectedChannel">
-        <VChatInfo
+        <ChatInfo
           @color-update="updateColor"
           :images="messageStore.chatImages"
           :channel="selectedChannel"
@@ -104,27 +104,25 @@ import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import VToast from "@/components/molecules/VToast.vue"
 import DashboardLayout from "@/components/templates/DashboardLayout.vue"
 import VChatList from "@/components/organisms/VChatList.vue"
-import VChatTitle from "@/components/organisms/VChatTitle.vue"
-import VChatInfo from "@/components/organisms/VChatInfo.vue"
-import VChatBox from "@/components/organisms/VChatBox.vue"
-import VChatBoxArea from "@/components/organisms/VChatBoxArea.vue"
-import ChannelForm from "@/components/organisms/ChannelForm.vue"
+import ChatTitle from "@/components/organisms/ChatTitle.vue"
+import ChatInfo from "@/components/organisms/ChatInfo.vue"
+import ChatBox from "@/components/organisms/ChatBox.vue"
+import ChatBoxArea from "@/components/organisms/ChatBoxArea.vue"
 import VModal from "@/components/atoms/VModal.vue"
-import VChatInvitation from "@/components/organisms/VChatInvitation.vue"
-import VInvitationDirect from "@/components/organisms/VInvitationDirect.vue"
-import VNotificationList from "@/components/organisms/VNotificationList.vue"
+import InvitationCard from "@/components/organisms/InvitationCard.vue"
+import InvitationDirect from "@/components/organisms/InvitationDirect.vue"
+import NotificationList from "@/components/organisms/NotificationList.vue"
+import Settings from "@/components/organisms/Settings.vue"
+import AddChannel from "@/components/organisms/AddChannel.vue"
 
 import type { Channel, DirectChannel } from "@/types/Channel"
 import { ChannelSchema, DirectChannelSchema } from "@/types/Channel"
 import type { Notification } from "@/types/Notification"
-import { userSchema, type User } from "@/types/User"
+import { UserSchema } from "@/types/User"
 
 const notifAudio = new Audio("./src/assets/slack_sound.mp3")
 
 const notifications = ref<Notification[]>([])
-
-import VSettings from "@/components/organisms/VSettings.vue"
-import { isLabeledStatement } from "typescript"
 
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
@@ -184,7 +182,7 @@ const toggleChatList = () => {
 }
 
 const profileImage = computed(() => {
-  const userValidation = userSchema.safeParse(loggedUser)
+  const userValidation = UserSchema.safeParse(loggedUser)
   if (userValidation.success) {
     return userProfileStore.getImage(userValidation.data.id)
   }

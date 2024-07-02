@@ -36,7 +36,6 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from "@/stores/useUserStore"
 import VButton from "@/components/atoms/VButton.vue"
 import type { Invitation } from "@/types/Notification"
 
@@ -49,6 +48,4 @@ const emits = defineEmits<{
   close: []
   view: [value: string]
 }>()
-
-const userStore = useUserStore()
 </script>

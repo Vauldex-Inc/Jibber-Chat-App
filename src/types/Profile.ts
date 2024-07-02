@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-const profileSchema = z.object({
+const ProfileSchema = z.object({
 	idUser: z.string(),
 	nickName: z.string().optional(),
 	firstName: z.string().optional(),
@@ -9,9 +9,7 @@ const profileSchema = z.object({
 	email: z.string().optional()
 })
 
-type Profile = z.infer<typeof profileSchema>
-
-const profileDataSchema = z.object({
+const ProfileDataSchema = z.object({
 	nickName: z.string().optional(),
 	firstName: z.string().optional(),
 	lastName: z.string().optional(),
@@ -19,6 +17,12 @@ const profileDataSchema = z.object({
 	email: z.string().optional()
 })
 
-type ProfileData = z.infer<typeof profileDataSchema>
+type Profile = z.infer<typeof ProfileSchema>
+type ProfileData = z.infer<typeof ProfileDataSchema>
 
-export { type Profile, type ProfileData, profileSchema, profileDataSchema }
+export { 
+	type Profile, 
+	type ProfileData, 
+	ProfileSchema, 
+	ProfileDataSchema
+}

@@ -5,7 +5,7 @@ interface Option {
 
 const baseUrl = import.meta.env.VITE_JIBBER_BASE_URL
 
-const useFetch =  async (uri: string, option?: Option) => {
+export const useFetch =  async (uri: string, option?: Option) => {
 
 	const response = await fetch(baseUrl + uri, {
     method: option ? option.method : "GET",
@@ -23,5 +23,3 @@ const useFetch =  async (uri: string, option?: Option) => {
 
   return response;
 }
-
-export { useFetch }

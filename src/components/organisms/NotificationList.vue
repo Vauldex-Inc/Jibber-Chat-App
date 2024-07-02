@@ -22,7 +22,7 @@
         @mouseleave="toggleNotifications"
         class="max-h-80 w-[28rem] divide-y overflow-y-scroll dark:divide-slate-700"
       >
-        <VNotificationListItem
+        <NotificationListItem
           v-for="notification in notificationsCopy"
           :key="notification.id"
           :invitation="notification"
@@ -40,12 +40,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUpdated } from "vue"
-import VIconButton from "@/components/atoms/VIconButton.vue"
-import VNotificationListItem from "@/components/organisms/VNotificationListItem.vue"
+import { ref, computed } from "vue"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { useChannelStore } from "@/stores/useChannelStore"
-import { type Invitation } from "@/types/Notification"
+import VIconButton from "@/components/atoms/VIconButton.vue"
+import NotificationListItem from "@/components/organisms/NotificationListItem.vue"
 
 const notificationStore = useNotificationStore()
 const notifications = notificationStore.getNotifications()

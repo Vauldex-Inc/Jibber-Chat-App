@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import TheLogin from '@/components/pages/TheLogin.vue'
-import TheRegister from '@/components/pages/TheRegister.vue'
-import TheDashboard from "@/components/pages/TheDashboard.vue"
+import Login from '@/components/pages/Login.vue'
+import Register from '@/components/pages/Register.vue'
+import Dashboard from "@/components/pages/Dashboard.vue"
 import {useUser} from "@/composables/useUser"
 
 const router = createRouter({
@@ -22,12 +22,12 @@ const router = createRouter({
           next()
         }
       },
-      component: TheLogin
+      component: Login
     },
     {
       path: '/register',
       name: 'register',
-      component: TheRegister
+      component: Register
     },
     {
       path: '/dashboard',
@@ -40,7 +40,7 @@ const router = createRouter({
           next({ name: 'login' })
         }
       },
-      component: TheDashboard
+      component: Dashboard
     }
   ]
 })

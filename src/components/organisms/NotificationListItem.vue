@@ -35,12 +35,12 @@
 
 <script setup lang="ts">
 import { computed } from "vue"
+import { formatSentAt } from "@/composables/useDateFormatter"
 import { useDateFormatter } from "@/composables/useDateFormatter"
 import { useChannelStore } from "@/stores/useChannelStore"
 import { useNotificationStore } from "@/stores/useNotificationStore"
-import type { Invitation } from "@/types/Notification"
-import { formatSentAt } from "@/composables/useDateFormatter"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
+import type { Invitation } from "@/types/Notification"
 
 const props = defineProps<{
   invitation: Invitation
@@ -54,7 +54,6 @@ const userProfileStore = useUserProfileStore()
 const channelStore = useChannelStore()
 const notificationStore = useNotificationStore()
 const dateFormatter = useDateFormatter()
-
 const options: Intl.DateTimeFormatOptions = {
   weekday: "long",
   hour: "numeric",

@@ -87,10 +87,10 @@ const users = computed(() => {
 
   return nonMemberUsers?.map((user: User) => {
     const userProfile = userProfileStore.getProfile(user.id)
-    if (userProfile?.firstName && userProfile?.lastName) {
-      return [user.id, `${userProfile.firstName} ${userProfile.lastName}`]
-    } else if (userProfile?.nickName) {
-      return [user.id, userProfile.nickName]
+    if (userProfile.value?.firstName && userProfile.value?.lastName) {
+      return [user.id, `${userProfile.value.firstName} ${userProfile.value.lastName}`]
+    } else if (userProfile.value?.nickName) {
+      return [user.id, userProfile.value?.nickName]
     } else {
       return [user.id, user.username]
     }

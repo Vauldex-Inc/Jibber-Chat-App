@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-const userSchema = z.object({
+const UserSchema = z.object({
 	id: z.string(),
 	username: z.string(),
 	createdAt: z.string(),
 	activeAt: z.string()
 })
 
-type User = z.infer<typeof userSchema>
+type User = z.infer<typeof UserSchema>
 
-export { type User, userSchema }
+export { type User, UserSchema }

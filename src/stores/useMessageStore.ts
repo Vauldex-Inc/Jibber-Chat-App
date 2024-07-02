@@ -1,8 +1,8 @@
 import { ref, computed } from "vue"
 import { defineStore } from "pinia"
+import axios from "axios"
 import { useFetch } from "@/composables/useFetch"
 import { MessageSchema, type Message } from "@/types/Message"
-import axios from "axios"
 
 export const useMessageStore = defineStore("messages", () => {
 	const latestMessages = ref<Array<Message>>([])

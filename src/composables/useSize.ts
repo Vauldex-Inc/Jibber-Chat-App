@@ -52,4 +52,9 @@ const inputSizeClass = (size?: string) => {
   }
 };
 
-export { sizeClass, imageSizeClass, customImageSizeClass, inputSizeClass }
+export { 
+  sizeClass, 
+  imageSizeClass, 
+  customImageSizeClass, 
+  inputSizeClass
+}

@@ -9,5 +9,4 @@ export const useSocket = (uri: string, callback: (data: MessageEvent) => void) =
 	}	
 
 	return socket
-
 }

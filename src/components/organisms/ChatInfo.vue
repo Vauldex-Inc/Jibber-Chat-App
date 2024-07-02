@@ -126,11 +126,11 @@
     </div>
 
     <VModal @close="closeDisplayImages" :is-open="stateDisplayImages">
-      <VImageViewer :chatImages="sentImages" />
+      <ViewImage :chatImages="sentImages" />
     </VModal>
 
     <VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
-      <VMemberInvitation
+      <InvitationPublic
         @action="(idUser) => userStore.inviteMember(channel.id, idUser)"
         :color="curColorTheme"
         :id-channel="channel.id"
@@ -138,11 +138,11 @@
     </VModal>
 
     <VModal @close="closeThemeSelector" :is-open="stateThemeSelector">
-      <VChatColorSelector @color="selectColor" />
+      <ChatColorSelector @color="selectColor" />
     </VModal>
 
     <VModal @close="closeDisplayAllMembers" :is-open="stateDisplayAllMembers">
-      <VDisplayAllMembers :id-channel="channel.id" @close="closeFromProfile" />
+      <DisplayMembers :id-channel="channel.id" @close="closeFromProfile" />
     </VModal>
   </div>
 </template>
@@ -155,10 +155,10 @@ import VSection from "@/components/molecules/VSection.vue"
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
 import VModal from "@/components/atoms/VModal.vue"
-import VChatColorSelector from "@/components/organisms/VChatColorSelector.vue"
-import VMemberInvitation from "@/components/organisms/VMemberInvitation.vue"
-import VDisplayAllMembers from "@/components/organisms/VDisplayAllMembers.vue"
-import VImageViewer from "@/components/organisms/VImageViewer.vue"
+import ChatColorSelector from "@/components/organisms/ChatColorSelector.vue"
+import InvitationPublic from "@/components/organisms/InvitationPublic.vue"
+import DisplayMembers from "@/components/organisms/DisplayMembers.vue"
+import ViewImage from "@/components/organisms/ViewImage.vue"
 import VProfileForm from "@/components/organisms/VProfileForm.vue"
 import {
   ChannelSchema,
@@ -168,9 +168,9 @@ import {
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 
-const props = defineProps<VChatInfoProps>()
+const props = defineProps<ChatInfoProps>()
 
-interface VChatInfoProps {
+interface ChatInfoProps {
   images: Array<string>
   channel: Channel | DirectChannel
   title: string
@@ -181,14 +181,14 @@ const emits = defineEmits<{
   colorUpdate: [value: string]
 }>()
 
-const sentImages = computed(() => {
-  return props.images.filter((i) => i !== "")
-})
-
 const userStore = useUserStore()
 const userProfileStore = useUserProfileStore()
 const channelUserStore = useChannelUserStore()
 const publicChannelStore = usePublicChannelStore()
+
+const sentImages = computed(() => {
+  return props.images.filter((i) => i !== "")
+})
 
 const channelType = computed(() => {
   const typeValidation = ChannelSchema.safeParse(props.channel)

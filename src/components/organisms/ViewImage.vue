@@ -23,8 +23,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue"
 import VIconButton from "@/components/atoms/VIconButton.vue"
-import { ref, computed } from "vue"
 
 const props = defineProps<{
   chatImages: string[]

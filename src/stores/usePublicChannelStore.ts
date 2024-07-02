@@ -1,5 +1,4 @@
 import { ref, computed } from "vue"
-
 import { ZodError, z } from "zod"
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
@@ -14,7 +13,7 @@ const PublicChannelSchema = z.object({
 
 type PublicChannel = z.infer<typeof PublicChannelSchema>
 
-const usePublicChannelStore = defineStore("public-channels", () => {
+export const usePublicChannelStore = defineStore("public-channels", () => {
   const _channels = ref<Array<PublicChannel>>([])
   const resource = "/channels"
 
@@ -76,5 +75,3 @@ const usePublicChannelStore = defineStore("public-channels", () => {
     add
   }
 })
-
-export { usePublicChannelStore }

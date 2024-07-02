@@ -1,12 +1,11 @@
 import { ref } from "vue"
 import { defineStore } from "pinia"
-import type { User } from "@/types/User"
-import type { Message } from "@/types/Message"
 import axios, { AxiosError } from "axios"
 import { useDateFormatter } from "@/composables/useDateFormatter"
+import type { User } from "@/types/User"
+import type { Message } from "@/types/Message"
 
 const dateFormatter = useDateFormatter()
-
 const defaultOptions: Intl.DateTimeFormatOptions = {
 	month: "long",
 	day: "numeric",
@@ -18,7 +17,6 @@ const defaultOptions: Intl.DateTimeFormatOptions = {
 
 export const useUserStore = defineStore("users", () => {
 	const users = ref<User[]>([])
-
 	const onlineUsers = ref<string[]>([])
 
 	const init = async () => {
@@ -79,7 +77,16 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	return {
-		users, init, getUser, getUsers, getStatus, updateUserOnlineAt, onlineUsers,
-		getOnlineUsers, addNewUser, sentAtFormatter, inviteMember
+		users, 
+		init, 
+		getUser, 
+		getUsers, 
+		getStatus, 
+		updateUserOnlineAt, 
+		onlineUsers,
+		getOnlineUsers, 
+		addNewUser, 
+		sentAtFormatter, 
+		inviteMember
 	}
 })

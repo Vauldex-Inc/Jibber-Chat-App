@@ -34,7 +34,7 @@
         class="hover:rounded-md hover:bg-gray-100 dark:hover:bg-slate-700"
         @click="toggleSettings"
       >
-        <VThemeSelector />
+        <ThemeSelector />
       </li>
       <li
         class="hover:rounded-md hover:bg-gray-100 dark:hover:bg-slate-700"
@@ -52,27 +52,26 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { useRouter } from "vue-router"
+import { z } from "zod"
 import { useFetch } from "@/composables/useFetch"
-
 import VIconButton from "@/components/atoms/VIconButton.vue"
 import VButton from "@/components/atoms/VButton.vue"
-import VThemeSelector from "@/components/organisms/VThemeSelector.vue"
+import ThemeSelector from "@/components/organisms/ThemeSelector.vue"
 import VModal from "@/components/atoms/VModal.vue"
 import VProfileForm from "@/components/organisms/VProfileForm.vue"
-
-import { z } from "zod"
-const errorSchema = z.object({
-  message: z.string(),
-})
-
-const router = useRouter()
-const isOpen = ref<boolean>(false)
-const formShown = ref<boolean>(false)
 
 defineProps<{
   profileImage?: string | undefined
   username: string
 }>()
+
+const errorSchema = z.object({
+  message: z.string(),
+})
+const router = useRouter()
+
+const isOpen = ref<boolean>(false)
+const formShown = ref<boolean>(false)
 
 const toggleSettings = () => (isOpen.value = !isOpen.value)
 

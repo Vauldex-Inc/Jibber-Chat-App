@@ -1,11 +1,9 @@
 import { ref } from "vue"
-
 import { defineStore } from "pinia"
 import axios from "axios";
-
 import type { Invitation } from "@/types/Notification"
 
-const useNotificationStore = defineStore("notifications", () => {
+export const useNotificationStore = defineStore("notifications", () => {
 	const notifications = ref<Invitation[]>([])
 	const selectedInvitation = ref<Invitation | undefined>(undefined)
 
@@ -51,7 +49,13 @@ const useNotificationStore = defineStore("notifications", () => {
 
 	}
 
-	return { notifications, init, getNotifications, setSelectedInvitation, getSelectedInvitation, addNewNotification, updateNotification }
+	return { 
+		notifications, 
+		init, 
+		getNotifications, 
+		setSelectedInvitation, 
+		getSelectedInvitation, 
+		addNewNotification, 
+		updateNotification
+	}
 })
-
-export { useNotificationStore }

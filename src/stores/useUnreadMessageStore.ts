@@ -1,11 +1,7 @@
 import { ref } from "vue"
-
 import { defineStore } from "pinia"
-
 import { useFetch } from "@/composables/useFetch"
-
 import { UnreadMessageSchema, type UnreadMessage } from "@/types/Message"
-
 
 export const useUnreadMessageStore = defineStore("unread-messages", () => {
 
@@ -41,6 +37,12 @@ export const useUnreadMessageStore = defineStore("unread-messages", () => {
 		unreadMessages.value = [...unreadMessages.value.filter(um => um.idChannel !== idChannel)]
 	}
 
-	return { unreadMessages, init, getUnreadMessages, addUnreadMessage, removeUnreadMessages }
+	return { 
+		unreadMessages, 
+		init, 
+		getUnreadMessages, 
+		addUnreadMessage, 
+		removeUnreadMessages 
+	}
 })
 

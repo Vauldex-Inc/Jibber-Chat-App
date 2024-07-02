@@ -17,19 +17,26 @@ export const useMessageStore = defineStore("messages", () => {
 	})
 
 	const init = async () => {
+		await initFetch("/channels/latest-messages")
+		await initFetch("/me/channels/latest-messages")
+	}
+
+	const initFetch = async (url: string) => {
 		try {
-			const { data } = await axios.get("/channels/latest-messages")
+			const { data } = await axios.get(url)
 			const validation = MessageSchema.array().safeParse(data.filter((d: Message) => d !== null))
 			if (validation.success) {
-				latestMessages.value = validation.data
+				if(url.split("/").includes("me")) {
+					latestMessages.value.push(...validation.data)
+				} else {
+					latestMessages.value = validation.data
+				}
 			} else {
 				throw new Error("Unsupported Format")
 			}
 
 		} catch (error) {
-			if (error instanceof Error) {
-				console.error(error.message)
-			}
+			error instanceof Error ? console.error : ""
 		}
 	}
 

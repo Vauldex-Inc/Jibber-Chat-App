@@ -31,10 +31,10 @@ const formatSentAt = (date: string) => {
       } else if (minutesDiff === 1) {
         return "1 min";
       } else {
-        return `${minutesDiff} mins`;
+        return `${minutesDiff} ${minutesDiff > 1 ? "mins" : "min"}`;
       }
     } else {
-      return `${hoursDiff} hours`;
+      return `${hoursDiff} ${hoursDiff > 1 ? "hours" : "hour"}`;
     }
   } else {
     return dateFormatter.format(date, {

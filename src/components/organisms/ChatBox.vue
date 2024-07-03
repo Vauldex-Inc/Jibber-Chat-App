@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-end items-center gap-2 p-5">
+  <div class="flex items-center gap-2 p-5">
     <input
       @change="attachFile"
       hidden
@@ -49,8 +49,8 @@
         :placeholder="
           channel.archivedAt ? 'You can\'t reply to this channel' : 'Aa'
         "
-        class="w-full rounded-md bg-gray-100 dark:bg-slate-900 dark:placeholder:text-gray-600"
-        size="large"
+        class="w-full rounded-md bg-gray-100 py-3 dark:bg-slate-900 dark:placeholder:text-gray-600"
+        size="medium"
       />
     </div>
     <VIconButton

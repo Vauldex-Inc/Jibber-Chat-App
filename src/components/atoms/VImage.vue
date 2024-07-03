@@ -33,7 +33,7 @@ const imageType = (ratio: string) => {
       return "relative z-0 aspect-square rounded-full object-cover w-12"
 
     case "message":
-      return "mt-2 aspect-auto max-h-48 rounded-md"
+      return "w-12 mt-2 aspect-auto max-h-48 rounded-full"
 
     case "info":
       return "h-24 w-32 rounded-md border-2 border-slate-200 object-cover dark:border-slate-800"

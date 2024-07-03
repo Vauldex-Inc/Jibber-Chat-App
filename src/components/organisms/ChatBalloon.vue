@@ -8,6 +8,8 @@
       v-if="message.idUser !== loggedUser.id"
       :image="profileStore.getImage(message.idUser)"
       :status="userStore.getStatus(message.idUser)"
+      type="message"
+      size="extraLarge"
     />
     <div class="flex flex-col items-start gap-2">
       <div

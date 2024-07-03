@@ -50,7 +50,6 @@ export const usePublicChannelStore = defineStore("public-channels", () => {
     try {
       const { data } = await axios.post(resource, channel)
       const responseValidation = ChannelSchema.safeParse(data.channel)
-      console.log(data)
       if (responseValidation.success) {
         const response = await axios.post(`${resource}/${data.channel.id}/users`, {})
 

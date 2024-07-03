@@ -303,7 +303,6 @@ onMounted(async () => {
       }
 
       case "CHANNEL": {
-        console.log(updates)
         const channel = updates.content.channel
         const channelValidation = ChannelSchema.safeParse(channel)
         if (channelValidation.success) {

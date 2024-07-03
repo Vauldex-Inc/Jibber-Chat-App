@@ -10,6 +10,7 @@ import { ZodError, z } from "zod"
 import VImage from "@/components/atoms/VImage.vue"
 import VUserStatus from "@/components/atoms/VUserStatus.vue"
 import { SizeSchema } from "@/types/Component"
+import type { AvatarProp } from "@/types/Prop";
 
 const PropSchema = z.object({
   image: z.string().optional(),
@@ -18,22 +19,10 @@ const PropSchema = z.object({
   status: z.enum(["online", "offline"]).optional(),
 })
 
-interface Prop {
-  image?: string
-  type?: string
-  size?: string
-  status?: string
-}
-
-const prop = defineProps<Partial<Prop>>()
+const prop = defineProps<Partial<AvatarProp>>()
 
 try {
-  PropSchema.parse({
-    image: prop.image,
-    type: prop.type,
-    size: prop.size,
-    status: prop.status,
-  })
+  PropSchema.parse(prop)
 } catch (e) {
   const error = e as ZodError
   console.error(error.issues)

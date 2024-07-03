@@ -29,14 +29,7 @@
             class="flex items-center justify-between rounded-md px-4 py-2 hover:bg-gray-100 hover:dark:bg-slate-800/50"
           >
             <span> {{ name }} </span>
-            <p
-              v-if="checkInviteStatus(id)"
-              class="rounded-md bg-slate-300 px-3 py-2 text-sm text-gray-700 dark:bg-slate-700 dark:text-gray-400"
-            >
-              Invited
-            </p>
             <VButton
-              v-else
               @click="selectedUserName(id)"
               size="small"
               :class="color"
@@ -53,14 +46,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
+import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-import type { User } from "@/types/User"
-import type { Profile } from "@/types/Profile"
+
 
 const props = defineProps<{
   color: string
@@ -73,39 +66,37 @@ const emits = defineEmits<{
 
 const userStore = useUserStore()
 const channelUserStore = useChannelUserStore()
-const userProfileStore = useUserProfileStore()
+const profileStore = useUserProfileStore()
+const users = userStore.getUsers()
+const loggedUser = useUser()
 
 const invitedUsers = ref<string[]>([])
+const unInvitedUsers = ref<[string, string | undefined][]>([])
 const inputUserName = ref<string>("")
 
-const users = computed(() => {
-  const appUsers = userStore.getUsers()
-  const nonMemberUsers = channelUserStore.getNonMembers(
-    props.idChannel,
-    appUsers.value,
-  )
+const filteredUserName = computed(() => {
+  return unInvitedUsers.value.filter(([id, _]) => {
+    const currentName = inputUserName.value.toLowerCase()
+    return (
+      profileStore.getName(id).toLowerCase().includes(currentName) &&
+      !isInvited(id) &&
+      id !== loggedUser?.id
+    )
+  })
+})
 
-  return nonMemberUsers?.map((user: User) => {
-    const userProfile = userProfileStore.getProfile(user.id)
-    if (userProfile.value?.firstName && userProfile.value?.lastName) {
-      return [user.id, `${userProfile.value.firstName} ${userProfile.value.lastName}`]
-    } else if (userProfile.value?.nickName) {
-      return [user.id, userProfile.value?.nickName]
-    } else {
-      return [user.id, user.username]
+onMounted(async () => {
+  (await channelUserStore.getChannelUsers(props.idChannel))?.forEach((cu) => invitedUsers.value.push(cu.idUser))
+  users.value.forEach((u) => {
+    if (!invitedUsers.value.includes(u.id)) {
+      const id = u.id
+      const name = profileStore.getName(u.id)
+      unInvitedUsers.value.push([id, name])
     }
   })
 })
 
-const filteredUserName = computed(() => {
-  return users.value?.filter((userName) => {
-    const searchedName = inputUserName.value.toLowerCase()
-    return userName[1].toLowerCase().includes(searchedName)
-  })
-})
-
-const checkInviteStatus = (idUser: string) =>
-  invitedUsers.value.includes(idUser)
+const isInvited = (idUser: string) => invitedUsers.value.includes(idUser)
 
 const selectedUserName = (idUser: string) => {
   invitedUsers.value.push(idUser)

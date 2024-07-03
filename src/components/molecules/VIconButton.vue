@@ -27,36 +27,21 @@
 import { computed } from "vue"
 import { z, ZodError } from "zod"
 import { sizeClass } from "@/composables/useSize"
-
-import { type Size } from "@/types/Component"
 import VImage from "@/components/atoms/VImage.vue"
+import { type IconButtonProp } from "@/types/Prop"
+import { SizeSchema } from "@/types/Component"
 
-interface Prop {
-  size?: Size
-  icon: string
-  type?: string
-  invert?: boolean
-  rounded?: boolean
-  hasPadding?: boolean
-  toolTip?: string
-}
-
-const prop = defineProps<Prop>()
-
-const emits = defineEmits<{
-  click: []
-}>()
+const prop = defineProps<IconButtonProp>()
+const emits = defineEmits(["click"])
 
 const PropSchema = z.object({
-  size: z
-    .enum(["extraSmall", "small", "medium", "large", "extraLarge"])
-    .optional(),
+  size: SizeSchema.optional(),
   icon: z.string(),
   type: z.string().optional(),
   invert: z.boolean().optional(),
   rounded: z.boolean().optional(),
   hasPadding: z.boolean().optional(),
-  toolTip: z.string().optional(),
+  toolTip: z.string().optional()
 })
 
 const roundedClass = computed(() => {
@@ -64,16 +49,9 @@ const roundedClass = computed(() => {
 })
 
 try {
-  PropSchema.parse({
-    size: prop.size,
-    icon: prop.icon,
-    invert: prop.invert,
-    rounded: prop.rounded,
-    hasPadding: prop.hasPadding,
-    toolTip: prop.toolTip,
-  })
+  PropSchema.parse(prop)
 } catch (e) {
   const error = e as ZodError
-  console.error(error.issues)
+  console.error(error.message)
 }
 </script>

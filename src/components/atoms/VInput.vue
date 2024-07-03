@@ -10,14 +10,9 @@
 <script setup lang="ts">
 import { z, ZodError } from "zod"
 import { inputSizeClass } from "@/composables/useSize"
+import type { InputProp } from "@/types/Prop"
 
-interface Prop {
-  type?: "text" | "file" | "password"
-  size?: "small" | "medium" | "large"
-}
-
-const prop = defineProps<Prop>()
-
+const prop = defineProps<InputProp>()
 const value = defineModel<string>()
 
 const PropSchema = z.object({
@@ -26,12 +21,9 @@ const PropSchema = z.object({
 })
 
 try {
-  PropSchema.parse({
-    type: prop.type,
-    size: prop.size,
-  })
+  PropSchema.parse(prop)
 } catch (e) {
   const error = e as ZodError
-  console.error(error.issues)
+  console.error(error.message)
 }
 </script>

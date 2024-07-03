@@ -12,30 +12,22 @@
 <script setup lang="ts">
 import { z, ZodError } from "zod"
 import { sizeClass } from "@/composables/useSize"
+import { type ButtonProp } from "@/types/Prop";
+import { SizeSchema } from "@/types/Component";
 
-interface Prop {
-  size?: "small" | "medium" | "large"
-  action?: "submit" | "button"
-}
 
-const prop = defineProps<Prop>()
-
-const emits = defineEmits<{
-  click: []
-}>()
+const prop = defineProps<ButtonProp>()
+const emits = defineEmits(["click"])
 
 const PropSchema = z.object({
-  size: z.enum(["small", "medium", "large"]).optional(),
-  action: z.enum(["submit", "button"]).optional(),
+  size: SizeSchema.optional(),
+  action: z.enum(["submit", "button"]).optional()
 })
 
 try {
-  PropSchema.parse({
-    size: prop.size,
-    action: prop.action,
-  })
+  PropSchema.parse(prop)
 } catch (e) {
   const error = e as ZodError
-  console.error(error.issues)
+  console.error(error.message)
 }
 </script>

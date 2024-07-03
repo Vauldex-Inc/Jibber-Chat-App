@@ -23,17 +23,11 @@
 
 <script setup lang="ts">
 import { z, ZodError } from "zod"
-import VIconButton from "./VIconButton.vue"
+import VIconButton from "@/components/molecules/VIconButton.vue"
+import type { ModalProp } from "@/types/Prop"
 
-interface Prop {
-  isOpen: boolean
-  closeButton?: boolean
-}
-
-const prop = defineProps<Prop>()
-
+const prop = defineProps<ModalProp>()
 const emits = defineEmits<{ close: [] }>()
-
 defineOptions({
   inheritAttrs: false,
 })
@@ -44,13 +38,10 @@ const PropSchema = z.object({
 })
 
 try {
-  PropSchema.parse({
-    isOpen: prop.isOpen,
-    closeButton: prop.closeButton,
-  })
+  PropSchema.parse(prop)
 } catch (e) {
   const error = e as ZodError
-  console.error(error.issues)
+  console.error(error.message)
 }
 </script>
 

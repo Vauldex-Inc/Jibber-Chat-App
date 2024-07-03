@@ -44,16 +44,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue"
 import { z, ZodError } from "zod"
-import VIconButton from "@/components/atoms/VIconButton.vue"
+import VIconButton from "@/components/molecules/VIconButton.vue"
+import type { ToastProp } from "@/types/Prop"
 
-interface Prop {
-  toastId: string
-  message: string
-  title: string
-}
-
-const prop = defineProps<Prop>()
-
+const prop = defineProps<ToastProp>()
 const emits = defineEmits<{
   close: [value: string]
 }>()
@@ -61,7 +55,7 @@ const emits = defineEmits<{
 const PropSchema = z.object({
   toastId: z.string(),
   message: z.string(),
-  title: z.string(),
+  title: z.string()
 })
 
 const loadingPercentage = ref<number>(0)
@@ -89,13 +83,9 @@ const setLoading = () => {
 }
 
 try {
-  PropSchema.parse({
-    toastId: prop.toastId,
-    message: prop.message,
-    title: prop.title,
-  })
+  PropSchema.parse(prop)
 } catch (e) {
   const error = e as ZodError
-  console.error(error.issues)
+  console.error(error.message)
 }
 </script>

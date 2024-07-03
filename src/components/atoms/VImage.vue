@@ -7,15 +7,18 @@
 
 <script lang="ts" setup>
 import { computed } from "vue"
-
+import { ZodError, z } from "zod"
 import { customImageSizeClass } from "@/composables/useSize"
+import type { ImageProp } from "@/types/Prop"
 
-const prop = defineProps<{
-  source?: string
-  type: string
-  size?: string
-  invert?: boolean
-}>()
+const prop = defineProps<ImageProp>()
+
+const PropSchema = z.object({
+  source: z.string().optional(),
+  type: z.string(),
+  size: z.string().optional(),
+  invert: z.boolean().optional()
+})
 
 const getImage = computed(
   () => prop.source || "./src/assets/images/default-avatar.svg",
@@ -44,5 +47,12 @@ const imageType = (ratio: string) => {
     default:
       return "object-cover aspect-square p-1"
   }
+}
+
+try {
+  PropSchema.parse(prop)
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.message)
 }
 </script>

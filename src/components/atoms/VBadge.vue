@@ -9,30 +9,23 @@
 
 <script lang="ts" setup>
 import { z, ZodError } from "zod"
+import { type BadgeProp } from "@/types/Prop";
 
-const PropSchema = z.object({
-  color: z.string().optional(),
-  count: z.number(),
-})
-
-interface Prop {
-  color?: string
-  count: number
-}
-
-const prop = defineProps<Prop>()
+const prop = defineProps<BadgeProp>()
 
 defineOptions({
   inheritAttrs: false,
 })
 
+const PropSchema = z.object({
+  color: z.string().optional(),
+  count: z.number()
+})
+
 try {
-  PropSchema.parse({
-    color: prop.color,
-    count: prop.count,
-  })
+  PropSchema.parse(prop)
 } catch (e) {
   const error = e as ZodError
-  console.error(error.issues)
+  console.error(error.message)
 }
 </script>

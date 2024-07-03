@@ -20,33 +20,23 @@
 </template>
 
 <script lang="ts" setup>
+import type { TextGroupProp } from "@/types/Prop"
 import { z, ZodError } from "zod"
 
-interface Prop {
-  title: string
-  text: string
-  subText?: string
-  isBold?: boolean
-}
 
-const prop = defineProps<Prop>()
+const prop = defineProps<TextGroupProp>()
 
 const PropSchema = z.object({
   title: z.string(),
   text: z.string(),
   subText: z.string().optional(),
-  isBold: z.boolean().optional(),
+  isBold: z.boolean().optional()
 })
 
 try {
-  PropSchema.parse({
-    title: prop.title,
-    text: prop.text,
-    subText: prop.subText,
-    isBold: prop.isBold,
-  })
+  PropSchema.parse(prop)
 } catch (e) {
   const error = e as ZodError
-  console.error(error.issues)
+  console.error(error.message)
 }
 </script>

@@ -10,7 +10,7 @@
 import { computed } from 'vue'
 
 const prop = defineProps<{
-  status?: string
+  status?: "offline" | "online" | undefined
 }>()
 
 const statusClass = computed(() => {

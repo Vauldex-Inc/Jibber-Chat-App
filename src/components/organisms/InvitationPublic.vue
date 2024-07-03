@@ -67,7 +67,7 @@ const emits = defineEmits<{
 const userStore = useUserStore()
 const channelUserStore = useChannelUserStore()
 const profileStore = useUserProfileStore()
-const users = userStore.getUsers()
+const users = userStore.getUsers
 const loggedUser = useUser()
 
 const invitedUsers = ref<string[]>([])

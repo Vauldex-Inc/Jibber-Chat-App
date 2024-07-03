@@ -22,7 +22,7 @@
       v-if="channelType === 'SNG' && typeof sender == 'string'"
       :image="profileStore.getImage(sender)"
       :status="userStore.getStatus(sender)"
-      size="extraLarge"
+      size="xlarge"
     />
     <div
       v-else
@@ -82,7 +82,7 @@ import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 
 import VAvatar from "@/components/molecules/VAvatar.vue"
-import VIconButton from "@/components/atoms/VIconButton.vue"
+import VIconButton from "@/components/molecules/VIconButton.vue"
 
 import type { Channel, DirectChannel } from "@/types/Channel"
 import { ChannelSchema } from "@/types/Channel"

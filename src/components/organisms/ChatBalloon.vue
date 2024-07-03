@@ -9,7 +9,7 @@
       :image="profileStore.getImage(message.idUser)"
       :status="userStore.getStatus(message.idUser)"
       type="message"
-      size="extraLarge"
+      size="xlarge"
     />
     <div class="flex flex-col items-start gap-2">
       <div

@@ -6,7 +6,7 @@
     <VIconButton
       class="bg-gray-100 dark:bg-slate-900"
       :hasPadding="true"
-      size="extraLarge"
+      size="xlarge"
       :icon="
         profileImage ? profileImage : './src/assets/images/default-avatar.svg'
       "
@@ -54,7 +54,7 @@ import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { z } from "zod"
 import { useFetch } from "@/composables/useFetch"
-import VIconButton from "@/components/atoms/VIconButton.vue"
+import VIconButton from "@/components/molecules/VIconButton.vue"
 import VButton from "@/components/atoms/VButton.vue"
 import ThemeSelector from "@/components/organisms/ThemeSelector.vue"
 import VModal from "@/components/atoms/VModal.vue"

@@ -29,7 +29,7 @@
             ? formData.image
             : './src/assets/images/default-avatar.svg'
         "
-        size="extraLarge"
+        size="xlarge"
         :status="userStore.getStatus(sender)"
       />
       <input
@@ -42,7 +42,7 @@
       <VIconButton
         v-if="viewOnly ? false : true"
         @click="openFileSelector"
-        size="extraSmall"
+        size="xsmall"
         icon="./src/assets/images/edit.svg"
         rounded
         class="absolute right-32 z-20 -translate-x-2 translate-y-0.5 bg-indigo-600 focus:border-indigo-600 dark:bg-slate-800 dark:focus:border-indigo-600"
@@ -129,10 +129,10 @@ import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import VAvatar from "@/components/molecules/VAvatar.vue"
-import VIconButton from "@/components/atoms/VIconButton.vue"
+import VIconButton from "@/components/molecules/VIconButton.vue"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-import type { ProfileData, Profile } from "@/types/Profile"
+import type { ProfileData } from "@/types/Profile"
 
 const props = defineProps<{
   sender?: string

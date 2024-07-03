@@ -21,7 +21,7 @@
       <VAvatar
         :image="profileStore.getImage(user)"
         :status="userStore.getStatus(user)"
-        size="extraLarge"
+        size="xlarge"
       />
       <VTextGroup
         :is-bold="unReadMessages.length > 0"

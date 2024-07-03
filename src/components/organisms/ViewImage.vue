@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
-import VIconButton from "@/components/atoms/VIconButton.vue"
+import VIconButton from "@/components/molecules/VIconButton.vue"
 
 const props = defineProps<{
   chatImages: string[]

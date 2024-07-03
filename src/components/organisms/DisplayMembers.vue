@@ -24,7 +24,7 @@
                 :image="userProfileStore.getImage(user.id)"
                 :status="getStatus(user.id)"
                 type="preview"
-                size="extraLarge"
+                size="xlarge"
               />
               <div class="flex flex-col">
                 <span class="font-semibold">{{

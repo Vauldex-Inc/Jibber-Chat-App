@@ -45,7 +45,7 @@ import { ref, computed } from "vue"
 import { useUser } from "@/composables/useUser"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { useChannelStore } from "@/stores/useChannelStore"
-import VIconButton from "@/components/atoms/VIconButton.vue"
+import VIconButton from "@/components/molecules/VIconButton.vue"
 import NotificationListItem from "@/components/organisms/NotificationListItem.vue"
 
 const notificationStore = useNotificationStore()

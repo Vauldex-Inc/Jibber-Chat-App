@@ -28,7 +28,7 @@
 
 <script lang="ts" setup>
 import ChatListItem from "@/components/organisms/ChatListItem.vue"
-import VIconButton from "@/components/atoms/VIconButton.vue"
+import VIconButton from "@/components/molecules/VIconButton.vue"
 import type { Channel, DirectChannel } from "@/types/Channel.ts"
 
 defineProps<{

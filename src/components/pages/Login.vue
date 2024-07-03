@@ -45,7 +45,7 @@
             class="inline w-full rounded-md border-2 border-gray-300 bg-gray-50 px-5 py-3 pr-12 outline-none hover:border-indigo-400 focus:border-indigo-400"
           />
           <VIconButton
-            size="extraSmall"
+            size="xsmall"
             :icon="icon"
             @click="toggle"
             class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 p-1"
@@ -86,7 +86,7 @@ import { useRouter, RouterLink } from "vue-router"
 import { useFetch } from "@/composables/useFetch"
 import VButton from "@/components/atoms/VButton.vue"
 import VInput from "@/components/atoms/VInput.vue"
-import VIconButton from "@/components/atoms/VIconButton.vue"
+import VIconButton from "@/components/molecules/VIconButton.vue"
 
 const error = ref<string>("")
 const errorUsername = ref<boolean>(false)

@@ -12,7 +12,7 @@
         <template v-if="channelType === 'SNG'">
           <div>
             <VAvatar
-              size="extraLarge"
+              size="xlarge"
               :status="sender ? userStore.getStatus(sender) : 'offline'"
               @click="openDisplayProfile"
             />
@@ -153,7 +153,7 @@ import { useUserStore } from "@/stores/useUserStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import VSection from "@/components/molecules/VSection.vue"
 import VAvatar from "@/components/molecules/VAvatar.vue"
-import VIconButton from "@/components/atoms/VIconButton.vue"
+import VIconButton from "@/components/molecules/VIconButton.vue"
 import VModal from "@/components/atoms/VModal.vue"
 import ChatColorSelector from "@/components/organisms/ChatColorSelector.vue"
 import InvitationPublic from "@/components/organisms/InvitationPublic.vue"

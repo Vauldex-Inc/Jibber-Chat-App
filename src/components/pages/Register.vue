@@ -61,7 +61,7 @@
             required
           />
           <VIconButton
-            size="extraSmall"
+            size="xsmall"
             :icon="icon"
             tabindex="20"
             class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 p-1"
@@ -79,7 +79,7 @@
             required
           />
           <VIconButton
-            size="extraSmall"
+            size="xsmall"
             :icon="icon"
             tabindex="21"
             class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 p-1"
@@ -131,7 +131,7 @@ import { ref, watchEffect, computed } from "vue"
 import { useFetch } from "@/composables/useFetch"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-import VIconButton from "@/components/atoms/VIconButton.vue"
+import VIconButton from "@/components/molecules/VIconButton.vue"
 
 interface Validation {
   message: string

@@ -1,4 +1,4 @@
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
 import { useDateFormatter } from "@/composables/useDateFormatter"
@@ -30,13 +30,9 @@ export const useUserStore = defineStore("users", () => {
 		}
 	}
 
-	const getUsers = () => {
-		return users
-	}
+	const getUsers = computed(() => users)
 
-	const getUser = (idUser: string) => {
-		return users.value.find((user) => user.id == idUser)
-	}
+	const getUser = (idUser: string) => users.value.find((user) => user.id == idUser)
 
 	const updateUserOnlineAt = (users: string[], type: string) => {
 		if (type === "online") {

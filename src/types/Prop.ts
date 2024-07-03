@@ -1,4 +1,6 @@
 import { type Size } from "@/types/Component"
+import type { Channel, DirectChannel } from "@/types/Channel"
+
 interface AvatarProp {
   image: string
   type: string
@@ -54,6 +56,12 @@ interface ToastProp {
   message: string
   title: string
 }
+interface ChatInfoProp {
+  images: Array<string>
+  channel: Channel | DirectChannel
+  title: string
+  sender?: string
+}
 
 export type {
   AvatarProp,
@@ -66,3 +74,4 @@ export type {
   TextGroupProp,
   ToastProp
 }
+

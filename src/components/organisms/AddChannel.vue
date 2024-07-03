@@ -4,7 +4,7 @@
     class="flex w-[420px] flex-col gap-4 rounded-md bg-white p-5 shadow-md dark:bg-slate-900"
   >
     <h4
-      v-if="variant === 'MPU'"
+      v-if="publicCstore.variant === GROUP_CHANNEL"
       class="pb-2 text-lg font-semibold text-gray-600 dark:text-gray-300"
     >
       Create new public channel
@@ -26,7 +26,7 @@
       size="medium"
       v-model="channelForm.title"
       v-focus
-      :placeholder="variant === 'MPU' ? 'Channel name' : 'Name'"
+      :placeholder="publicCstore.variant === GROUP_CHANNEL ? 'Channel name' : 'Name'"
     />
     <VButton
       class="text-md mt-4 rounded-md bg-indigo-600 text-white"
@@ -40,69 +40,35 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { z } from "zod"
-import { useFetch } from "@/composables/useFetch"
-import type { Channel } from "@/types/Channel"
+import { GROUP_CHANNEL, type ChannelData } from "@/types/Channel"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
+import axios from "axios"
+import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 
-const props = defineProps<{
-  variant: "MPU" | "MPR" | "SNG" | undefined
-}>()
+const publicCstore = usePublicChannelStore()
 
-interface ChannelData {
-  title: string
-  channelType: string
-  archivedAt?: string
-  color?: string
-}
-
-const emits = defineEmits<{
-  submit: [value: Channel | undefined]
-}>()
-
-const errorSchema = z.object({
-  message: z.string(),
-})
+const errorSchema = z.object({message: z.string()})
 
 const error = ref<string>("")
-const channelForm = ref<ChannelData>({
-  title: "",
-  channelType: props.variant!,
-})
+const channelForm = ref<ChannelData>({title: "", channelType: publicCstore.variant!})
 
-const vFocus = {
-  mounted: (el: HTMLInputElement) => el.focus(),
-}
+const vFocus = { mounted: (el: HTMLInputElement) => el.focus() }
 
 const create = async () => {
   try {
     if (channelForm.value.title) {
-      const response = await useFetch("/channels", {
-        method: "POST",
-        body: JSON.stringify(channelForm.value),
-      })
-
-      if (response.status === 200) {
-        const result = await response.json()
-
-        const channel = result.channel
-
-        await useFetch(`/channels/${channel.id}/users`, {
-          method: "POST",
-          body: JSON.stringify({}),
-        })
-
-        emits("submit", channel)
-      }
+      publicCstore.post(channelForm.value)
     } else {
-      if (props.variant === "MPU") {
+      if (publicCstore.variant === GROUP_CHANNEL) {
         error.value = "Please provide a channel name."
       } else {
         error.value = "Please provide a name."
       }
     }
+    publicCstore.variant = undefined
   } catch (error) {
-    emits("submit", undefined)
+    publicCstore.variant = undefined
     const errorMessage = errorSchema.safeParse(error).data?.message
     throw new Error(`Error: ${errorMessage}`)
   } finally {

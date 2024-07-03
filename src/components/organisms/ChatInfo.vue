@@ -9,35 +9,38 @@
       <div
         class="flex flex-col items-center justify-center gap-5 px-5 pb-5 pt-16"
       >
-        <template v-if="channelType === 'SNG'">
+        <template v-if="channelType === DIRECT_CHANNEL">
           <div>
             <VAvatar
               size="xlarge"
               :status="sender ? userStore.getStatus(sender) : 'offline'"
-              @click="openDisplayProfile"
+              @click="modal.toggle('stateDisplayProfile')"
             />
             <p
               class="mt-2 rounded-md p-1 text-center text-sm capitalize"
               :class="
-                sender && userStore.getStatus(sender) === 'online'
+                sender && userStore.getStatus(sender) === Status.enum.online
                   ? 'bg-emerald-100 text-emerald-600 dark:bg-slate-900'
                   : 'bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
               "
             >
-              {{ sender ? userStore.getStatus(sender) : "offline" }}
+              {{ sender ? userStore.getStatus(sender) : Status.enum.offline }}
             </p>
           </div>
           <p class="font-semibold">
             {{ sender && userProfileStore.getName(sender) }}
           </p>
-          <VModal @close="closeDisplayProfile" :is-open="stateDisplayProfile">
+          <VModal 
+            @close="modal.toggle('stateDisplayProfile')" 
+            :is-open="modal.stateDisplayProfile.value"
+          >
             <VProfileForm :sender="sender" :viewOnly="true" />
           </VModal>
         </template>
         <template v-else>
           <div
             class="flex aspect-square h-16 items-center justify-center rounded-full text-white"
-            :class="curColorTheme"
+            :class="color"
           >
             <p class="text-xl">{{ channelAbbr }}</p>
           </div>
@@ -47,11 +50,11 @@
         </template>
         <div class="flex items-center justify-center gap-4">
           <div
-            v-if="channelType !== 'SNG'"
+            v-if="channelType !== DIRECT_CHANNEL"
             class="group flex flex-col items-center justify-center gap-2"
           >
             <VIconButton
-              @click="openMemberInvite"
+              @click="modal.toggle('stateMemberInvite')"
               :disabled="channel.archivedAt !== undefined"
               icon="./src/assets/images/add.svg"
               :class="{ 'opacity-50': channel.archivedAt }"
@@ -63,7 +66,7 @@
           <div class="group flex flex-col items-center justify-center gap-2">
             <VIconButton
               :disabled="channel.archivedAt !== undefined"
-              @click="openThemeSelector"
+              @click="modal.toggle('stateThemeSelector')"
               icon="./src/assets/images/theme.svg"
               :class="{ 'opacity-50': channel.archivedAt }"
               class="border-2 border-indigo-200 bg-indigo-100 group-hover:border-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:group-hover:border-slate-800 dark:group-hover:bg-slate-900"
@@ -73,76 +76,114 @@
           </div>
         </div>
       </div>
+
       <hr
         class="my-5 border-0 border-b border-b-indigo-200 dark:border-b-slate-800"
       />
-      <VSection
-        :color="channel.color"
-        class="p-5"
-        title="Members"
-        actionButton="View All"
-        @click="openDisplayAllMembers"
-      >
-        <div class="flex items-center gap-3 p-3">
-          <img
-            src="@/assets/images/profile.svg"
-            class="aspect-square h-8 dark:invert"
-          />
-          <p>
-            {{ channelUserStore.getChannelUsersCount(channel.id) }}
-          </p>
-        </div>
-      </VSection>
-      <hr
-        class="my-5 border-0 border-b border-b-indigo-200 dark:border-b-slate-800"
-      />
-      <VSection
-        :color="channel.color"
-        class="p-5"
-        title="Images"
-        :actionButton="sentImages.length ? 'View All' : undefined"
-        @click="openDisplayImages"
-      >
-        <div class="p-3">
-          <ul
-            class="flex flex-wrap items-start justify-center gap-1 overflow-y-scroll"
-            v-if="sentImages.length !== 0"
+
+      <div class="p-5 mb-2 flex items-center justify-between">
+        <p class="font-semibold capitalize text-gray-700 dark:text-gray-300">
+          Members
+        </p>
+        <VButton
+          size="small"
+          @click="modal.toggle('stateDisplayAllMember')"
+          class="rounded-md font-semibold capitalize hover:bg-indigo-100 dark:hover:bg-slate-900"
+        >
+          <p
+            :class="channel.color"
+            class="inline-block bg-clip-text text-transparent"
           >
-            <template v-for="image in sentImages.reverse().slice(0, 4)">
-              <li v-if="image !== undefined">
-                <img
-                  class="h-24 w-32 rounded-md border-2 border-slate-200 object-cover dark:border-slate-800"
-                  :src="image"
-                />
-              </li>
-            </template>
-          </ul>
-          <p v-else class="text-center">No images found</p>
-        </div>
-      </VSection>
+            View All
+          </p>
+        </VButton>          
+      </div>
+      
+      <div class="flex items-center gap-3 p-3">
+        <img
+          src="@/assets/images/profile.svg"
+          class="aspect-square h-8 dark:invert"
+        />
+        <p>
+          {{ channelUserStore.getChannelUsersCount(channel.id) }}
+        </p>
+      </div> 
+
+      <hr
+        class="my-5 border-0 border-b border-b-indigo-200 dark:border-b-slate-800"
+      />
+
+      <div class="p-5 mb-2 flex items-center justify-between">
+        <p class="font-semibold capitalize text-gray-700 dark:text-gray-300">
+          Images
+        </p>
+        <VButton
+          size="small"
+          @click="modal.toggle('stateDisplayImages')"
+          class="rounded-md font-semibold capitalize hover:bg-indigo-100 dark:hover:bg-slate-900"
+        >
+          <p
+            :class="channel.color"
+            class="inline-block bg-clip-text text-transparent"
+            v-if="sentImages.length > 0"
+          >
+            View All
+          </p>
+        </VButton>          
+      </div>
+
+      <div class="p-3">
+        <ul
+          class="flex flex-wrap items-start justify-center gap-1 overflow-y-scroll"
+          v-if="sentImages.length !== 0"
+        >
+          <template v-for="image in sentImages.reverse().slice(0, 4)">
+            <li v-if="image !== undefined">
+              <img
+                class="h-24 w-32 rounded-md border-2 border-slate-200 object-cover dark:border-slate-800"
+                :src="image"
+              />
+            </li>
+          </template>
+        </ul>
+        <p v-else class="text-center">No images found</p>
+      </div>
+
       <hr
         class="my-5 border-0 border-b border-b-indigo-200 dark:border-b-slate-800"
       />
     </div>
 
-    <VModal @close="closeDisplayImages" :is-open="stateDisplayImages">
+    <VModal 
+      @close="modal.toggle('stateDisplayImages')" 
+      :is-open="modal.stateDisplayImages.value"
+    >
       <ViewImage :chatImages="sentImages" />
     </VModal>
 
-    <VModal @close="closeMemberInvite" :is-open="stateMemberInvite">
+    <VModal 
+      @close="modal.toggle('stateMemberInvite')" 
+      :is-open="modal.stateMemberInvite.value"
+    >
       <InvitationPublic
         @action="(idUser) => userStore.inviteMember(channel.id, idUser)"
-        :color="curColorTheme"
+        :color="color"
         :id-channel="channel.id"
       />
     </VModal>
 
-    <VModal @close="closeThemeSelector" :is-open="stateThemeSelector">
+    <VModal 
+      @close="modal.toggle('stateThemeSelector')" 
+      :is-open="modal.stateThemeSelector.value"
+    >
       <ChatColorSelector @color="selectColor" />
     </VModal>
 
-    <VModal @close="closeDisplayAllMembers" :is-open="stateDisplayAllMembers">
-      <DisplayMembers :id-channel="channel.id" @close="closeFromProfile" />
+    <VModal 
+      @close="modal.toggle('stateDisplayAllMembers')" 
+      :is-open="modal.stateDisplayAllMembers.value"
+    >
+      <DisplayMembers :id-channel="channel.id" @close="modal.toggle('stateDisplayAllMembers')" />
     </VModal>
   </div>
 </template>
@@ -151,7 +192,7 @@
 import { ref, computed } from "vue"
 import { useUserStore } from "@/stores/useUserStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
-import VSection from "@/components/molecules/VSection.vue"
+import { useModal } from "@/composables/useModal"
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
 import VModal from "@/components/atoms/VModal.vue"
@@ -160,31 +201,24 @@ import InvitationPublic from "@/components/organisms/InvitationPublic.vue"
 import DisplayMembers from "@/components/organisms/DisplayMembers.vue"
 import ViewImage from "@/components/organisms/ViewImage.vue"
 import VProfileForm from "@/components/organisms/VProfileForm.vue"
+import VButton from "../atoms/VButton.vue"
 import {
   ChannelSchema,
-  type Channel,
-  type DirectChannel,
+  DIRECT_CHANNEL,
+  GROUP_CHANNEL
 } from "@/types/Channel"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+import type { ChatInfoProp } from "@/types/Prop"
+import { Status } from "@/types/User"
 
-const props = defineProps<ChatInfoProps>()
-
-interface ChatInfoProps {
-  images: Array<string>
-  channel: Channel | DirectChannel
-  title: string
-  sender?: string
-}
-
-const emits = defineEmits<{
-  colorUpdate: [value: string]
-}>()
+const props = defineProps<ChatInfoProp>()
 
 const userStore = useUserStore()
 const userProfileStore = useUserProfileStore()
 const channelUserStore = useChannelUserStore()
 const publicChannelStore = usePublicChannelStore()
+const modal = useModal()
 
 const sentImages = computed(() => {
   return props.images.filter((i) => i !== "")
@@ -192,7 +226,7 @@ const sentImages = computed(() => {
 
 const channelType = computed(() => {
   const typeValidation = ChannelSchema.safeParse(props.channel)
-  return typeValidation.success ? "MPU" : "SNG"
+  return typeValidation.success ? GROUP_CHANNEL : DIRECT_CHANNEL
 })
 
 const channelAbbr = computed(() => {
@@ -204,39 +238,25 @@ const channelAbbr = computed(() => {
   }
 })
 
-const curColorTheme = computed(() => {
+const color = computed(() => {
   return props.channel.color ? props.channel.color : "bg-slate-800"
 })
 
-const stateMemberInvite = ref<boolean>(false)
-const openMemberInvite = () => (stateMemberInvite.value = true)
-const closeMemberInvite = () => (stateMemberInvite.value = false)
-
-const stateThemeSelector = ref<boolean>(false)
-const openThemeSelector = () => (stateThemeSelector.value = true)
-const closeThemeSelector = () => (stateThemeSelector.value = false)
-
-const stateDisplayAllMembers = ref<boolean>(false)
-const openDisplayAllMembers = () => (stateDisplayAllMembers.value = true)
-const closeDisplayAllMembers = () => (stateDisplayAllMembers.value = false)
-const closeFromProfile = (isOpen: boolean) =>
-  (stateDisplayAllMembers.value = isOpen)
-
-const stateDisplayImages = ref<boolean>(false)
-const openDisplayImages = () => (stateDisplayImages.value = true)
-const closeDisplayImages = () => (stateDisplayImages.value = false)
-
-const stateDisplayProfile = ref<boolean>(false)
-const openDisplayProfile = () => (stateDisplayProfile.value = true)
-const closeDisplayProfile = () => (stateDisplayProfile.value = false)
-
 const selectColor = async (color: string) => {
-  const validation = ChannelSchema.safeParse(props.channel)
-  const channelType = validation.success ? "MPU" : "SNG"
-  const editedChannel = { ...props.channel, channelType }
+  const editedChannel = { ...props.channel }
 
-  const res = await channelUserStore.setChannelColor(editedChannel, color)
-  res && emits("colorUpdate", color)
-  closeThemeSelector()
+  try {
+    const res = await channelUserStore.setChannelColor(editedChannel, color)
+    if (res === 200) {
+      props.channel.color = color
+      publicChannelStore.updateChannelColor(editedChannel.id, color)
+    } else {
+      throw new Error("Failed to update color")
+    }
+  } catch (error) {
+    error instanceof Error ? console.error(error.message) : ""
+  }
+  
+  modal.toggle('stateThemeSelector')
 }
 </script>

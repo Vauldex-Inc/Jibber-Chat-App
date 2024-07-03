@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-end gap-2 p-5">
+  <div class="flex items-end items-center gap-2 p-5">
     <input
       @change="attachFile"
       hidden
@@ -10,7 +10,7 @@
     <VIconButton
       :disabled="channel.archivedAt !== undefined"
       @click="openFileSelector"
-      size="large"
+      size="medium"
       :class="[curColorTheme, { 'opacity-50': channel.archivedAt }]"
       icon="./src/assets/images/file.svg"
     />
@@ -56,7 +56,7 @@
     <VIconButton
       :disabled="channel.archivedAt !== undefined"
       @click="sendMessage"
-      size="large"
+      size="medium"
       :class="[curColorTheme, { 'opacity-50': channel.archivedAt }]"
       icon="./src/assets/images/send.svg"
     />

@@ -43,7 +43,6 @@ import { z } from "zod"
 import { GROUP_CHANNEL, type ChannelData } from "@/types/Channel"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-import axios from "axios"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 
 const publicCstore = usePublicChannelStore()

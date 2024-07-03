@@ -1,8 +1,14 @@
 <template>
-  <VModal :is-open="variant === 'SNG'" @close="variant = undefined">
+  <VModal 
+    :is-open="publicCstore.variant === DIRECT_CHANNEL" 
+    @close="publicCstore.variant = undefined"
+  >
     <InvitationDirect color="bg-indigo-600" @submit="newDirect" />
   </VModal>
-  <VModal :is-open="variant === 'MPU'" @close="variant = undefined">
+  <VModal 
+    :is-open="publicCstore.variant === GROUP_CHANNEL" 
+    @close="publicCstore.variant = undefined"
+  >
     <AddChannel/>
   </VModal>
   <VModal :is-open="invitationModalOpen" @close="closeInvitationModal">
@@ -17,7 +23,7 @@
     <template #messages>
       <VChatList
         @open="openChannel"
-        @click="variant = 'SNG'"
+        @click="publicCstore.variant = DIRECT_CHANNEL"
         :items="directChannels"
         class="h-3/6"
         title="messages"
@@ -26,7 +32,7 @@
     <template #channels>
       <VChatList
         @open="openChannel"
-        @click="variant = 'MPU'"
+        @click="publicCstore.variant = GROUP_CHANNEL"
         :items="multiChannels"
         class="h-2/6"
         title="channels"
@@ -62,7 +68,6 @@
     <template #chatinfo>
       <template v-if="selectedChannel">
         <ChatInfo
-          @color-update="updateColor"
           :images="messageStore.chatImages"
           :channel="selectedChannel"
           :sender="idSender"
@@ -116,7 +121,7 @@ import Settings from "@/components/organisms/Settings.vue"
 import AddChannel from "@/components/organisms/AddChannel.vue"
 
 import type { Channel, DirectChannel } from "@/types/Channel"
-import { ChannelSchema, DirectChannelSchema } from "@/types/Channel"
+import { ChannelSchema, DIRECT_CHANNEL, DirectChannelSchema, GROUP_CHANNEL } from "@/types/Channel"
 import type { Notification } from "@/types/Notification"
 import { UserSchema } from "@/types/User"
 
@@ -137,7 +142,7 @@ const directStore = useDirectChannelStore()
 const loggedUser = useUser()
 
 const invitationNotif = notificationStore.getSelectedInvitation()
-const multiChannels = channelStore.getMultiChannels()
+const multiChannels = publicCstore.channels
 const singleChannels = channelStore.getSingleChannels()
 const directChannels = directCstore.channels
 
@@ -214,13 +219,6 @@ const newDirect = (channel: DirectChannel | undefined) => {
       throw new Error("Failed to create channel")
     }
   }
-  
-
-}
-
-const updateColor = (color: string) => {
-  selectedChannel.value!.color = color
-  channelStore.updateChannel(selectedChannel.value!.id, color)
 }
 
 const updateArchived = (data: { color: string; archivedAt: string }) => {

@@ -45,10 +45,10 @@
             class="inline w-full rounded-md border-2 border-gray-300 bg-gray-50 px-5 py-3 pr-12 outline-none hover:border-indigo-400 focus:border-indigo-400"
           />
           <VIconButton
-            size="small"
+            size="extraSmall"
             :icon="icon"
             @click="toggle"
-            class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600"
+            class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 p-1"
           />
         </div>
         <VButton

@@ -12,7 +12,7 @@
         <template v-if="channelType === 'SNG'">
           <div>
             <VAvatar
-              size="small"
+              size="extraLarge"
               :status="sender ? userStore.getStatus(sender) : 'offline'"
               @click="openDisplayProfile"
             />

@@ -11,6 +11,7 @@ import VImage from "@/components/atoms/VImage.vue"
 import VUserStatus from "@/components/atoms/VUserStatus.vue"
 import { SizeSchema } from "@/types/Component"
 import type { AvatarProp } from "@/types/Prop"
+import { StatusSchema } from "@/types/User"
 
 const prop = defineProps<Partial<AvatarProp>>()
 
@@ -18,7 +19,7 @@ const PropSchema = z.object({
   image: z.string().optional(),
   type: z.string().optional(),
   size: SizeSchema.optional(),
-  status: z.enum(["online", "offline"]).optional()
+  status: StatusSchema.optional()
 })
 
 try {

@@ -19,12 +19,12 @@
             <p
               class="mt-2 rounded-md p-1 text-center text-sm capitalize"
               :class="
-                sender && userStore.getStatus(sender) === Status.enum.online
+                sender && userStore.getStatus(sender) === StatusSchema.enum.online
                   ? 'bg-emerald-100 text-emerald-600 dark:bg-slate-900'
                   : 'bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
               "
             >
-              {{ sender ? userStore.getStatus(sender) : Status.enum.offline }}
+              {{ sender ? userStore.getStatus(sender) : StatusSchema.enum.offline }}
             </p>
           </div>
           <p class="font-semibold">
@@ -210,7 +210,7 @@ import {
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import type { ChatInfoProp } from "@/types/Prop"
-import { Status } from "@/types/User"
+import { StatusSchema } from "@/types/User"
 
 const props = defineProps<ChatInfoProp>()
 

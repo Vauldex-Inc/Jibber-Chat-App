@@ -1,11 +1,12 @@
 import { type Size } from "@/types/Component"
 import type { Channel, DirectChannel } from "@/types/Channel"
+import type { Status } from "@/types/User"
 
 interface AvatarProp {
   image: string
   type: string
   size: string
-  status: "offline" | "online"
+  status: Status
 }
 interface BadgeProp {
   color?: string
@@ -72,6 +73,7 @@ export type {
   InputProp,
   ModalProp,
   TextGroupProp,
-  ToastProp
+  ToastProp,
+  ChatInfoProp
 }
 

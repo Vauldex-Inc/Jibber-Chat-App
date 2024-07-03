@@ -7,8 +7,14 @@ const UserSchema = z.object({
 	activeAt: z.string()
 })
 
-const Status = z.enum(['online', 'offline'])
+const StatusSchema = z.enum(['online', 'offline'])
 
 type User = z.infer<typeof UserSchema>
+type Status = z.infer<typeof StatusSchema>
 
-export { type User, UserSchema, Status }
+export { 
+	type User,
+	type Status,
+	UserSchema,
+	StatusSchema
+}

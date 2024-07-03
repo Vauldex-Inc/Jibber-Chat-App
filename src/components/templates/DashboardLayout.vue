@@ -8,7 +8,8 @@
           <slot name="actions" />
         </div>
         <p
-          class="flex flex-1 items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-center text-4xl font-bold text-transparent"
+          class="flex flex-1 items-center justify-center bg-gradient-to-r from-indigo-600 
+          to-purple-600 bg-clip-text text-center text-4xl font-bold text-transparent"
         >
           Jibber
         </p>
@@ -27,7 +28,8 @@
     </aside>
     <section
       :class="[{ 'pl-3': !toggleChat }, { 'pr-3': !toggleInfo }]"
-      class="flex flex-1 flex-col justify-between border-x border-x-indigo-200 dark:border-x-slate-800"
+      class="flex flex-1 flex-col justify-between border-x border-x-indigo-200 
+      dark:border-x-slate-800"
     >
       <slot name="chatbox" />
     </section>

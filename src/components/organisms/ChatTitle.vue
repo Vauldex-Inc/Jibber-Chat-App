@@ -22,6 +22,7 @@
       v-if="channelType === 'SNG' && typeof sender == 'string'"
       :image="profileStore.getImage(sender)"
       :status="userStore.getStatus(sender)"
+      size="extraLarge"
     />
     <div
       v-else

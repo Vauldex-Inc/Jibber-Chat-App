@@ -14,7 +14,7 @@
     </div>
     <ul class="overflow-y-scroll bg-white pb-5 dark:bg-slate-950">
       <template v-if="items.length !== 0">
-        <ChatListItem
+        <VChatListItem
           @open="openChannel"
           v-for="item in items"
           :key="item.id"
@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts" setup>
-import ChatListItem from "@/components/organisms/ChatListItem.vue"
+import VChatListItem from "@/components/organisms/VChatListItem.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
 import type { Channel, DirectChannel } from "@/types/Channel.ts"
 

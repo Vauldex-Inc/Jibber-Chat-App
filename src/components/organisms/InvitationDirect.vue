@@ -70,7 +70,7 @@ const emits = defineEmits<{
 const directStore = useDirectChannelStore()
 const profileStore = useUserProfileStore()
 const userStore = useUserStore()
-const users = userStore.getUsers()
+const users = userStore.getUsers
 const loggedUser = useUser()
 
 const inputUserName = ref<string>("")

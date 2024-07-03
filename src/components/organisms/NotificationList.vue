@@ -4,6 +4,7 @@
       icon="./src/assets/images/notification-bell.svg"
       :invert="true"
       :rounded="true"
+      size="medium"
       @click="toggleNotifications"
     />
     <span
@@ -14,13 +15,13 @@
     </span>
     <div
       v-if="displayNotification"
-      @mouseleave="displayNotification = false"
       class="absolute bottom-0 left-2 z-30 translate-y-full rounded-md bg-white px-2 py-5 shadow-xl dark:bg-slate-800"
+      @mouseleave="displayNotification = false"
     >
       <ul
         v-if="notificationsCopy?.length !== 0"
-        @mouseleave="toggleNotifications"
         class="max-h-80 w-[28rem] divide-y overflow-y-scroll dark:divide-slate-700"
+        @mouseleave="toggleNotifications"
       >
         <NotificationListItem
           v-for="notification in notificationsCopy"

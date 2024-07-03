@@ -7,7 +7,7 @@
       <VIconButton
         class="bg-slate-700 dark:bg-slate-800"
         icon="./src/assets/images/add.svg"
-        size="medium"
+        size="small"
         @click="emits('click')"
       >
       </VIconButton>

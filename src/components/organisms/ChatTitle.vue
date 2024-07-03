@@ -13,7 +13,7 @@
     <VIconButton
       v-else
       @click="emits('toggleChat')"
-      class="border bg-gray-100 hover:bg-gray-200 dark:border-slate-800 dark:bg-gray-900 hover:dark:bg-slate-900"
+      class="border bg-gray-100 p-10 hover:bg-gray-200 dark:border-slate-800 dark:bg-gray-900 hover:dark:bg-slate-900"
       :invert="true"
       tool-tip="show chats"
       icon="./src/assets/images/collapse-menu-right.svg"
@@ -107,9 +107,9 @@ const channelStore = useChannelStore()
 
 const channelAbbr = computed(() => {
   const abbrValidation = ChannelSchema.safeParse(props.channel)
-  if (abbrValidation.success){
+  if (abbrValidation.success) {
     return abbrValidation.data.title.slice(0, 1)
-  } 
+  }
 })
 
 const channelType = computed(() => {
@@ -123,7 +123,7 @@ const curColorTheme = computed(() => {
 
 const archiveChannel = async () => {
   try {
-		const archivedAt = new Date().toISOString()
+    const archivedAt = new Date().toISOString()
     await channelStore.archiveChannel(props.channel, archivedAt)
     emits("archive", { color: "", archivedAt })
   } catch (e) {

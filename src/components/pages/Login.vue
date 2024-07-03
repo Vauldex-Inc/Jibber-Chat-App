@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref , type Ref} from "vue"
+import { ref, type Ref } from "vue"
 import { useRouter, RouterLink } from "vue-router"
 import { useFetch } from "@/composables/useFetch"
 import VButton from "@/components/atoms/VButton.vue"
@@ -179,7 +179,7 @@ const login = async () => {
       localStorage.setItem("user", JSON.stringify(result.user))
       resetFields(formData, "username", "password")
       router.push("/dashboard")
-    } else if (response.status === 404) {
+    } else if (response.status === 401) {
       highlightErrorFields()
       displayError("Incorrect username and password combination")
     }

@@ -61,10 +61,10 @@
             required
           />
           <VIconButton
-            size="small"
+            size="extraSmall"
             :icon="icon"
             tabindex="20"
-            class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600"
+            class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 p-1"
             @click="toggle"
           />
         </div>
@@ -79,10 +79,10 @@
             required
           />
           <VIconButton
-            size="small"
+            size="extraSmall"
             :icon="icon"
             tabindex="21"
-            class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600"
+            class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 p-1"
             @click="toggle"
           />
         </div>

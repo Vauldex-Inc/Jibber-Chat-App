@@ -86,15 +86,15 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 
 	}
 
-	const setChannelColor = async (channel: Channel | DirectChannel, color: string): Promise<boolean | void> => {
+	const setChannelColor = async (channel: Channel | DirectChannel, color: string): Promise<number | void> => {
 		try {
 			const validation = ChannelSchema.safeParse(channel)
-			const { data } = await axios.put(`/channels/${channel.id}`, {
+			const response = await axios.put(`/channels/${channel.id}`, {
 				title: validation.success ? validation.data.title : "",
 				channelType: validation.success ? "MPU" : "SNG",
 				color: color,
 			})
-			return data.message
+			return response.status
 		} catch (e) {
 			const error = e as AxiosError
 			console.error(error)

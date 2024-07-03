@@ -18,14 +18,21 @@
           class="flex items-center justify-between rounded-md px-4 py-2 hover:bg-gray-100 hover:dark:bg-gray-800"
           @click="selectedProfile(user.id)"
         >
-          <div class="flex gap-4">
+          <div class="flex items-center gap-4">
             <template v-if="userProfileStore.getProfile(user.id)">
-              <VAvatar :image="userProfileStore.getImage(user.id)" :status="getStatus(user.id)" />
+              <VAvatar
+                :image="userProfileStore.getImage(user.id)"
+                :status="getStatus(user.id)"
+                type="preview"
+                size="extraLarge"
+              />
               <div class="flex flex-col">
                 <span class="font-semibold">{{
                   userProfileStore.getName(user.id)
                 }}</span>
-                <span v-if="userProfileStore.getNickname(user.id)" class="text-xs"
+                <span
+                  v-if="userProfileStore.getNickname(user.id)"
+                  class="text-xs"
                   >({{ userProfileStore.getNickname(user.id) }})</span
                 >
               </div>

@@ -39,7 +39,7 @@ const imageType = (ratio: string) => {
       return "h-24 w-32 rounded-md border-2 border-slate-200 object-cover dark:border-slate-800"
 
     case "preview":
-      return "h-8 w-8 object-cover p-1"
+      return "aspect-square object-cover p-1 rounded-full"
 
     default:
       return "object-cover aspect-square p-1"

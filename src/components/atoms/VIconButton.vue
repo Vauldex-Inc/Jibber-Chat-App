@@ -7,7 +7,12 @@
     type="button"
   >
     <div class="relative">
-      <VImage :size="size" :source="icon" type="icon" :invert="invert" />
+      <VImage
+        :size="size"
+        :source="icon"
+        :type="type ?? 'icon'"
+        :invert="invert"
+      />
       <p
         class="absolute -bottom-4 left-1/2 z-50 hidden min-w-24 -translate-x-1/2 translate-y-full rounded-md bg-slate-800 px-2 py-1 text-sm capitalize text-gray-200 group-hover:block"
         v-if="toolTip"

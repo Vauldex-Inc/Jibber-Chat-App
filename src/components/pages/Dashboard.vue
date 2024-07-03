@@ -3,7 +3,7 @@
     <InvitationDirect color="bg-indigo-600" @submit="newDirect" />
   </VModal>
   <VModal :is-open="variant === 'MPU'" @close="variant = undefined">
-    <AddChannel :variant="variant" @submit="newChannel" />
+    <AddChannel/>
   </VModal>
   <VModal :is-open="invitationModalOpen" @close="closeInvitationModal">
     <InvitationCard
@@ -203,21 +203,6 @@ const openChannel = async (id: string, type: "SNG" | "MPU") => {
   } else {
     selectedChannel.value = channelStore.getChannelById(id)
   }
-}
-
-const newChannel = (channel: Channel | undefined) => {
-  if (channel) {
-    const newPc = {
-      id: channel.id,
-      title: channel.title,
-      color: channel.color,
-      archivedAt: channel.archivedAt
-    }
-    
-    channelStore.addNewChannel(channel)
-    publicCstore.add(newPc)
-  }
-  variant.value = undefined
 }
 
 const newDirect = (channel: DirectChannel | undefined) => {

@@ -1,5 +1,8 @@
 <template>
-  <img :src="getImage" :class="imageType(type)" />
+  <img
+    :src="getImage"
+    :class="[imageType(type), customImageSizeClass(prop.size)]"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -23,7 +26,6 @@ const imageType = (ratio: string) => {
     case "icon":
       return [
         "aspect-square rounded-full object-cover",
-        customImageSizeClass(prop.size),
         prop.invert ? "invert dark:invert-0" : "invert-0",
       ]
 

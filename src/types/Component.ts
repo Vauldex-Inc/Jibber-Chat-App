@@ -1,7 +1,4 @@
 import { z } from 'zod'
 
-const SizeSchema = z.enum(["small", "medium", "large", "extraLarge"])
-
-type Size = z.infer<typeof SizeSchema>
-
-export { type Size, SizeSchema }
+export const SizeSchema = z.enum(["extraSmall", "small", "medium", "large", "extraLarge"])
+export type Size = z.infer<typeof SizeSchema>

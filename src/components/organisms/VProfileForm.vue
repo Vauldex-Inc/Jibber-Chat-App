@@ -4,7 +4,7 @@
     class="flex w-96 max-w-full flex-col justify-center gap-3 rounded-lg bg-white p-5 shadow-md dark:bg-slate-900"
   >
     <div
-      class="relative flex justify-center"
+      class="relative flex flex-col-reverse items-center justify-start pl-5"
       @mouseenter="onAvatar = true"
       @mouseleave="onAvatar = false"
     >
@@ -13,12 +13,13 @@
         @click="removeImage"
         size="small"
         rounded
+        :hasPadding="true"
         icon="./src/assets/images/close.svg"
         class="scale-75"
         :class="
           viewOnly
             ? 'hidden'
-            : 'absolute bottom-0 right-32 z-20 -translate-x-2 -translate-y-10 bg-red-500 focus:border-indigo-600 dark:focus:border-indigo-600'
+            : 'absolute bottom-0 right-32 z-20 -translate-x-1 -translate-y-8 bg-red-500 p-0.5 focus:border-indigo-600 dark:focus:border-indigo-600'
         "
         :hidden="!onAvatar"
       />
@@ -28,7 +29,7 @@
             ? formData.image
             : './src/assets/images/default-avatar.svg'
         "
-        size="large"
+        size="extraLarge"
         :status="userStore.getStatus(sender)"
       />
       <input
@@ -41,10 +42,10 @@
       <VIconButton
         v-if="viewOnly ? false : true"
         @click="openFileSelector"
-        size="small"
+        size="extraSmall"
         icon="./src/assets/images/edit.svg"
         rounded
-        class="absolute bottom-0 right-32 z-20 -translate-x-2 translate-y-0.5 bg-indigo-600 focus:border-indigo-600 dark:bg-slate-700 dark:bg-slate-800 dark:focus:border-indigo-600"
+        class="absolute right-32 z-20 -translate-x-2 translate-y-0.5 bg-indigo-600 focus:border-indigo-600 dark:bg-slate-800 dark:focus:border-indigo-600"
       />
     </div>
     <p
@@ -201,16 +202,6 @@ const create = async () => {
     })
 
     if (response.status === 200) {
-      if (currUser) {
-        const newProfile: Profile = {
-          idUser: currUser.id,
-          nickName: formData.value.nickName,
-          firstName: formData.value.firstName,
-          lastName: formData.value.lastName,
-          image: formData.value.image,
-          email: formData.value.email,
-        }
-      }
       emits("submit")
     } else {
       error.value = "Oops, something went wrong."
@@ -226,7 +217,9 @@ const create = async () => {
 
 const doesExist = () => {
   if (currUser) {
-    const userProfile = userStore.getUser(props.sender ? props.sender : currUser.id)
+    const userProfile = userStore.getUser(
+      props.sender ? props.sender : currUser.id,
+    )
     const user = userProfile?.username
 
     if (user) {
@@ -237,7 +230,7 @@ const doesExist = () => {
         firstName: profile.value?.firstName,
         lastName: profile.value?.lastName,
         image: profile.value?.image,
-        email: profile.value?.email
+        email: profile.value?.email,
       }
     } else {
       method.value = "POST"

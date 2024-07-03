@@ -1,6 +1,6 @@
 <template>
   <div class="relative inline-block">
-    <VImage type="avatar" :source="image" />
+    <VImage :size="size" :type="type ?? 'avatar'" :source="image" />
     <VUserStatus :status="status" />
   </div>
 </template>
@@ -13,12 +13,14 @@ import { SizeSchema } from "@/types/Component"
 
 const PropSchema = z.object({
   image: z.string().optional(),
+  type: z.string().optional(),
   size: SizeSchema.optional(),
   status: z.enum(["online", "offline"]).optional(),
 })
 
 interface Prop {
   image?: string
+  type?: string
   size?: string
   status?: string
 }
@@ -28,6 +30,7 @@ const prop = defineProps<Partial<Prop>>()
 try {
   PropSchema.parse({
     image: prop.image,
+    type: prop.type,
     size: prop.size,
     status: prop.status,
   })

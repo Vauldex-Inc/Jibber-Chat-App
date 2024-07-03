@@ -1,6 +1,6 @@
 const sizeClass = (size?: string) => {
   switch (size) {
-    case "extraSmall":
+    case "xsmall":
       return "text-xs"
     case "small":
       return "py-2 px-3 text-sm";
@@ -34,7 +34,7 @@ const customImageSizeClass = (size?: string) => {
       return "h-6";
     case "large":
       return "h-8";
-    case "extraLarge":
+    case "xlarge":
       return "h-12";
     default:
       return "h-4";

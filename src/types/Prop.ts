@@ -2,6 +2,7 @@ import { type Size } from "@/types/Component"
 import type { DirectChannel, PublicChannel } from "@/types/Channel"
 import type { Status } from "@/types/User"
 import type { Message } from "@/types/Message"
+import type { Invitation } from "@/types/Notification"
 
 interface AvatarProp {
   image: string
@@ -84,6 +85,27 @@ interface ProfileProp {
   viewOnly?: boolean
 }
 
+interface ChatTitleProp {
+  channel: PublicChannel | DirectChannel
+  sender?: string
+  collapse: boolean
+}
+
+interface InvitationCardProp {
+  notification: Invitation
+  name: string
+}
+
+interface SettingProp {
+  profileImage?: string
+  username: string
+}
+
+interface InvitationProp {
+  color: string
+  idChannel: string
+}
+
 export type {
   AvatarProp,
   BadgeProp,
@@ -98,6 +120,10 @@ export type {
   ChatBalloonProp,
   ChannelTypeProp,
   ChannelMessageProp,
-  ProfileProp
+  ProfileProp,
+  ChatTitleProp,
+  InvitationCardProp,
+  SettingProp,
+  InvitationProp
 }
 

@@ -36,16 +36,26 @@
 </template>
 
 <script setup lang="ts">
+import { z, ZodError } from "zod"
 import VButton from "@/components/atoms/VButton.vue"
-import type { Invitation } from "@/types/Notification"
+import { InvitationSchema } from "@/types/Notification";
+import type { InvitationCardProp } from "@/types/Prop";
 
-defineProps<{
-  notification: Invitation
-  name: string
-}>()
-
+const prop = defineProps<InvitationCardProp>()
 const emits = defineEmits<{
   close: []
   view: [value: string]
 }>()
+
+const PropSchema = z.object({
+  notification: InvitationSchema,
+  name: z.string()
+})
+
+try {
+  PropSchema.parse(prop)
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.message)
+}
 </script>

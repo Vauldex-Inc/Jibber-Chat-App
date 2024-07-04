@@ -76,30 +76,28 @@
 
 <script lang="ts" setup>
 import { computed } from "vue"
+import { ZodError, z } from "zod"
 import { useUserStore } from "@/stores/useUserStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
-
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
-
-import type { Channel, DirectChannel } from "@/types/Channel"
-import { ChannelSchema } from "@/types/Channel"
+import { ChannelSchema, DirectChannelSchema, PublicChannelSchema } from "@/types/Channel"
 import { useChannelStore } from "@/stores/useChannelStore"
+import type { ChatTitleProp } from "@/types/Prop"
 
-const props = defineProps<{
-  channel: Channel | DirectChannel
-  sender?: string
-  collapse: boolean
-}>()
-
+const prop = defineProps<ChatTitleProp>()
 const emits = defineEmits<{
   archive: [value: { color: string; archivedAt: string }]
   toggleInfo: []
   toggleChat: []
 }>()
 
+const PropSchema = z.object({
+  channel: PublicChannelSchema.or(DirectChannelSchema),
+  sender: z.string().uuid().optional()
+})
 const profileStore = useUserProfileStore()
 const userStore = useUserStore()
 const channelUserStore = useChannelUserStore()
@@ -107,29 +105,36 @@ const publicChannelStore = usePublicChannelStore()
 const channelStore = useChannelStore()
 
 const channelAbbr = computed(() => {
-  const abbrValidation = ChannelSchema.safeParse(props.channel)
+  const abbrValidation = ChannelSchema.safeParse(prop.channel)
   if (abbrValidation.success) {
     return abbrValidation.data.title.slice(0, 1)
   }
 })
 
 const channelType = computed(() => {
-  const typeValidation = ChannelSchema.safeParse(props.channel)
+  const typeValidation = ChannelSchema.safeParse(prop.channel)
   return typeValidation.success ? "MPU" : "SNG"
 })
 
 const curColorTheme = computed(() => {
-  return props.channel.color ? props.channel.color : "bg-slate-800"
+  return prop.channel.color ? prop.channel.color : "bg-slate-800"
 })
 
 const archiveChannel = async () => {
   try {
     const archivedAt = new Date().toISOString()
-    await channelStore.archiveChannel(props.channel, archivedAt)
+    await channelStore.archiveChannel(prop.channel, archivedAt)
     emits("archive", { color: "", archivedAt })
   } catch (e) {
     const error = e as Error
     console.error(error.message)
   }
+}
+
+try {
+  PropSchema.parse(prop)
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.message)
 }
 </script>

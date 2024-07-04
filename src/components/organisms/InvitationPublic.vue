@@ -47,23 +47,25 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue"
+import { ZodError, z } from "zod"
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
 import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
+import type { InvitationProp } from "@/types/Prop"
 
 
-const props = defineProps<{
-  color: string
-  idChannel: string
-}>()
-
+const prop = defineProps<InvitationProp>()
 const emits = defineEmits<{
   action: [value: string]
 }>()
 
+const PropSchema = z.object({
+  color: z.string(),
+  idChannel: z.string().uuid()
+})
 const userStore = useUserStore()
 const channelUserStore = useChannelUserStore()
 const profileStore = useUserProfileStore()
@@ -86,7 +88,7 @@ const filteredUserName = computed(() => {
 })
 
 onMounted(async () => {
-  (await channelUserStore.getChannelUsers(props.idChannel))?.forEach((cu) => invitedUsers.value.push(cu.idUser))
+  (await channelUserStore.getChannelUsers(prop.idChannel))?.forEach((cu) => invitedUsers.value.push(cu.idUser))
   users.value.forEach((u) => {
     if (!invitedUsers.value.includes(u.id)) {
       const id = u.id
@@ -101,5 +103,12 @@ const isInvited = (idUser: string) => invitedUsers.value.includes(idUser)
 const selectedUserName = (idUser: string) => {
   invitedUsers.value.push(idUser)
   emits("action", idUser)
+}
+
+try {
+  PropSchema.parse(prop)
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.message)
 }
 </script>

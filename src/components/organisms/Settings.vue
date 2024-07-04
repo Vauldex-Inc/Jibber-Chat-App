@@ -52,21 +52,20 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { useRouter } from "vue-router"
-import { z } from "zod"
-import { useFetch } from "@/composables/useFetch"
+import axios, { AxiosError } from "axios"
+import { ZodError, z } from "zod"
 import VIconButton from "@/components/molecules/VIconButton.vue"
 import VButton from "@/components/atoms/VButton.vue"
 import ThemeSelector from "@/components/organisms/ThemeSelector.vue"
 import VModal from "@/components/atoms/VModal.vue"
 import VProfileForm from "@/components/organisms/VProfileForm.vue"
+import type { SettingProp } from "@/types/Prop"
 
-defineProps<{
-  profileImage?: string | undefined
-  username: string
-}>()
+const prop = defineProps<SettingProp>()
 
-const errorSchema = z.object({
-  message: z.string(),
+const PropSchema = z.object({
+  profileImage: z.string().optional(),
+  username: z.string()
 })
 const router = useRouter()
 
@@ -74,19 +73,24 @@ const isOpen = ref<boolean>(false)
 const formShown = ref<boolean>(false)
 
 const toggleSettings = () => (isOpen.value = !isOpen.value)
-
 const newProfile = () => (formShown.value = false)
-
 const logout = async () => {
   try {
-    const response = await useFetch("/sessions", { method: "DELETE" })
+    const response = await axios.delete("/sessions")
     if (response.status === 200) {
       localStorage.removeItem("user")
       router.push("/")
     }
-  } catch (error) {
-    const errorMessage = errorSchema.safeParse(error).data?.message
-    throw new Error(`Error: ${errorMessage}`)
+  } catch (e) {
+    const error = e as AxiosError
+    console.error(error.message)
   }
+}
+
+try {
+  PropSchema.parse(prop)
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.message)
 }
 </script>

@@ -42,13 +42,10 @@ import { useNotificationStore } from "@/stores/useNotificationStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import type { Invitation } from "@/types/Notification"
 
-const props = defineProps<{
+const prop = defineProps<{
   invitation: Invitation
 }>()
-
-const emit = defineEmits<{
-  close: []
-}>()
+const emit = defineEmits(["close"])
 
 const userProfileStore = useUserProfileStore()
 const channelStore = useChannelStore()
@@ -61,7 +58,7 @@ const options: Intl.DateTimeFormatOptions = {
 }
 
 const isRead = computed(() => {
-  const seenStatus = props.invitation.seenAt
+  const seenStatus = prop.invitation.seenAt
   if (seenStatus) {
     return dateFormatter.format(seenStatus, options)
   }
@@ -69,21 +66,21 @@ const isRead = computed(() => {
 })
 
 const channelName = computed(() => {
-  const channel = channelStore.getChannelById(props.invitation.idChannel)
+  const channel = channelStore.getChannelById(prop.invitation.idChannel)
   return channel?.title
 })
 
 const formattedSentAtDate = computed(() => {
-  return formatSentAt(props.invitation.sentAt)
+  return formatSentAt(prop.invitation.sentAt)
 })
 
 const sender = computed(() => {
-  return userProfileStore.getName(props.invitation.idSender)
+  return userProfileStore.getName(prop.invitation.idSender)
 })
 
 const viewNotifInvite = () => {
-  notificationStore.setSelectedInvitation(props.invitation)
-  notificationStore.updateNotification(props.invitation.id)
+  notificationStore.setSelectedInvitation(prop.invitation)
+  notificationStore.updateNotification(prop.invitation.id)
   emit("close")
 }
 </script>

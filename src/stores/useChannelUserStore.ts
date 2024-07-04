@@ -7,7 +7,9 @@ import type { User } from "@/types/User"
 import type { ZodError } from "zod"
 
 export const useChannelUserStore = defineStore("channel-users", () => {
-	const channelUsers = ref<[string, ChannelUser[]][]>([])
+	type ChannelType = Channel | DirectChannel
+	const users = ref<[string, ChannelUser[]][]>([])
+	const channel = ref<ChannelType>({} as ChannelType) // currently opened or actived channel (direct | public)
 
 	const channelUsersCount = computed(() => {
 		const copy = [...channelUsers.value]
@@ -16,6 +18,13 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 			return [id, users.length]
 		})
 	})
+
+	const getIdChannel = computed(() => idChannel.value)
+
+	// continue
+	const opeChannel = (id: string) => {
+		idChannel.value = id
+	}
 
 
 	const getChannelUsers = async (idChannel: string) => {
@@ -108,6 +117,7 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 
 
 	return {
+		channel,
 		channelUsers,
 		getChannelUsers,
 		isMember,

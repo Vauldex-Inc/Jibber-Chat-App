@@ -1,4 +1,5 @@
 <template>
+  <!-- Refactor this -->
   <VModal 
     :is-open="publicCstore.variant === DIRECT_CHANNEL" 
     @close="publicCstore.variant = undefined"
@@ -19,7 +20,62 @@
       @close="closeInvitationModal"
     />
   </VModal>
-  <DashboardLayout :toggle-chat="isChatListOpen" :toggle-info="isChatInfoOpen">
+  <!-- End of Refactor this -->
+
+
+
+
+  <TheChat>
+    <template #chatbox>
+      <template v-if="selectedChannel">
+        <ChatTitle
+          :collapse="isChatListOpen"
+          @toggle-chat="toggleChatList"
+          @toggle-info="toggleChatInfo"
+          @archive="updateArchived"
+          :channel="selectedChannel"
+          :sender="idSender"
+        />
+        <ChatBoxArea
+          :channel="selectedChannel"
+          :messages="messageStore.chatMessages"
+          class="flex-1"
+        />
+        <ChatBox @send="sendMessage" :channel="selectedChannel" />
+      </template>
+    </template>
+
+    <template #left>
+      <TheChatList>
+        <template #actions>
+          <Settings :username="loggedUser!.username" :profileImage="profileImage" />
+        </template>
+        <template #notification>
+          <NotificationList />
+        </template>
+      </TheChatList>
+    </template>
+
+
+    <template #right>
+      <TheChannelInformation>
+
+      </TheChannelInformation>
+    </template>
+  </TheChat>
+
+  <TransitionGroup name="notif" tag="ul" class="flex flex-col gap-2 absolute right-0 top-0 z-40">
+    <VToast
+      v-for="n in notifications"
+      :key="n.id"
+      :toast-id="n.id"
+      :message="n.message"
+      :title="n.title"
+      @close="onCloseToast"
+    />
+  </TransitionGroup>
+
+<!--   <TheDashboard :toggle-chat="isChatListOpen" :toggle-info="isChatInfoOpen">
     <template #messages>
       <VChatList
         @open="openChannel"
@@ -83,15 +139,22 @@
           :toast-id="notif.id"
           :message="notif.message"
           :title="notif.title"
-          @close="closeToast"
+          @close="onCloseToast"
         />
       </TransitionGroup>
     </template>
-  </DashboardLayout>
+  </TheDashboard> -->
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch, computed, onUnmounted, type Ref } from "vue"
+import {
+  onMounted,
+  ref,
+  watch,
+  computed,
+  onUnmounted,
+  type Ref
+} from "vue"
 
 import { useUser } from "@/composables/useUser"
 import { useFetch } from "@/composables/useFetch"
@@ -107,7 +170,7 @@ import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import VToast from "@/components/molecules/VToast.vue"
-import DashboardLayout from "@/components/templates/DashboardLayout.vue"
+import TheDashboard from "@/components/templates/TheDashboard.vue"
 import VChatList from "@/components/organisms/VChatList.vue"
 import ChatTitle from "@/components/organisms/ChatTitle.vue"
 import ChatInfo from "@/components/organisms/ChatInfo.vue"
@@ -243,7 +306,7 @@ const sendMessage = async (message: string, img: string | undefined) => {
   await messageStore.sendMessage(selectedChannel.value!.id, message, img)
 }
 
-const closeToast = (id: string) => {
+const onCloseToast = (id: string) => {
   notifications.value = [...notifications.value.filter((n) => n.id !== id)]
 }
 

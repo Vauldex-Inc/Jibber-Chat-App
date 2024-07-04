@@ -51,6 +51,5 @@ const move = (dir: string) => {
       break;
     }
   }
-  console.log(count.value)
 }
 </script>

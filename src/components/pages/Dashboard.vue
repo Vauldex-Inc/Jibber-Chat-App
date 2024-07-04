@@ -174,7 +174,7 @@ const privateChannels = computed(() => {
   })
 })
 
-const isChatInfoOpen = ref<boolean>(true) // switch to false after
+const isChatInfoOpen = ref<boolean>(false) // switch to false after
 
 const toggleChatInfo = () => {
   isChatInfoOpen.value = !isChatInfoOpen.value

@@ -39,20 +39,17 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
-import { z } from "zod"
-import { GROUP_CHANNEL, type ChannelData } from "@/types/Channel"
+import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+import { GROUP_CHANNEL, type ChannelData } from "@/types/Channel"
+import type { AxiosError } from "axios"
 
 const publicCstore = usePublicChannelStore()
-
-const errorSchema = z.object({message: z.string()})
+const vFocus = { mounted: (el: HTMLInputElement) => el.focus() }
 
 const error = ref<string>("")
 const channelForm = ref<ChannelData>({title: "", channelType: publicCstore.variant!})
-
-const vFocus = { mounted: (el: HTMLInputElement) => el.focus() }
 
 const create = async () => {
   try {
@@ -66,10 +63,10 @@ const create = async () => {
       }
     }
     publicCstore.variant = undefined
-  } catch (error) {
+  } catch (e) {
     publicCstore.variant = undefined
-    const errorMessage = errorSchema.safeParse(error).data?.message
-    throw new Error(`Error: ${errorMessage}`)
+    const error = e as Error | AxiosError
+    console.error(error.message)
   } finally {
     setTimeout(() => {
       error.value = ""

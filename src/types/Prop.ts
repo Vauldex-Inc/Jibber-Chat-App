@@ -1,6 +1,7 @@
 import { type Size } from "@/types/Component"
 import type { Channel, DirectChannel } from "@/types/Channel"
 import type { Status } from "@/types/User"
+import type { Message } from "@/types/Message"
 
 interface AvatarProp {
   image: string
@@ -64,6 +65,11 @@ interface ChatInfoProp {
   sender?: string
 }
 
+interface ChatBalloonProp {
+  message: Message
+  color?: string
+}
+
 export type {
   AvatarProp,
   BadgeProp,
@@ -74,6 +80,7 @@ export type {
   ModalProp,
   TextGroupProp,
   ToastProp,
-  ChatInfoProp
+  ChatInfoProp,
+  ChatBalloonProp
 }
 

@@ -45,18 +45,29 @@
 </template>
 
 <script lang="ts" setup>
+import { ZodError, z } from "zod"
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import VAvatar from "@/components/molecules/VAvatar.vue"
-import type { Message } from "@/types/Message"
+import type { ChatBalloonProp } from "@/types/Prop"
+import { MessageSchema } from "@/types/Message"
 
-defineProps<{
-  message: Message
-  color?: string
-}>()
+const prop = defineProps<ChatBalloonProp>()
+
+const PropSchema = z.object({
+  message: MessageSchema,
+  color: z.string().optional()
+})
 
 const userStore = useUserStore()
 const profileStore = useUserProfileStore()
 const loggedUser = useUser()
+
+try {
+  PropSchema.parse(prop)
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.message)
+}
 </script>

@@ -87,7 +87,7 @@
         </p>
         <VButton
           size="small"
-          @click="modal.toggle('stateDisplayAllMember')"
+          @click="modal.toggle('stateDisplayAllMembers')"
           class="rounded-md font-semibold capitalize hover:bg-indigo-100 dark:hover:bg-slate-900"
         >
           <p

@@ -7,7 +7,7 @@
       <VIconButton
         tool-tip="previous"
         size="large"
-        @click="leftMove"
+        @click="move('left')"
         icon="./src/assets/images/left-button.svg"
       />
     </div>
@@ -15,7 +15,7 @@
       <VIconButton
         tool-tip="next"
         size="large"
-        @click="rightMove"
+        @click="move('right')"
         icon="./src/assets/images/right-button.svg"
       />
     </div>
@@ -26,25 +26,31 @@
 import { ref } from "vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
 
-const props = defineProps<{
+const prop = defineProps<{
   chatImages: string[]
 }>()
 
 const count = ref<number>(0)
 
-const rightMove = () => {
-  if (count.value >= props.chatImages.length - 1) {
-    count.value = 0
-  } else {
-    count.value++
+const move = (dir: string) => {
+  switch (dir) {
+    case "right": {
+      if (count.value >= prop.chatImages.length - 1) {
+        count.value = 0
+      } else {
+        count.value++
+      }
+      break;
+    }
+    case "left": {
+      if (count.value <= 0) {
+        count.value = prop.chatImages.length - 1
+      } else {
+        count.value--
+      }
+      break;
+    }
   }
-}
-
-const leftMove = () => {
-  if (count.value <= 0) {
-    count.value = props.chatImages.length - 1
-  } else {
-    count.value--
-  }
+  console.log(count.value)
 }
 </script>

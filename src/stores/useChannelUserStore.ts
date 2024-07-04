@@ -4,6 +4,7 @@ import axios, { AxiosError } from "axios"
 import { ChannelUserSchema, type ChannelUser, ChannelSchema } from "@/types/Channel"
 import type { Channel, DirectChannel } from "@/types/Channel"
 import type { User } from "@/types/User"
+import type { ZodError } from "zod"
 
 export const useChannelUserStore = defineStore("channel-users", () => {
 	const channelUsers = ref<[string, ChannelUser[]][]>([])
@@ -89,15 +90,19 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 	const setChannelColor = async (channel: Channel | DirectChannel, color: string): Promise<number | void> => {
 		try {
 			const validation = ChannelSchema.safeParse(channel)
-			const response = await axios.put(`/channels/${channel.id}`, {
-				title: validation.success ? validation.data.title : "",
-				channelType: validation.success ? "MPU" : "SNG",
-				color: color,
-			})
-			return response.status
+			if (validation.success) {
+				const response = await axios.put(`/channels/${validation.data.id}`, {
+					title: validation.success ? validation.data.title : "",
+					channelType: validation.success ? "MPU" : "SNG",
+					color: color,
+				})
+				return response.status
+			} else {
+				throw new Error("Failed to update")
+			}
 		} catch (e) {
-			const error = e as AxiosError
-			console.error(error)
+			const error = e as AxiosError | ZodError
+			console.error(error.message)
 		}
 	}
 

@@ -12,6 +12,7 @@ import {
 export const usePublicChannelStore = defineStore("public-channels", () => {
   const _channels = ref<Array<PublicChannel>>([])
   const variant = ref<ChannelVariant | undefined>(undefined)
+  const currentOpen = ref<PublicChannel | undefined>(undefined)
 
   const resource = "/channels"
 
@@ -69,6 +70,14 @@ export const usePublicChannelStore = defineStore("public-channels", () => {
 		})
 	}
 
+  const getInitials = (title: string) => title.slice(0, 1)
+
+  const openChannel = (idChannel: string) => _channels.value.find((c) => {
+    if (c.id === idChannel) {
+      currentOpen.value = c
+    }
+  })
+
   return {
     channels,
     fetch,
@@ -77,6 +86,9 @@ export const usePublicChannelStore = defineStore("public-channels", () => {
     add,
     variant,
     getChannelById,
-    updateChannelColor
+    updateChannelColor,
+    getInitials,
+    currentOpen,
+    openChannel
   }
 })

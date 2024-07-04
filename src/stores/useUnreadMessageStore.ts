@@ -29,8 +29,8 @@ export const useUnreadMessageStore = defineStore("unread-messages", () => {
 		unreadMessages.value.push(message)
 	}
 
-	const getUnreadMessages = () => {
-		return unreadMessages
+	const getUnreadMessages = (idChannel: string) => {
+		return unreadMessages.value.filter((message) => message.idChannel === idChannel)
 	}
 
 	const removeUnreadMessages = (idChannel: string) => {

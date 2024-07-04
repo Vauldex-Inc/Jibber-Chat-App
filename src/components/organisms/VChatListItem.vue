@@ -83,8 +83,7 @@ const channelStore = usePublicChannelStore()
 
 const unReadMessages = computed(() => {
   return unreadMessageStore
-    .getUnreadMessages()
-    .value.filter((ur) => ur.idChannel === prop.item.id)
+    .getUnreadMessages(prop.item.id)
 })
 
 const channelType = computed(() => {

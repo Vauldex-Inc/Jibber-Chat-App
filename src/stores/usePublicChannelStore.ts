@@ -3,23 +3,11 @@ import { ZodError, z } from "zod"
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
 import { 
-  ChannelSchema, 
-  ChannelVariantEnum, 
+  PublicChannelSchema,
+  type PublicChannel,
   type ChannelData, 
   type ChannelVariant
 } from "@/types/Channel"
-
-const PublicChannelSchema = z.object({
-  id: z.string(),
-  idUser: z.string(),
-  title: z.string(),
-  color: z.string().optional(),
-  channelType: ChannelVariantEnum.optional(),
-  createdAt: z.string().datetime(),
-  archivedAt: z.string().datetime().optional()
-})
-
-type PublicChannel = z.infer<typeof PublicChannelSchema>
 
 export const usePublicChannelStore = defineStore("public-channels", () => {
   const _channels = ref<Array<PublicChannel>>([])
@@ -49,7 +37,7 @@ export const usePublicChannelStore = defineStore("public-channels", () => {
   const post = async (channel: ChannelData) => {
     try {
       const { data } = await axios.post(resource, channel)
-      const responseValidation = ChannelSchema.safeParse(data.channel)
+      const responseValidation = PublicChannelSchema.safeParse(data.channel)
       if (responseValidation.success) {
         const response = await axios.post(`${resource}/${data.channel.id}/users`, {})
 

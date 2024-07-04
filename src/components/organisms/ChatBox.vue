@@ -65,25 +65,25 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue"
-import { z } from "zod"
+import { ZodError, z } from "zod"
 import VInput from "@/components/atoms/VInput.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
-import type { Channel, DirectChannel } from "@/types/Channel.ts"
+import type { ChannelTypeProp } from "@/types/Prop"
+import { DirectChannelSchema, PublicChannelSchema } from "@/types/Channel"
 
-const props = defineProps<{
-  channel: Channel | DirectChannel
-}>()
-
-interface ImageForm {
-  image: string | ArrayBuffer | null
-  title: string
-}
-
+const prop = defineProps<ChannelTypeProp>()
 const emits = defineEmits<{
   send: [message: string, image?: string]
 }>()
 
 const fileSchema = z.coerce.string()
+const PropSchema = z.object({
+  channel: PublicChannelSchema.or(DirectChannelSchema)
+})
+interface ImageForm {
+  image: string | ArrayBuffer | null
+  title: string
+}
 
 const isInputTextFocus = ref<boolean>(false)
 const fileInput = ref<HTMLInputElement | string | undefined>(undefined)
@@ -95,7 +95,7 @@ const imageForm = ref<ImageForm>({
 const isMessageWithImage = ref<boolean>(false)
 
 const curColorTheme = computed(() => {
-  return props.channel.color ? props.channel.color : "bg-slate-800"
+  return prop.channel.color ? prop.channel.color : "bg-slate-800"
 })
 
 const remove = () => {
@@ -147,5 +147,12 @@ const attachFile = () => {
       reader.readAsDataURL(file)
     }
   }
+}
+
+try {
+  PropSchema.parse(prop)
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.message)
 }
 </script>

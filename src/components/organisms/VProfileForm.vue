@@ -123,7 +123,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
-import { z } from "zod"
+import { ZodError, z } from "zod"
 import { useFetch } from "@/composables/useFetch"
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
@@ -132,16 +132,11 @@ import VAvatar from "@/components/molecules/VAvatar.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
+import type { ProfileProp } from "@/types/Prop"
 import type { ProfileData } from "@/types/Profile"
 
-const props = defineProps<{
-  sender?: string
-  viewOnly?: boolean
-}>()
-
-const emits = defineEmits<{
-  submit: []
-}>()
+const prop = defineProps<ProfileProp>()
+const emits = defineEmits(["submit"])
 
 const fileSchema = z.coerce.string()
 const currUser = useUser()
@@ -150,6 +145,10 @@ const userProfileStore = useUserProfileStore()
 const vFocus = {
   mounted: (el: HTMLInputElement) => el.focus(),
 }
+const PropSchema = z.object({
+  sender: z.string().optional(),
+  viewOnly: z.boolean().optional()
+})
 
 const method = ref<"POST" | "PUT">()
 const error = ref<string>("")
@@ -160,7 +159,7 @@ const formData = ref<ProfileData>({
   firstName: "",
   lastName: "",
   image: "",
-  email: "",
+  email: ""
 })
 
 onMounted(() => {
@@ -218,7 +217,7 @@ const create = async () => {
 const doesExist = () => {
   if (currUser) {
     const userProfile = userStore.getUser(
-      props.sender ? props.sender : currUser.id,
+      prop.sender ? prop.sender : currUser.id,
     )
     const user = userProfile?.username
 
@@ -237,5 +236,12 @@ const doesExist = () => {
       formData.value.nickName = user
     }
   }
+}
+
+try {
+  PropSchema.parse(prop)
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.message)
 }
 </script>

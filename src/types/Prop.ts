@@ -1,5 +1,5 @@
 import { type Size } from "@/types/Component"
-import type { Channel, DirectChannel } from "@/types/Channel"
+import type { DirectChannel, PublicChannel } from "@/types/Channel"
 import type { Status } from "@/types/User"
 import type { Message } from "@/types/Message"
 
@@ -60,7 +60,7 @@ interface ToastProp {
 }
 interface ChatInfoProp {
   images: Array<string>
-  channel: Channel | DirectChannel
+  channel: PublicChannel | DirectChannel
   title: string
   sender?: string
 }
@@ -68,6 +68,20 @@ interface ChatInfoProp {
 interface ChatBalloonProp {
   message: Message
   color?: string
+}
+
+interface ChannelTypeProp {
+  channel: PublicChannel | DirectChannel
+}
+
+interface ChannelMessageProp {
+  messages: Message[]
+  channel: PublicChannel | DirectChannel
+}
+
+interface ProfileProp {
+  sender?: string
+  viewOnly?: boolean
 }
 
 export type {
@@ -81,6 +95,9 @@ export type {
   TextGroupProp,
   ToastProp,
   ChatInfoProp,
-  ChatBalloonProp
+  ChatBalloonProp,
+  ChannelTypeProp,
+  ChannelMessageProp,
+  ProfileProp
 }
 

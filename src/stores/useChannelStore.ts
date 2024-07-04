@@ -4,7 +4,7 @@ import type { ZodError } from "zod"
 import axios, { AxiosError } from "axios"
 import { useUserProfileStore } from "./useUserProfileStore"
 import { useUser } from "@/composables/useUser"
-import type { Channel, DirectChannel } from "@/types/Channel"
+import type { PublicChannel, DirectChannel } from "@/types/Channel"
 import { ChannelSchema } from "@/types/Channel"
 import { UserSchema } from "@/types/User";
 
@@ -12,7 +12,7 @@ import { UserSchema } from "@/types/User";
 export const useChannelStore = defineStore("channels", () => {
 	const loggedUserId = UserSchema.safeParse(useUser()).data?.id
 	const userProfileStore = useUserProfileStore()
-	const channels = ref<Channel[]>([])
+	const channels = ref<PublicChannel[]>([])
 
 	const init = async () => {
 		try {
@@ -60,7 +60,7 @@ export const useChannelStore = defineStore("channels", () => {
 		return channels.value.find(c => c.id === idChannel)
 	}
 
-	const addNewChannel = (channel: Channel) => {
+	const addNewChannel = (channel: PublicChannel) => {
 		channels.value.push(channel)
 	}
 

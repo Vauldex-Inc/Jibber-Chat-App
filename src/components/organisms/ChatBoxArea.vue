@@ -31,15 +31,19 @@
 </template>
 
 <script lang="ts" setup>
-import { onUpdated, ref } from "vue"
+import { ref, onUpdated } from "vue"
+import { z, ZodError } from "zod"
 import ChatBalloon from "@/components/organisms/ChatBalloon.vue"
-import type { Message } from "@/types/Message.ts"
-import type { Channel, DirectChannel } from "@/types/Channel.ts"
+import type { ChannelMessageProp } from "@/types/Prop";
+import { MessageSchema } from "@/types/Message";
+import { DirectChannelSchema, PublicChannelSchema } from "@/types/Channel";
 
-defineProps<{
-  messages: Message[]
-  channel: Channel | DirectChannel
-}>()
+const prop = defineProps<ChannelMessageProp>()
+
+const PropSchema = z.object({
+  messages: MessageSchema.array(),
+  channel: PublicChannelSchema.or(DirectChannelSchema)
+})
 
 const chatList = ref<HTMLElement | undefined>(undefined)
 
@@ -51,4 +55,11 @@ onUpdated(() => {
     })
   }
 })
+
+try {
+  PropSchema.parse(prop)
+} catch (e) {
+  const error = e as ZodError
+  console.error(error.message)
+}
 </script>

@@ -1,28 +1,43 @@
 import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
-import { z, type ZodError } from "zod"
-import { type Channel, type DirectChannel, type ChannelVariant, PublicChannelSchema } from "@/types/Channel"
-import { useUserProfileStore } from "./useUserProfileStore"
-
-type ChannelType = Channel | DirectChannel
+import {z, type ZodError } from "zod"
+import { 
+  type ChannelType,
+  type ChannelUser, 
+  ChannelUserSchema, 
+	type DirectChannel,
+	type Channel} from "@/types/Channel"
+import type { User } from "@/types/User"
 
 export const useChannelStore = defineStore("channels", () => {
   // makes the state private
   const _channel = ref<ChannelType>({} as ChannelType)
+  const _users = ref<[string, ChannelUser[]][]>([])
   const profileStore = useUserProfileStore()
   const uuid = z.string().uuid()
 
-  const channel = computed(() => _channel.value)
+  const channel = computed(() => _channel.value) // current channel
+  const channelUsers = computed(() => _users.value)
+
+  const channelUsersCount = computed(() => {
+		const copy = [..._users.value]
+		return copy.map(ch => {
+			const [id, users] = ch
+			return [id, users.length]
+		})
+	})
 
   // use this every click of the direct channel or public channel
   const set = (channel: ChannelType) => {
-    _channel.value = channel
-    console.log(_channel.value)
-  }
+		_channel.value = channel
+		console.log(_channel.value)
+	} 
   const changeTheme = async (color: string) => {
     try {
       const response = await axios.put(`/channels/${channel.value.id}`, {
+        title: channel.value.title,
+        channelType: channel.value.channelType,
         title: channel.value.title,
         channelType: channel.value.channelType,
         color,
@@ -34,30 +49,99 @@ export const useChannelStore = defineStore("channels", () => {
       console.error(error.message)
     }
   }
-  
-  const archiveChannel = async (channel: Channel | DirectChannel, archivedAt: string) => {
-    const validation = PublicChannelSchema.safeParse(channel)
-    try {
-      const title = validation.success ? validation.data.title : profileStore.getName(channel.idUser)
-      const channelType = validation.success ? "MPU" : "SNG"
- 
-      await axios.put(`/channels/${channel.id}`, {
-        title: title,
-        channelType: channelType,
-        color: undefined,
-        archivedAt: archivedAt,
-      })
-    } catch (e) {
-      const error = e as ZodError | AxiosError
-      console.error(error)
-    }
-  }
+
+  const getChannelUsers = async (idChannel: string) => {
+		const users: [string, ChannelUser[]] | undefined = channelUsers.value.find(c => c[0] === idChannel)
+
+		if (!users) {
+			try {
+				const { data } = await axios.get(`/channels/${idChannel}/users`)
+				const validation = ChannelUserSchema.array().safeParse(data.users)
+
+				if (validation.success) {
+					channelUsers.value.push([idChannel, validation.data])
+					return validation.data
+				} else {
+					throw new Error("Unsupported Format")
+				}
+			} catch (e) {
+				const error = e as AxiosError
+				console.error(error)
+			}
+		}
+		else {
+			return users[1] as ChannelUser[]
+		}
+	}
+
+  const addNewChannelUser = (user: ChannelUser) => {
+		const chanUsers = channelUsers.value.find(c => c[0] === user.idChannel)
+
+		if (!chanUsers) {
+			channelUsers.value.push([user.idChannel, [user]])
+		} else {
+			channelUsers.value.map(ch => {
+				const [id, users] = ch
+
+				if (id === user.idChannel) {
+					if (!users.find(u => u.idUser === user.idUser)) {
+						users.push(user)
+					}
+				}
+
+				return [id, users] as [string, ChannelUser[]]
+			})
+		}
+	}
+
+  const getChannelUsersCount = (idChannel: string) => {
+		const userCountAndChannel = channelUsersCount.value.find((ch) => ch[0] === idChannel)
+		if (userCountAndChannel)
+			return userCountAndChannel[1] as number > 1 ? `${userCountAndChannel[1] as number} members` : `0 member`
+	}
+
+	const isMember = (idChannel: string, idUser: string) => {
+		const users = channelUsers.value.find(c => c[0] === idChannel)
+		return users && users[1].find(u => u.idUser === idUser) !== undefined
+	}
+
+
+	const getNonMembers = (idChannel: string, users: User[]) => {
+		const foundChannelUser = channelUsers.value.find((channelUser) => channelUser[0] === idChannel)
+
+		if (foundChannelUser) {
+			return users.filter((user) => {
+				return foundChannelUser[1].every((channelUser) => {
+					return channelUser.idUser !== user.id
+				})
+			})
+		}
+	}
+
+	const archiveChannel = async (channel: Channel | DirectChannel, archivedAt: string) => {
+		try {
+			await axios.put(`/channels/${channel.id}`, {
+				title: channel.title,
+				channelType: channel.channelType,
+				color: undefined,
+				archivedAt: archivedAt,
+			})
+		} catch (e) {
+			const error = e as AxiosError
+			console.error(error.message)
+		}
+	}
 
   return {
     channel,
-    set,
     changeTheme,
-    archiveChannel
+    getChannelUsers,
+    addNewChannelUser,
+    getChannelUsersCount,
+    isMember,
+    getNonMembers,
+    set,
+		archiveChannel
   }
 })
 

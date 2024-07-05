@@ -67,7 +67,7 @@
         </template>
 
         <template #members>
-          <ChatMembers />
+          <ChatMembers v-if="isPublic" />
         </template>
 
         <template #images>
@@ -241,6 +241,13 @@ const idSender = computed(() => {
 })
 
 const isChatInfoOpen = ref<boolean>(true) // switch to false after
+
+const isPublic = computed(() => {
+  const validation = PublicChannelSchema.safeParse(channelStore.channel)
+  if (validation.success) {
+    return true
+  }
+})
 
 const toggleChatInfo = () => {
   isChatInfoOpen.value = !isChatInfoOpen.value

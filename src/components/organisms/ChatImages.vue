@@ -36,9 +36,7 @@
       <p v-else class="text-center">No images found</p>
     </div>
 
-    <VModal 
-      :is-open="open"
-    >
+    <VModal :is-open="open">
       <ViewImage :chatImages="chatImages" />
     </VModal>
   </div>

@@ -1,27 +1,30 @@
 import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
-import type { ZodError } from "zod"
-import type { Channel, DirectChannel, ChannelVariant } from "@/types/Channel"
+import { z, type ZodError } from "zod"
+import { type Channel, type DirectChannel, type ChannelVariant, PublicChannelSchema } from "@/types/Channel"
+import { useUserProfileStore } from "./useUserProfileStore"
 
 type ChannelType = Channel | DirectChannel
 
 export const useChannelStore = defineStore("channels", () => {
   // makes the state private
   const _channel = ref<ChannelType>({} as ChannelType)
-
+  const profileStore = useUserProfileStore()
   const uuid = z.string().uuid()
 
   const channel = computed(() => _channel.value)
 
   // use this every click of the direct channel or public channel
-  const set = (channel: ChannelType) => _channel.value = channel
-
-  const changeTheme = (color: string) => {
+  const set = (channel: ChannelType) => {
+    _channel.value = channel
+    console.log(_channel.value)
+  }
+  const changeTheme = async (color: string) => {
     try {
       const response = await axios.put(`/channels/${channel.value.id}`, {
-        title: channel.value.title
-        channelType: channel.value.type,
+        title: channel.value.title,
+        channelType: channel.value.channelType,
         color,
       })
 
@@ -30,6 +33,31 @@ export const useChannelStore = defineStore("channels", () => {
       const error = e as AxiosError | ZodError
       console.error(error.message)
     }
+  }
+  
+  const archiveChannel = async (channel: Channel | DirectChannel, archivedAt: string) => {
+    const validation = PublicChannelSchema.safeParse(channel)
+    try {
+      const title = validation.success ? validation.data.title : profileStore.getName(channel.idUser)
+      const channelType = validation.success ? "MPU" : "SNG"
+ 
+      await axios.put(`/channels/${channel.id}`, {
+        title: title,
+        channelType: channelType,
+        color: undefined,
+        archivedAt: archivedAt,
+      })
+    } catch (e) {
+      const error = e as ZodError | AxiosError
+      console.error(error)
+    }
+  }
+
+  return {
+    channel,
+    set,
+    changeTheme,
+    archiveChannel
   }
 })
 
@@ -110,24 +138,6 @@ export const useChannelStore = defineStore("channels", () => {
 
 //      return c
 //    })
-//  }
-
-//  const archiveChannel = async (channel: Channel | DirectChannel, archivedAt: string) => {
-//    const validation = ChannelSchema.safeParse(channel)
-//    try {
-//      const title = validation.success ? validation.data.title : userProfileStore.getName(channel.idUser)
-//      const channelType = validation.success ? "MPU" : "SNG"
-
-//      await axios.put(`/channels/${channel.id}`, {
-//        title: title,
-//        channelType: channelType,
-//        color: undefined,
-//        archivedAt: archivedAt,
-//      })
-//    } catch (e) {
-//      const error = e as ZodError | AxiosError
-//      console.error(error)
-//    }
 //  }
 
 //  return {

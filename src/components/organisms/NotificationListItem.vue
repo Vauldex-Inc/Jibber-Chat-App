@@ -41,6 +41,7 @@ import { useChannelStore } from "@/stores/useChannelStore"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import type { Invitation } from "@/types/Notification"
+import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 
 const props = defineProps<{
   invitation: Invitation
@@ -51,7 +52,7 @@ const emit = defineEmits<{
 }>()
 
 const userProfileStore = useUserProfileStore()
-const channelStore = useChannelStore()
+const publicChannelStore = usePublicChannelStore()
 const notificationStore = useNotificationStore()
 const dateFormatter = useDateFormatter()
 const options: Intl.DateTimeFormatOptions = {
@@ -69,7 +70,7 @@ const isRead = computed(() => {
 })
 
 const channelName = computed(() => {
-  const channel = channelStore.getChannelById(props.invitation.idChannel)
+  const channel = publicChannelStore.getChannelById(props.invitation.idChannel)
   return channel?.title
 })
 

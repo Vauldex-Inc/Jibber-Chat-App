@@ -25,23 +25,23 @@
 
 
 
-  <TheChat>
+  <TheChat :toggle-info="toggleChatInfo()" :toggle-chat="toggleChatList()">
     <template #chatbox>
-      <template v-if="selectedChannel">
+      <template v-if="channelStore.channel">
         <ChatTitle
           :collapse="isChatListOpen"
           @toggle-chat="toggleChatList"
           @toggle-info="toggleChatInfo"
           @archive="updateArchived"
-          :channel="selectedChannel"
+          :channel="channelStore.channel"
           :sender="idSender"
         />
         <ChatBoxArea
-          :channel="selectedChannel"
+          :channel="channelStore.channel"
           :messages="messageStore.chatMessages"
           class="flex-1"
         />
-        <ChatBox @send="sendMessage" :channel="selectedChannel" />
+        <ChatBox @send="sendMessage" :channel="channelStore.channel" />
       </template>
     </template>
 
@@ -52,6 +52,18 @@
         </template>
         <template #notification>
           <NotificationList />
+        </template>
+        <template #messages>
+          <VChatList
+            @open="openChannel"
+            @click="publicCstore.variant = DIRECT_CHANNEL"
+            :items="directChannels"
+            class="h-3/6"
+            title="messages"
+          />
+        </template>
+        <template #channels>
+          <PublicChannels />
         </template>
       </TheChatList>
     </template>
@@ -152,14 +164,12 @@ import {
   ref,
   watch,
   computed,
-  onUnmounted,
-  type Ref
+  onUnmounted
 } from "vue"
 
 import { useUser } from "@/composables/useUser"
 import { useFetch } from "@/composables/useFetch"
 import { useSocket } from "@/composables/useSocket"
-
 import { useUserStore } from "@/stores/useUserStore"
 import { useChannelStore } from "@/stores/useChannelStore"
 import { useMessageStore } from "@/stores/useMessageStore"
@@ -170,10 +180,7 @@ import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import VToast from "@/components/molecules/VToast.vue"
-import TheDashboard from "@/components/templates/TheDashboard.vue"
-import VChatList from "@/components/organisms/VChatList.vue"
 import ChatTitle from "@/components/organisms/ChatTitle.vue"
-import ChatInfo from "@/components/organisms/ChatInfo.vue"
 import ChatBox from "@/components/organisms/ChatBox.vue"
 import ChatBoxArea from "@/components/organisms/ChatBoxArea.vue"
 import VModal from "@/components/atoms/VModal.vue"
@@ -182,11 +189,16 @@ import InvitationDirect from "@/components/organisms/InvitationDirect.vue"
 import NotificationList from "@/components/organisms/NotificationList.vue"
 import Settings from "@/components/organisms/Settings.vue"
 import AddChannel from "@/components/organisms/AddChannel.vue"
-
-import type { Channel, DirectChannel } from "@/types/Channel"
-import { ChannelSchema, DIRECT_CHANNEL, DirectChannelSchema, GROUP_CHANNEL } from "@/types/Channel"
+import PublicChannels from "@/components/organisms/PublicChannels.vue"
+import TheChannelInformation from "@/components/templates/TheChannelInformation.vue"
+import TheChat from "@/components/templates/TheChat.vue"
+import TheChatList from "@/components/templates/TheChatList.vue"
+import VChatList from "../organisms/VChatList.vue"
+import type { Channel, DirectChannel, PublicChannel } from "@/types/Channel"
+import { ChannelSchema, DIRECT_CHANNEL, DirectChannelSchema, GROUP_CHANNEL, PublicChannelSchema } from "@/types/Channel"
 import type { Notification } from "@/types/Notification"
 import { UserSchema } from "@/types/User"
+import { storeToRefs } from "pinia"
 
 const notifAudio = new Audio("./src/assets/slack_sound.mp3")
 
@@ -196,6 +208,7 @@ const notificationStore = useNotificationStore()
 const userStore = useUserStore()
 const userProfileStore = useUserProfileStore()
 const channelStore = useChannelStore()
+const { channel } = storeToRefs(channelStore)
 const publicCstore = usePublicChannelStore()
 const directCstore = useDirectChannelStore()
 const messageStore = useMessageStore()
@@ -206,18 +219,16 @@ const loggedUser = useUser()
 
 const invitationNotif = notificationStore.getSelectedInvitation()
 const multiChannels = publicCstore.channels
-const singleChannels = channelStore.getSingleChannels()
 const directChannels = directCstore.channels
 
 const senderId = ref<string | undefined>(undefined)
 const selectedChannel = ref<Channel | DirectChannel | undefined>(undefined)
 const activeSocket = ref<WebSocket | undefined>(undefined)
-const variant = ref<"MPU" | "MPR" | "SNG" | undefined>()
 const onlineSocket = ref<WebSocket | undefined>(undefined)
 const invitationModalOpen = ref<boolean>(false)
 
 const idSender = computed(() => {
-  const validation = DirectChannelSchema.safeParse(selectedChannel.value)
+  const validation = DirectChannelSchema.safeParse(channelStore.channel)
   if (validation.success) {
     if (loggedUser?.id === validation.data.idUser) {
       return validation.data.idReceiver
@@ -225,28 +236,22 @@ const idSender = computed(() => {
       return validation.data.idUser
     }
   } else {
-    return selectedChannel.value?.idUser
+    return channelStore.channel.idUser
   }
-})
-
-const privateChannels = computed(() => {
-  return singleChannels.value.filter((s) => {
-    const users = s.title.split("/")
-
-    return users.some((u) => u === loggedUser?.id)
-  })
 })
 
 const isChatInfoOpen = ref<boolean>(true) // switch to false after
 
 const toggleChatInfo = () => {
   isChatInfoOpen.value = !isChatInfoOpen.value
+  return isChatInfoOpen.value
 }
 
 const isChatListOpen = ref<boolean>(true)
 
 const toggleChatList = () => {
   isChatListOpen.value = !isChatListOpen.value
+  return isChatInfoOpen.value
 }
 
 const profileImage = computed(() => {
@@ -257,7 +262,12 @@ const profileImage = computed(() => {
 })
 
 const viewChannel = (id: string) => {
-  selectedChannel.value = channelStore.getChannelById(id)
+  const validation = PublicChannelSchema.safeParse(publicCstore.getChannelById(id))
+  if (validation.success) {
+    channelStore.set(validation.data)
+  } else {
+    channelStore.set(channelStore.channel)
+  }
   invitationModalOpen.value = false
 }
 
@@ -265,12 +275,8 @@ const closeInvitationModal = () => {
   invitationModalOpen.value = false
 }
 
-const openChannel = async (id: string, type: "SNG" | "MPU") => {
-  if (type === "SNG") {
-    selectedChannel.value = directCstore.getDirectChannel(id)
-  } else {
-    selectedChannel.value = channelStore.getChannelById(id)
-  }
+const openChannel = async (channel: PublicChannel | DirectChannel) => {
+  channelStore.set(channel)
 }
 
 const newDirect = (channel: DirectChannel | undefined) => {
@@ -285,25 +291,21 @@ const newDirect = (channel: DirectChannel | undefined) => {
 }
 
 const updateArchived = (data: { color: string; archivedAt: string }) => {
-  if (selectedChannel.value) {
-    selectedChannel.value.color = data.color
-    selectedChannel.value.archivedAt = data.archivedAt
-    channelStore.updateChannel(
-      selectedChannel.value.id,
-      data.color,
-      data.archivedAt,
-    )
+  if (channelStore.channel) {
+    channelStore.channel.color = data.color
+    channelStore.channel.archivedAt = data.archivedAt
+    channelStore.changeTheme(data.color)
   }
 }
 
 const sendMessage = async (message: string, img: string | undefined) => {
-  if (!channelUserStore.isMember(selectedChannel.value!.id, loggedUser!.id)) {
-    await useFetch(`/channels/${selectedChannel.value!.id}/users`, {
+  if (!channelUserStore.isMember(channelStore.channel.id, loggedUser!.id)) {
+    await useFetch(`/channels/${channelStore.channel.id}/users`, {
       method: "POST",
       body: JSON.stringify({}),
     })
   }
-  await messageStore.sendMessage(selectedChannel.value!.id, message, img)
+  await messageStore.sendMessage(channelStore.channel.id, message, img)
 }
 
 const onCloseToast = (id: string) => {
@@ -314,9 +316,9 @@ watch(invitationNotif, () => {
   invitationModalOpen.value = true
 })
 
-watch(selectedChannel, async (channel) => {
+watch(channel, async (channel) => {
   if (channel) {
-    const users = await channelUserStore.getChannelUsers(channel.id)
+    await channelUserStore.getChannelUsers(channel.id)
     await messageStore.getChannelMessages(channel.id)
     const validation = ChannelSchema.safeParse(channel)
 
@@ -346,7 +348,6 @@ onMounted(async () => {
   await userStore.init()
   await userProfileStore.init()
   await publicCstore.fetch()
-  await channelStore.init()
   await messageStore.init()
   await unreadMessageStore.init()
   await notificationStore.init()
@@ -357,11 +358,7 @@ onMounted(async () => {
     switch (updates.resourceType) {
       case "CHANNEL_UPDATE": {
         const update = updates.content.channelUpdate
-        channelStore.updateChannel(
-          updates.content.idChannel,
-          update.color,
-          update.archivedAt,
-        )
+        channelStore.changeTheme(update.color)
         break
       }
 
@@ -369,7 +366,7 @@ onMounted(async () => {
         const channel = updates.content.channel
         const channelValidation = ChannelSchema.safeParse(channel)
         if (channelValidation.success) {
-          channelStore.addNewChannel(channelValidation.data) //change to add
+          publicCstore.add(channelValidation.data) //change to add
           const senderName = userProfileStore.getName(channelValidation.data.idUser)
 
           notifications.value.push({
@@ -394,35 +391,39 @@ onMounted(async () => {
           sentAt: unreadMessage.sentAt,
         }
 
-        if (!selectedChannel.value) {
+        if (channelStore.channel) {
           return
         }
 
         messageStore.addNewLatestMessage(latestMessage)
-        if (unreadMessage.idChannel !== selectedChannel.value.id) {
+        const validation = ChannelSchema.safeParse(channelStore.channel)
+
+        if (validation.success) {
+          if (unreadMessage.idChannel !== validation.data.id) {
           unreadMessageStore.addUnreadMessage(unreadMessage)
         }
+          if (
+            unreadMessage.idSender !== loggedUser!.id &&
+            unreadMessage.idChannel !== validation.data.id &&
+            channelUserStore.isMember(unreadMessage.idChannel, loggedUser!.id)
+          ) {
+            const channel = directCstore.getDirectChannel(unreadMessage.idChannel)
+            const validation = DirectChannelSchema.safeParse(channel)
+            if (channel) {
+              const senderName = userProfileStore.getName(unreadMessage.idSender)
+              const title =
+                validation.success
+                  ? senderName
+                  : `${channel.title} (${senderName})`
 
-        if (
-          unreadMessage.idSender !== loggedUser!.id &&
-          unreadMessage.idChannel !== selectedChannel.value.id &&
-          channelUserStore.isMember(unreadMessage.idChannel, loggedUser!.id)
-        ) {
-          const channel = channelStore.getChannelById(unreadMessage.idChannel)
-          if (channel) {
-            const senderName = userProfileStore.getName(unreadMessage.idSender)
-            const title =
-              channel.channelType === "SNG"
-                ? senderName
-                : `${channel.title} (${senderName})`
-
-            notifications.value.push({
-              id: unreadMessage.messageId,
-              title: title ? title : "",
-              message: unreadMessage.text,
-            })
+              notifications.value.push({
+                id: unreadMessage.messageId,
+                title: title ? title : "",
+                message: unreadMessage.text,
+              })
+            }
+            notifAudio.play()
           }
-          notifAudio.play()
         }
         break
       }
@@ -447,8 +448,9 @@ onMounted(async () => {
 
       case "NOTIFICATION": {
         const notification = updates.content.notification
-        const channel = channelStore.getChannelById(notification.idChannel)
-        if (channel?.channelType !== "SNG") {
+        const channel = publicCstore.getChannelById(notification.idChannel)
+        const validation = PublicChannelSchema.safeParse(channel)
+        if (validation.success) {
           notificationStore.addNewNotification(notification)
           notificationStore.setSelectedInvitation(notification)
           notifAudio.play()
@@ -476,10 +478,11 @@ onMounted(async () => {
     }
   })
 
-  selectedChannel.value =
-    privateChannels.value.length > 0
-      ? privateChannels.value[0]
+  channelStore.set(
+    directChannels.value.length > 0
+      ? directChannels.value[0]
       : multiChannels.value[0]
+    )
 })
 
 onUnmounted(() => {

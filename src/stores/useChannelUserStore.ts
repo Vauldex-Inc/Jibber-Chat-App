@@ -5,38 +5,38 @@ import { ChannelUserSchema, type ChannelUser, ChannelSchema } from "@/types/Chan
 import type { Channel, DirectChannel } from "@/types/Channel"
 import type { User } from "@/types/User"
 import type { ZodError } from "zod"
+import { useChannelStore } from "./useChannelStore"
 
 export const useChannelUserStore = defineStore("channel-users", () => {
 	type ChannelType = Channel | DirectChannel
 	const users = ref<[string, ChannelUser[]][]>([])
-	const channel = ref<ChannelType>({} as ChannelType) // currently opened or actived channel (direct | public)
+	const _channel = ref<ChannelType>({} as ChannelType) // currently opened or actived channel (direct | public)
 
 	const channelUsersCount = computed(() => {
-		const copy = [...channelUsers.value]
+		const copy = [...users.value]
 		return copy.map(ch => {
 			const [id, users] = ch
 			return [id, users.length]
 		})
 	})
 
-	const getIdChannel = computed(() => idChannel.value)
-
+	const channel = computed(() => _channel.value)
 	// continue
-	const opeChannel = (id: string) => {
-		idChannel.value = id
-	}
+	// const opeChannel = (id: string) => {
+	// 	_channel.value = id
+	// }
 
 
 	const getChannelUsers = async (idChannel: string) => {
-		const users: [string, ChannelUser[]] | undefined = channelUsers.value.find(c => c[0] === idChannel)
+		const channelUsers: [string, ChannelUser[]] | undefined = users.value.find(c => c[0] === idChannel)
 
-		if (!users) {
+		if (!channelUsers) {
 			try {
 				const { data } = await axios.get(`/channels/${idChannel}/users`)
 				const validation = ChannelUserSchema.array().safeParse(data.users)
 
 				if (validation.success) {
-					channelUsers.value.push([idChannel, validation.data])
+					users.value.push([idChannel, validation.data])
 					return validation.data
 				} else {
 					throw new Error("Unsupported Format")
@@ -47,17 +47,17 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 			}
 		}
 		else {
-			return users[1] as ChannelUser[]
+			return channelUsers[1] as ChannelUser[]
 		}
 	}
 
 	const addNewChannelUser = (user: ChannelUser) => {
-		const chanUsers = channelUsers.value.find(c => c[0] === user.idChannel)
+		const channelUsers = users.value.find(c => c[0] === user.idChannel)
 
-		if (!chanUsers) {
-			channelUsers.value.push([user.idChannel, [user]])
+		if (!channelUsers) {
+			users.value.push([user.idChannel, [user]])
 		} else {
-			channelUsers.value.map(ch => {
+			users.value.map(ch => {
 				const [id, users] = ch
 
 				if (id === user.idChannel) {
@@ -78,16 +78,16 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 	}
 
 	const isMember = (idChannel: string, idUser: string) => {
-		const users = channelUsers.value.find(c => c[0] === idChannel)
-		return users && users[1].find(u => u.idUser === idUser) !== undefined
+		const channelUsers = users.value.find(c => c[0] === idChannel)
+		return users && channelUsers?.[1].find(u => u.idUser === idUser) !== undefined
 	}
 
 
-	const getNonMembers = (idChannel: string, users: User[]) => {
-		const foundChannelUser = channelUsers.value.find((channelUser) => channelUser[0] === idChannel)
+	const getNonMembers = (idChannel: string, channelUsers: User[]) => {
+		const foundChannelUser = users.value.find((channelUser) => channelUser[0] === idChannel)
 
 		if (foundChannelUser) {
-			return users.filter((user) => {
+			return channelUsers.filter((user) => {
 				return foundChannelUser[1].every((channelUser) => {
 					return channelUser.idUser !== user.id
 				})
@@ -118,7 +118,6 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 
 	return {
 		channel,
-		channelUsers,
 		getChannelUsers,
 		isMember,
 		getNonMembers,

@@ -61,16 +61,16 @@ import VAvatar from "@/components/molecules/VAvatar.vue"
 import VBadge from "@/components/atoms/VBadge.vue"
 import VTextGroup from "@/components/molecules/VTextGroup.vue"
 import {
-  ChannelSchema,
   DirectChannelSchema,
-  type Channel,
+  PublicChannelSchema,
   type DirectChannel,
+  type PublicChannel,
 } from "@/types/Channel"
 
-const prop = defineProps<{ item: Channel | DirectChannel }>()
+const prop = defineProps<{ item: PublicChannel | DirectChannel }>()
 
 const emits = defineEmits<{
-  open: [value: string, type: "SNG" | "MPU"]
+  open: [channel: PublicChannel | DirectChannel]
 }>()
 
 const loggedUser = useUser()
@@ -88,7 +88,7 @@ const unReadMessages = computed(() => {
 })
 
 const channelType = computed(() => {
-  const typeValidation = ChannelSchema.safeParse(prop.item)
+  const typeValidation = PublicChannelSchema.safeParse(prop.item)
   return typeValidation.success ? "MPU" : "SNG"
 })
 
@@ -113,7 +113,7 @@ const color = computed(() => {
 })
 
 const channelAbbr = computed(() => {
-  const abbrValidation = ChannelSchema.safeParse(prop.item)
+  const abbrValidation = PublicChannelSchema.safeParse(prop.item)
   if (abbrValidation.success) {
     return abbrValidation.data.title.slice(0, 1)
   }
@@ -140,13 +140,13 @@ const sentAt = computed(() => {
 })
 
 const openChannel = () => {
-  const channelValidation = ChannelSchema.safeParse(prop.item)
+  const channelValidation = PublicChannelSchema.safeParse(prop.item)
   if (channelValidation.success) {
-    unreadMessageStore.removeUnreadMessages(prop.item.id)
-    emits("open", prop.item.id, "MPU")
+    unreadMessageStore.removeUnreadMessages(channelValidation.data.id)
+    emits("open", channelValidation.data)
   } else {
     unreadMessageStore.removeUnreadMessages(prop.item.id)
-    emits("open", prop.item.id, "SNG")
+    emits("open", prop.item)
   }
 }
 

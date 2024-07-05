@@ -68,8 +68,12 @@ export const useMessageStore = defineStore("messages", () => {
 		latestMessages.value.push(message)
 	}
 
-	const getLatestMessages = () => {
-		return latestMessages
+	const getLatestMessages = (idChannel: string) => {
+		return latestMessages.value.filter((m) => {
+			if (m) {
+				return m.idChannel === idChannel
+			}
+		})
 	}
 
 	return {

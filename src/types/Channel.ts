@@ -24,6 +24,8 @@ const ChannelUserSchema = z.object({
 
 const DirectChannelSchema = z.object({
 	id: z.string().uuid(),
+	title: z.string().optional(),
+	channelType: ChannelVariantEnum.optional(),
 	color: z.string().optional(),
 	archivedAt: z.string().datetime().optional(),
 	idUser: z.string().uuid(),
@@ -37,8 +39,18 @@ const ChannelDataSchema = z.object({
   color: z.string().optional()
 })
 
-type ChannelVariant = z.infer<typeof ChannelVariantEnum>
+const PublicChannelSchema = z.object({
+  id: z.string(),
+  idUser: z.string(),
+  title: z.string(),
+  color: z.string().optional(),
+  channelType: ChannelVariantEnum.optional(),
+  createdAt: z.string().datetime(),
+  archivedAt: z.string().datetime().optional()
+})
 
+type PublicChannel = z.infer<typeof PublicChannelSchema>
+type ChannelVariant = z.infer<typeof ChannelVariantEnum>
 type Channel = z.infer<typeof ChannelSchema>
 type ChannelUser = z.infer<typeof ChannelUserSchema>
 type DirectChannel = z.infer<typeof DirectChannelSchema>
@@ -50,11 +62,13 @@ export {
 	type DirectChannel,
 	type ChannelData,
 	type ChannelVariant,
+	type PublicChannel,
 	ChannelVariantEnum,
 	ChannelDataSchema,
 	ChannelSchema,
 	ChannelUserSchema,
 	DirectChannelSchema,
+	PublicChannelSchema,
 	GROUP_CHANNEL,
 	DIRECT_CHANNEL
 }

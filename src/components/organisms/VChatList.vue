@@ -29,19 +29,19 @@
 <script lang="ts" setup>
 import VChatListItem from "@/components/organisms/VChatListItem.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
-import type { Channel, DirectChannel } from "@/types/Channel.ts"
+import type { PublicChannel, DirectChannel } from "@/types/Channel.ts"
 
 defineProps<{
   title: string
-  items: Channel[] | DirectChannel[]
+  items: PublicChannel[] | DirectChannel[]
 }>()
 
 const emits = defineEmits<{
-  open: [value: string, type: "SNG" | "MPU"]
+  open: [channel: PublicChannel | DirectChannel]
   click: []
 }>()
 
-const openChannel = (id: string, type: "SNG" | "MPU") => {
-  emits("open", id, type)
+const openChannel = (channel: PublicChannel | DirectChannel) => {
+  emits("open", channel)
 }
 </script>

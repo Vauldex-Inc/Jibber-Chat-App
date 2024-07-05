@@ -6,7 +6,7 @@
         {{ name }}
       </h4>
     </header>
-    <div v-if="channel.archivedAt" class="flex items-center justify-center gap-4">
+    <div v-if="channelStore.channel.archivedAt" class="flex items-center justify-center gap-4">
       <template v-for="opt, index in options" :key="opt.key">
         <div
           v-if="checkPermissions(opt.permission)"
@@ -27,12 +27,12 @@
       <VModal :is-open="open">
         <!-- Add condition -->
         <InvitationPublic
-          :color="channel.color"
-          :id-channel="channel.id"
-          @action="(idUser) => inviteMember(channel.id, idUser)"
+          :color="channelStore.channel.color"
+          :id-channel="channelStore.channel.id"
+          @action="(idUser: string) => inviteMember(channelStore.channel.id, idUser)"
         />
         <!-- Add condition -->
-        <ChatColorSelector @color="channel.changeTheme" />
+        <ChatColorSelector @color="channelStore.changeTheme" />
         <!-- Add condition -->
         <VProfileForm />
       </VModal>
@@ -42,37 +42,38 @@
 
 <script setup lang="ts">
   import { computed, ref } from "vue"
-  import { z } from "zod"
   import { useUserStore } from "@/stores/useUserStore"
   import { useUserProfileStore } from "@/stores/useUserProfileStore"
   import { useChannelStore } from "@/stores/useChannelStore"
-  import { ChannelVariantEnum } from "@/types/Channel"
+  import { ChannelVariantEnum, DIRECT_CHANNEL, GROUP_CHANNEL, type ChannelVariant } from "@/types/Channel"
 
   const { getStatus, inviteMember } = useUserStore()
   const { getName } = useUserProfileStore()
-  const channel = useChannelStore()
+  const channelStore = useChannelStore()
   const open = ref(false)
   const options = ref({
     member: {
       key: 'member',
       title: 'Member',
       icon: './src/assets/images/add.svg',
-      permission: [ChannelVariantEnum.DIRECT_CHANNEL]
+      permission: [DIRECT_CHANNEL]
     },
     theme: {
       key: 'theme',
       title: 'Theme',
       icon: './src/assets/images/theme.svg',
-      permission: [ChannelVariantEnum.DIRECT_CHANNEL, ChannelVariantEnum.GROUP_CHANNEL]
+      permission: [DIRECT_CHANNEL, GROUP_CHANNEL]
     }
   })
 
   // Refactor this in the future
-  const name = computed(() => channel && 'title' in channel ? channel.title : getName(channel.idUser))
-  const status = computed(() => getStatus(channel.idUser))
+  const name = computed(() => channelStore.channel && 'title' in channelStore.channel ? channelStore.channel.title : getName(channelStore.channel.idUser))
+  const status = computed(() => getStatus(channelStore.channel.idUser))
 
-  const checkPermissions = (type: ChannelVariantEnum): boolean => ChannelVariantEnum.parse(type)
-
+  const checkPermissions = (type: string[]): boolean => {
+    return type.map((t) => ChannelVariantEnum.safeParse(t).success).includes(false)
+  }
+  
   const modal = (key: string) => {
     switch(key) {
       case 'member': // open add member modal

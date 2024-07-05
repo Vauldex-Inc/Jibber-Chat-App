@@ -34,11 +34,11 @@
 import { onUpdated, ref } from "vue"
 import ChatBalloon from "@/components/organisms/ChatBalloon.vue"
 import type { Message } from "@/types/Message.ts"
-import type { Channel, DirectChannel } from "@/types/Channel.ts"
+import type { PublicChannel, DirectChannel } from "@/types/Channel.ts"
 
-defineProps<{
+const prop = defineProps<{
   messages: Message[]
-  channel: Channel | DirectChannel
+  channel: PublicChannel | DirectChannel
 }>()
 
 const chatList = ref<HTMLElement | undefined>(undefined)
@@ -50,5 +50,6 @@ onUpdated(() => {
       top: chatList.value.scrollHeight,
     })
   }
+  console.log(prop.messages)
 })
 </script>

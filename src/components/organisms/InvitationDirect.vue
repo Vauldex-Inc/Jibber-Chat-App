@@ -35,8 +35,7 @@
             <VButton
               @click="create(id, name)"
               size="small"
-              :class="color"
-              class="cursor-pointer rounded-md text-gray-100"
+              class="cursor-pointer rounded-md text-gray-100 bg-indigo-600"
             >
               Message
             </VButton>
@@ -56,16 +55,6 @@ import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-
-import type { DirectChannel } from "@/types/Channel"
-
-defineProps<{
-  color: string
-}>()
-
-const emits = defineEmits<{
-  submit: [channel: DirectChannel | undefined]
-}>()
 
 const directStore = useDirectChannelStore()
 const profileStore = useUserProfileStore()

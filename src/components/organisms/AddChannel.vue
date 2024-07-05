@@ -4,16 +4,9 @@
     class="flex w-[420px] flex-col gap-4 rounded-md bg-white p-5 shadow-md dark:bg-slate-900"
   >
     <h4
-      v-if="publicCstore.variant === GROUP_CHANNEL"
       class="pb-2 text-lg font-semibold text-gray-600 dark:text-gray-300"
     >
       Create new public channel
-    </h4>
-    <h4
-      v-else
-      class="pb-2 text-lg font-semibold text-gray-600 dark:text-gray-300"
-    >
-      Direct message
     </h4>
     <p
       v-if="error"
@@ -26,7 +19,7 @@
       size="medium"
       v-model="channelForm.title"
       v-focus
-      :placeholder="publicCstore.variant === GROUP_CHANNEL ? 'Channel name' : 'Name'"
+      placeholder="Channel name"
     />
     <VButton
       class="text-md mt-4 rounded-md bg-indigo-600 text-white"
@@ -39,18 +32,17 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
-import { z } from "zod"
-import { GROUP_CHANNEL, type ChannelData } from "@/types/Channel"
+import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+import { type ChannelData } from "@/types/Channel"
+
+const emits = defineEmits(["close"])
 
 const publicCstore = usePublicChannelStore()
 
-const errorSchema = z.object({message: z.string()})
-
 const error = ref<string>("")
-const channelForm = ref<ChannelData>({title: "", channelType: publicCstore.variant!})
+const channelForm = ref<ChannelData>({title: "", channelType: "MPU"})
 
 const vFocus = { mounted: (el: HTMLInputElement) => el.focus() }
 
@@ -59,17 +51,12 @@ const create = async () => {
     if (channelForm.value.title) {
       publicCstore.post(channelForm.value)
     } else {
-      if (publicCstore.variant === GROUP_CHANNEL) {
-        error.value = "Please provide a channel name."
-      } else {
-        error.value = "Please provide a name."
-      }
+      error.value = "Please provide a channel name."
     }
-    publicCstore.variant = undefined
-  } catch (error) {
-    publicCstore.variant = undefined
-    const errorMessage = errorSchema.safeParse(error).data?.message
-    throw new Error(`Error: ${errorMessage}`)
+    emits("close")
+  } catch (e) {
+    const error = e as Error
+    console.error(error.message)
   } finally {
     setTimeout(() => {
       error.value = ""

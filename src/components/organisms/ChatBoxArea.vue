@@ -50,6 +50,5 @@ onUpdated(() => {
       top: chatList.value.scrollHeight,
     })
   }
-  console.log(prop.messages)
 })
 </script>

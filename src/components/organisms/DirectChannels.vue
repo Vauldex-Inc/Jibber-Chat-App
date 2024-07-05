@@ -24,11 +24,11 @@
             :is-bold="getUnreadMessages(channel.id).length > 0"
             class="flex-1"
             :title="getName(user(channel))"
-            :text="latestMessage(channel.id)?.text"
+            :text="latestMessage(channel.id) ? latestMessage(channel.id)!.text : ''"
           />
           
           <div v-if="!channel.archivedAt" class="flex flex-col items-center gap-2">
-            <span class="text-sm">{{ formatSentAt(latestMessage(channel.id)!.sentAt) }}</span>
+            <span class="text-sm">{{ latestMessage(channel.id) ? formatSentAt(latestMessage(channel.id)!.sentAt) : "" }}</span>
             <VBadge
               v-if="getUnreadMessages.length > 0"
               :count="getUnreadMessages.length"
@@ -48,7 +48,6 @@
 
 <script lang="ts" setup>
   import { ref } from 'vue'
-  import { storeToRefs } from "pinia"
   import {useUserProfileStore} from "@/stores/useUserProfileStore"
   import {useUserStore} from "@/stores/useUserStore"
   import {useChannelStore} from "@/stores/useChannelStore"

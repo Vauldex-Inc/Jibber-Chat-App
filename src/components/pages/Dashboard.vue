@@ -6,12 +6,6 @@
   >
     <InvitationDirect color="bg-indigo-600" @submit="newDirect" />
   </VModal> -->
-  <VModal 
-    :is-open="publicCstore.variant === GROUP_CHANNEL" 
-    @close="publicCstore.variant = undefined"
-  >
-    <AddChannel/>
-  </VModal>
   <VModal :is-open="invitationModalOpen" @close="closeInvitationModal">
     <InvitationCard
       :notification="invitationNotif!"
@@ -25,7 +19,7 @@
 
 
 
-  <TheChat :toggle-info="toggleChatInfo()" :toggle-chat="toggleChatList()">
+  <TheChat :toggle-info="isChatInfoOpen" :toggle-chat="isChatListOpen">
     <template #chatbox>
       <template v-if="channelStore.channel">
         <ChatTitle
@@ -251,14 +245,12 @@ const isChatInfoOpen = ref<boolean>(true) // switch to false after
 
 const toggleChatInfo = () => {
   isChatInfoOpen.value = !isChatInfoOpen.value
-  return isChatInfoOpen.value
 }
 
 const isChatListOpen = ref<boolean>(true)
 
 const toggleChatList = () => {
   isChatListOpen.value = !isChatListOpen.value
-  return isChatInfoOpen.value
 }
 
 const profileImage = computed(() => {

@@ -27,10 +27,7 @@ export const useChannelStore = defineStore("channels", () => {
 	})
 
   // use this every click of the direct channel or public channel
-  const set = (channel: ChannelType) => {
-		_channel.value = channel
-		console.log(_channel.value)
-	} 
+  const set = (channel: ChannelType) => _channel.value = channel 
   const changeTheme = async (color: string) => {
     try {
       const response = await axios.put(`/channels/${channel.value.id}`, {

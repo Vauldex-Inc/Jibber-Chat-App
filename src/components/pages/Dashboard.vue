@@ -1,11 +1,11 @@
 <template>
   <!-- Refactor this -->
-  <VModal 
+  <!-- <VModal 
     :is-open="publicCstore.variant === DIRECT_CHANNEL" 
     @close="publicCstore.variant = undefined"
   >
     <InvitationDirect color="bg-indigo-600" @submit="newDirect" />
-  </VModal>
+  </VModal> -->
   <VModal 
     :is-open="publicCstore.variant === GROUP_CHANNEL" 
     @close="publicCstore.variant = undefined"
@@ -50,8 +50,13 @@
         <template #actions>
           <Settings :username="loggedUser!.username" :profileImage="profileImage" />
         </template>
+
         <template #notification>
           <NotificationList />
+        </template>
+
+        <template #messages>
+          <DirectChannels />
         </template>
         <template #messages>
           <VChatList
@@ -71,7 +76,17 @@
 
     <template #right>
       <TheChannelInformation>
+        <template #details>
+          <ChatDetails />
+        </template>
 
+        <template #members>
+          <ChatMembers />
+        </template>
+
+        <template #images>
+          <ChatImages />
+        </template>
       </TheChannelInformation>
     </template>
   </TheChat>
@@ -173,19 +188,23 @@ import { useSocket } from "@/composables/useSocket"
 import { useUserStore } from "@/stores/useUserStore"
 import { useChannelStore } from "@/stores/useChannelStore"
 import { useMessageStore } from "@/stores/useMessageStore"
-import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
 import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
+import DirectChannels from "../organisms/DirectChannels.vue"
+import TheChatList from "../templates/TheChatList.vue"
+import ChatMembers from "../organisms/ChatMembers.vue"
+import ChatImages from "../organisms/ChatImages.vue"
+import TheChannelInformation from "../templates/TheChannelInformation.vue"
+import TheChat from "../templates/TheChat.vue"
 import VToast from "@/components/molecules/VToast.vue"
 import ChatTitle from "@/components/organisms/ChatTitle.vue"
 import ChatBox from "@/components/organisms/ChatBox.vue"
 import ChatBoxArea from "@/components/organisms/ChatBoxArea.vue"
 import VModal from "@/components/atoms/VModal.vue"
 import InvitationCard from "@/components/organisms/InvitationCard.vue"
-import InvitationDirect from "@/components/organisms/InvitationDirect.vue"
 import NotificationList from "@/components/organisms/NotificationList.vue"
 import Settings from "@/components/organisms/Settings.vue"
 import AddChannel from "@/components/organisms/AddChannel.vue"
@@ -198,6 +217,7 @@ import type { Channel, DirectChannel, PublicChannel } from "@/types/Channel"
 import { ChannelSchema, DIRECT_CHANNEL, DirectChannelSchema, GROUP_CHANNEL, PublicChannelSchema } from "@/types/Channel"
 import type { Notification } from "@/types/Notification"
 import { UserSchema } from "@/types/User"
+import ChatDetails from "../organisms/ChatDetails.vue"
 import { storeToRefs } from "pinia"
 
 const notifAudio = new Audio("./src/assets/slack_sound.mp3")
@@ -212,7 +232,6 @@ const { channel } = storeToRefs(channelStore)
 const publicCstore = usePublicChannelStore()
 const directCstore = useDirectChannelStore()
 const messageStore = useMessageStore()
-const channelUserStore = useChannelUserStore()
 const unreadMessageStore = useUnreadMessageStore()
 const directStore = useDirectChannelStore()
 const loggedUser = useUser()
@@ -238,6 +257,14 @@ const idSender = computed(() => {
   } else {
     return channelStore.channel.idUser
   }
+})
+
+const privateChannels = computed(() => {
+  return singleChannels.value.filter((s) => {
+    const users = s.title.split("/")
+
+    return users.some((u) => u === loggedUser?.id)
+  })
 })
 
 const isChatInfoOpen = ref<boolean>(true) // switch to false after
@@ -279,16 +306,16 @@ const openChannel = async (channel: PublicChannel | DirectChannel) => {
   channelStore.set(channel)
 }
 
-const newDirect = (channel: DirectChannel | undefined) => {
-  if (channel) {
-    const channelValidation = DirectChannelSchema.safeParse(channel)
-    if (channelValidation.success) {
-      directCstore.add(channel)
-    } else {
-      throw new Error("Failed to create channel")
-    }
-  }
-}
+// const newDirect = (channel: DirectChannel | undefined) => {
+//   if (channel) {
+//     const channelValidation = DirectChannelSchema.safeParse(channel)
+//     if (channelValidation.success) {
+//       directCstore.add(channel)
+//     } else {
+//       throw new Error("Failed to create channel")
+//     }
+//   }
+// }
 
 const updateArchived = (data: { color: string; archivedAt: string }) => {
   if (channelStore.channel) {
@@ -318,7 +345,7 @@ watch(invitationNotif, () => {
 
 watch(channel, async (channel) => {
   if (channel) {
-    await channelUserStore.getChannelUsers(channel.id)
+    const users = await channelStore.getChannelUsers(channel.id)
     await messageStore.getChannelMessages(channel.id)
     const validation = ChannelSchema.safeParse(channel)
 
@@ -366,6 +393,7 @@ onMounted(async () => {
         const channel = updates.content.channel
         const channelValidation = ChannelSchema.safeParse(channel)
         if (channelValidation.success) {
+          publicCstore.add(channelValidation.data) //change to add
           publicCstore.add(channelValidation.data) //change to add
           const senderName = userProfileStore.getName(channelValidation.data.idUser)
 
@@ -460,7 +488,7 @@ onMounted(async () => {
 
       case "NEW_MEMBER": {
         const member = updates.content.member
-        channelUserStore.addNewChannelUser(member)
+        channelStore.addNewChannelUser(member)
         break
       }
 

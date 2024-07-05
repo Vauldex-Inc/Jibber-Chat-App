@@ -27,7 +27,9 @@
           <VIconButton
             :icon="opt.icon"
             :invert="true"
-            class="border-2 border-indigo-200 bg-indigo-100 group-hover:border-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:group-hover:border-slate-800 dark:group-hover:bg-slate-900"
+            class="border-2 border-indigo-200 bg-indigo-100 group-hover:border-slate-500 
+            dark:border-slate-800 dark:bg-slate-950 dark:group-hover:border-slate-800 
+            dark:group-hover:bg-slate-900"
             @click="modal(opt.key)"
           />
           <p class="text-sm text-gray-600 dark:text-slate-400">
@@ -60,7 +62,7 @@
 <script setup lang="ts">
   import { computed, ref } from "vue"
   import { useUserStore } from "@/stores/useUserStore"
-  import { useUserProfileStore } from "@/stores/useUserProfileStore"
+  import { useUserProfileStore } from "@/stores/useProfileStore"
   import { useChannelStore } from "@/stores/useChannelStore"
   import VIconButton from "@/components/molecules/VIconButton.vue"
   import VAvatar from "@/components/molecules/VAvatar.vue"

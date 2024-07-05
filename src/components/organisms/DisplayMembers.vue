@@ -60,7 +60,7 @@ import VAvatar from "@/components/molecules/VAvatar.vue"
 import VProfileForm from "@/components/organisms/VProfileForm.vue"
 import VModal from "@/components/atoms/VModal.vue"
 import { type User } from "@/types/User"
-import { useUserProfileStore } from "@/stores/useUserProfileStore"
+import { useUserProfileStore } from "@/stores/useProfileStore"
 import type { ChannelUser } from "@/types/Channel"
 import { useChannelStore } from "@/stores/useChannelStore"
 

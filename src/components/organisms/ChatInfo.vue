@@ -207,7 +207,7 @@ import {
   DIRECT_CHANNEL,
   GROUP_CHANNEL
 } from "@/types/Channel"
-import { useUserProfileStore } from "@/stores/useUserProfileStore"
+import { useUserProfileStore } from "@/stores/useProfileStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import type { ChatInfoProp } from "@/types/Prop"
 import { StatusSchema } from "@/types/User"

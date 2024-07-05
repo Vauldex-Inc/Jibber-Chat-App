@@ -50,7 +50,7 @@
 
 <script lang="ts" setup>
   import { computed, ref, type Ref } from 'vue'
-  import {useUserProfileStore} from "@/stores/useUserProfileStore"
+  import {useUserProfileStore} from "@/stores/useProfileStore"
   import {useUserStore} from "@/stores/useUserStore"
   import {useChannelStore} from "@/stores/useChannelStore"
   import {useUnreadMessageStore} from "@/stores/useUnreadMessageStore"

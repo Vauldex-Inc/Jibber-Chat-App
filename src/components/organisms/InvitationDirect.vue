@@ -52,7 +52,7 @@ import { ref, computed, onMounted } from "vue"
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
 import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
-import { useUserProfileStore } from "@/stores/useUserProfileStore"
+import { useUserProfileStore } from "@/stores/useProfileStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
 

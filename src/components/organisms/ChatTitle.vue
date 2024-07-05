@@ -78,7 +78,7 @@
 import { computed } from "vue"
 import { useUserStore } from "@/stores/useUserStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
-import { useUserProfileStore } from "@/stores/useUserProfileStore"
+import { useUserProfileStore } from "@/stores/useProfileStore"
 
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"

@@ -1,6 +1,6 @@
 <template>
   <div class="members">
-    <header class="p-5 mb-2 flex items-center justify-between">
+    <header class="p-5 flex items-center justify-between">
       <p class="font-semibold capitalize text-gray-700 dark:text-gray-300">
         {{ header.title }}
       </p>
@@ -28,7 +28,7 @@
       </p>
     </div>
 
-    <VModal :is-open="open">
+    <VModal @close="open = false" :is-open="open">
       <DisplayMembers :id-channel="channel.id" />
     </VModal>
   </div>

@@ -18,7 +18,7 @@ const formatSentAt = (date: string) => {
 
   const dateFormatter = useDateFormatter()
 
-  if (timeDiff < 0) {
+  if (timeDiff < 0 || date === undefined) {
     return "";
   }
 

@@ -105,7 +105,6 @@
     return {
       id: r.id,
       image: getImage(id),
-      image: getImage(id),
       status: getStatus(id),
       name: getName(id),
       sentAt: formatSentAt(sentAt),

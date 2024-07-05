@@ -13,22 +13,24 @@
       </VIconButton>
     </div>
     <ul class="overflow-y-scroll bg-white pb-5 dark:bg-slate-950">
-      <template v-if="channels.length > 0">
+      <template v-if="transformChannels.length > 0">
         <li 
-          v-for="channel in channels" 
+          v-for="channel in transformChannels" 
           class="flex cursor-pointer items-center gap-4 p-3 transition-all hover:bg-indigo-400/10"
-          :key="channel.id" @click="set(channel)">
-          <VAvatar :image="getImage(user(channel))" :status="getStatus(user(channel))"size="xlarge"/>
+          :key="channel.id" 
+          @click="onClickChannel(channel.id)"
+        >
+          <VAvatar :image="channel.image" :status="channel.status" size="xlarge"/>
 
           <VTextGroup
-            :is-bold="getUnreadMessages(channel.id).length > 0"
+            :is-bold="channel.hasUnread"
             class="flex-1"
-            :title="getName(user(channel))"
-            :text="latestMessage(channel.id) ? latestMessage(channel.id)!.text : ''"
+            :title="channel.name"
+            :text="channel.text"
           />
           
           <div v-if="!channel.archivedAt" class="flex flex-col items-center gap-2">
-            <span class="text-sm">{{ latestMessage(channel.id) ? formatSentAt(latestMessage(channel.id)!.sentAt) : "" }}</span>
+            <span class="text-sm">{{ channel.sentAt }}</span>
             <VBadge
               v-if="getUnreadMessages.length > 0"
               :count="getUnreadMessages.length"
@@ -47,7 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue'
+  import { computed, ref, type Ref } from 'vue'
   import {useUserProfileStore} from "@/stores/useUserProfileStore"
   import {useUserStore} from "@/stores/useUserStore"
   import {useChannelStore} from "@/stores/useChannelStore"
@@ -56,7 +58,7 @@
   import { useMessageStore } from '@/stores/useMessageStore'
   import { formatSentAt } from '@/composables/useDateFormatter'
   import { useUser } from '@/composables/useUser'
-  import type { DirectChannel } from '@/types/Channel'
+  import type { UnreadMessage, Message } from '@/types/Message'
   import VModal from '../atoms/VModal.vue'
   import InvitationDirect from './InvitationDirect.vue'
   import VBadge from '../atoms/VBadge.vue'
@@ -66,9 +68,9 @@
 
   const { getImage, getName } = useUserProfileStore()
   const { getStatus } = useUserStore()
-  const { set } = useChannelStore()
+  const channel = useChannelStore()
   const { channels } = useDirectChannelStore()
-  const { getUnreadMessages } = useUnreadMessageStore()
+  const { getUnreadMessages, hasUnread } = useUnreadMessageStore()
   const { getLatestMessages } = useMessageStore()
   const loggedUser = useUser()
   const header = {
@@ -76,20 +78,54 @@
   }
   const open = ref<boolean>(false)
 
-  const latestMessage = (idChannel: string) => {
+  function latestMessage(idChannel: string): { text: string, sentAt: string } {
+
+    let message = {} as UnreadMessage | Message
+
     const unReadMessages = getUnreadMessages(idChannel)
+    
     if (getUnreadMessages(idChannel).length > 0) {
-      return unReadMessages[unReadMessages.length - 1]
+      message = unReadMessages[unReadMessages.length - 1]
     }
 
     const messages = getLatestMessages(idChannel).filter((m) => m.idChannel === idChannel)
 
     if (messages.length > 0) {
-      return messages[messages.length - 1]
+      message = messages[messages.length - 1]
+    }
+
+    return {
+      text: message.text,
+      sentAt: message.sentAt
     }
   }
 
-  const user = (channel: DirectChannel) => {
-    return loggedUser?.id === channel.idUser ? channel.idReceiver : channel.idUser
+  const setId = (idUser: string, idReceiver: string) => {
+    return loggedUser?.id === idUser ? idReceiver : idUser
+  }
+
+  const transformChannels = computed(() => channels.value.map((r) => {
+    const id = setId(r.idUser, r.idReceiver)
+    const { text, sentAt } = latestMessage(r.id)
+
+    return {
+      id: r.id,
+      image: getImage(id) || '...',
+      status: getStatus(id),
+      name: getName(id) || '...',
+      sentAt: formatSentAt(sentAt),
+      text,
+      color: r.color,
+      archivedAt: r.archivedAt,
+      hasUnread: hasUnread(r.id)
+    }
+  }))
+
+  const onClickChannel = (idChannel: string) => {
+    const _channel = channels.value.find((r) => r.id === idChannel)
+
+    if (_channel) {
+      channel.set(_channel)
+    }
   }
 </script>

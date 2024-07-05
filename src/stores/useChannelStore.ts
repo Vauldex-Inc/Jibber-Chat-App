@@ -122,6 +122,10 @@ export const useChannelStore = defineStore("channels", () => {
 		}
 	}
 
+	const channelInitials = computed(() => {
+		return _channel.value.title?.slice(0,1)
+	})
+
   return {
     channel,
     changeTheme,
@@ -131,6 +135,7 @@ export const useChannelStore = defineStore("channels", () => {
     isMember,
     getNonMembers,
     set,
-		archiveChannel
+		archiveChannel,
+		channelInitials
   }
 })

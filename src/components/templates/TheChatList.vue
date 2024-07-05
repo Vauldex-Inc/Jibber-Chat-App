@@ -10,7 +10,7 @@
       <div class="flex items-center gap-3 order-1">
         <slot name="actions" />
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 order-3">
         <slot name="notification" />
       </div>
     </header>

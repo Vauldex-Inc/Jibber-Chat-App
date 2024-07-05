@@ -74,7 +74,7 @@
   const { getLatestMessages } = useMessageStore()
   const loggedUser = useUser()
   const header = {
-    title: "Messages"
+    title: "Direct Messages"
   }
   const open = ref<boolean>(false)
 
@@ -105,10 +105,11 @@
     return {
       id: r.id,
       image: getImage(id),
+      image: getImage(id),
       status: getStatus(id),
-      name: getName(id) || '...',
-      sentAt: sentAt ? formatSentAt(sentAt) : '',
-      text: text || '',
+      name: getName(id),
+      sentAt: formatSentAt(sentAt),
+      text,
       color: r.color,
       archivedAt: r.archivedAt,
       hasUnread: hasUnread(r.id)

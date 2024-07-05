@@ -5,7 +5,7 @@ const GROUP_CHANNEL = "MPU"
 const DIRECT_CHANNEL = "SNG"
 const PRIVATE_CHANNEL = "MPR"
 
-const ChannelVariantEnum = z.enum([GROUP_CHANNEL, DIRECT_CHANNEL, PRIVATE_CHANNEL])
+const ChannelVariantEnum = z.nativeEnum({GROUP_CHANNEL, DIRECT_CHANNEL, PRIVATE_CHANNEL})
 
 const ChannelSchema = z.object({
 	id: z.string(),

@@ -1,13 +1,25 @@
 <template>
   <div class="flex flex-col items-center justify-center gap-5 px-5 pb-5 pt-16">
     <header class="text-center">
-      <VAvatar :status="status" size="xlarge"  @click="modal('profile')" />
+      <VAvatar 
+        v-if="!transformedChannel.isPublic" 
+        :status="transformedChannel.status" 
+        size="xlarge"  
+        @click="modal('profile')" 
+      />
+      <div
+        v-else
+        class="flex aspect-square h-12 items-center justify-center mx-auto rounded-full text-white"
+        :class="transformedChannel.color"
+      >
+        <p>{{ transformedChannel.initials }}</p>
+      </div>
       <h4 class="font-semibold">
         {{ name }}
       </h4>
     </header>
-    <div v-if="!channel.archivedAt" class="flex items-center justify-center gap-4">
-      <template v-for="opt, index in options" :key="opt.key">
+    <div v-if="!transformedChannel.archivedAt" class="flex items-center justify-center gap-4">
+      <template v-for="opt in options" :key="opt.key">
         <div
           v-if="checkPermissions(opt.permission)"
           class="group flex flex-col items-center justify-center gap-2"
@@ -47,7 +59,6 @@
 
 <script setup lang="ts">
   import { computed, ref } from "vue"
-  import { storeToRefs } from "pinia"
   import { useUserStore } from "@/stores/useUserStore"
   import { useUserProfileStore } from "@/stores/useUserProfileStore"
   import { useChannelStore } from "@/stores/useChannelStore"
@@ -61,13 +72,16 @@
   import {
     ChannelVariantEnum,
     DIRECT_CHANNEL,
-    GROUP_CHANNEL
+    GROUP_CHANNEL,
   } from "@/types/Channel"
+import { useUser } from "@/composables/useUser"
+import { storeToRefs } from "pinia"
 
   const { getStatus, inviteMember } = useUserStore()
   const { getName } = useUserProfileStore()
-  const { channel } = storeToRefs(useChannelStore())
+  const { channel, channelInitials } = storeToRefs(useChannelStore())
   const { changeTheme } = useChannelStore()
+  const loggedUser = useUser()
   const open = {
     modalState: false,
     member: false, 
@@ -89,12 +103,31 @@
     }
   ])
 
-  const name = computed(() => channel && 'title' in channel ? channel.title : getName(channel.value.idUser))
-  const status = computed(() => getStatus(channel.value.idUser))
+  const name = computed(() => channel.value && 'title' in channel.value ? channel.value.title : getName(userId.value))
 
   const checkPermissions = (type: Array<string>): boolean => {
-    return ChannelVariantEnum.array().safeParse(type).success
+    return ChannelVariantEnum.array().safeParse(type).success && type.includes(transformedChannel.value.channelType!)
   } 
+
+  const userId = computed(() => {
+    if ('idReceiver' in channel.value) {
+      return loggedUser?.id === channel.value.idUser ? channel.value.idReceiver : channel.value.idUser
+    } else {
+      return channel.value.idUser
+    }
+  }) 
+  
+  const transformedChannel = computed(() => {
+    return {
+      color: channel.value.color,
+      initials: channelInitials,
+      isPublic: channel.value.channelType === GROUP_CHANNEL || false,
+      archivedAt: channel.value.archivedAt,
+      channelType: channel.value.channelType,
+      status: getStatus(userId.value)
+    }
+    
+  })
 
   const modal = (key: string) => {
     switch(key) {

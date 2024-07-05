@@ -55,7 +55,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
-import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import { useUserStore } from "@/stores/useUserStore"
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VProfileForm from "@/components/organisms/VProfileForm.vue"
@@ -63,6 +62,7 @@ import VModal from "@/components/atoms/VModal.vue"
 import { type User } from "@/types/User"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import type { ChannelUser } from "@/types/Channel"
+import { useChannelStore } from "@/stores/useChannelStore"
 
 const props = defineProps<{
   idChannel: string
@@ -73,7 +73,7 @@ const emits = defineEmits<{
 }>()
 
 const userStore = useUserStore()
-const channelUserStore = useChannelUserStore()
+const channelStore = useChannelStore()
 const userProfileStore = useUserProfileStore()
 
 const channelUsers = ref<ChannelUser[] | undefined>([])
@@ -88,7 +88,7 @@ const getStatus = (id: string) => {
 }
 
 onMounted(async () => {
-  channelUsers.value = await channelUserStore.getChannelUsers(props.idChannel)
+  channelUsers.value = await channelStore.getChannelUsers(props.idChannel)
   if (channelUsers.value) {
     users.value = channelUsers.value.map((channelUser) => {
       return userStore.getUser(channelUser.idUser)

@@ -47,7 +47,7 @@ interface ModalProp {
 
 interface TextGroupProp {
   title: string
-  text: string
+  text?: string
   subText?: string
   isBold?: boolean
 }

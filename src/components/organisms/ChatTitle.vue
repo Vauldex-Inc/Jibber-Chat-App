@@ -51,7 +51,7 @@
             {{ publicChannelStore.getTitle(channel.id) }}
           </p>
           <p class="text-sm">
-            {{ channelUserStore.getChannelUsersCount(channel.id) }}
+            {{ channelStore.getChannelUsersCount(channel.id) }}
           </p>
         </template>
       </div>
@@ -77,7 +77,6 @@
 <script lang="ts" setup>
 import { computed } from "vue"
 import { useUserStore } from "@/stores/useUserStore"
-import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 
@@ -102,7 +101,6 @@ const emits = defineEmits<{
 
 const profileStore = useUserProfileStore()
 const userStore = useUserStore()
-const channelUserStore = useChannelUserStore()
 const publicChannelStore = usePublicChannelStore()
 const channelStore = useChannelStore()
 

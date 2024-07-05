@@ -6,7 +6,7 @@
         {{ name }}
       </h4>
     </header>
-    <div v-if="channelStore.channel.archivedAt" class="flex items-center justify-center gap-4">
+    <div v-if="channel.archivedAt" class="flex items-center justify-center gap-4">
       <template v-for="opt, index in options" :key="opt.key">
         <div
           v-if="checkPermissions(opt.permission)"
@@ -24,17 +24,22 @@
         </div>
       </template>
 
-      <VModal :is-open="open">
-        <!-- Add condition -->
-        <InvitationPublic
-          :color="channelStore.channel.color"
-          :id-channel="channelStore.channel.id"
-          @action="(idUser: string) => inviteMember(channelStore.channel.id, idUser)"
-        />
-        <!-- Add condition -->
-        <ChatColorSelector @color="channelStore.changeTheme" />
-        <!-- Add condition -->
-        <VProfileForm />
+      <VModal :is-open="open.modalState">
+        <template v-if="open.member">
+          <InvitationPublic
+            :color="channel.color!"
+            :id-channel="channel.id"
+            @action="(idUser: string) => inviteMember(channel.id, idUser)"
+          />
+        </template>
+
+        <template v-if="open.theme">
+          <ChatColorSelector @color="changeTheme" />
+        </template>
+
+        <template v-if="open.profile">
+          <VProfileForm />
+        </template>
       </VModal>
     </div>
   </div>
@@ -42,43 +47,69 @@
 
 <script setup lang="ts">
   import { computed, ref } from "vue"
+  import { storeToRefs } from "pinia"
   import { useUserStore } from "@/stores/useUserStore"
   import { useUserProfileStore } from "@/stores/useUserProfileStore"
   import { useChannelStore } from "@/stores/useChannelStore"
-  import { ChannelVariantEnum, DIRECT_CHANNEL, GROUP_CHANNEL, type ChannelVariant } from "@/types/Channel"
+  import VIconButton from "@/components/molecules/VIconButton.vue"
+  import VAvatar from "@/components/molecules/VAvatar.vue"
+  import InvitationPublic from "@/components/organisms/InvitationPublic.vue"
+  import ChatColorSelector from "@/components/organisms/ChatColorSelector.vue"
+  import VProfileForm from "@/components/organisms/VProfileForm.vue"
+  import VModal from "../atoms/VModal.vue"
+
+  import {
+    ChannelVariantEnum,
+    DIRECT_CHANNEL,
+    GROUP_CHANNEL
+  } from "@/types/Channel"
 
   const { getStatus, inviteMember } = useUserStore()
   const { getName } = useUserProfileStore()
-  const channelStore = useChannelStore()
-  const open = ref(false)
-  const options = ref({
-    member: {
+  const { channel } = storeToRefs(useChannelStore())
+  const { changeTheme } = useChannelStore()
+  const open = {
+    modalState: false,
+    member: false, 
+    theme: false, 
+    profile: false
+  }
+  const options = ref([
+    {
       key: 'member',
       title: 'Member',
       icon: './src/assets/images/add.svg',
-      permission: [DIRECT_CHANNEL]
+      permission: [GROUP_CHANNEL]
     },
-    theme: {
+    {
       key: 'theme',
       title: 'Theme',
       icon: './src/assets/images/theme.svg',
       permission: [DIRECT_CHANNEL, GROUP_CHANNEL]
     }
-  })
+  ])
 
-  // Refactor this in the future
-  const name = computed(() => channelStore.channel && 'title' in channelStore.channel ? channelStore.channel.title : getName(channelStore.channel.idUser))
-  const status = computed(() => getStatus(channelStore.channel.idUser))
+  const name = computed(() => channel && 'title' in channel ? channel.title : getName(channel.value.idUser))
+  const status = computed(() => getStatus(channel.value.idUser))
 
-  const checkPermissions = (type: string[]): boolean => {
-    return type.map((t) => ChannelVariantEnum.safeParse(t).success).includes(false)
-  }
-  
+  const checkPermissions = (type: Array<string>): boolean => ChannelVariantEnum.safeParse(type).success
+
   const modal = (key: string) => {
     switch(key) {
-      case 'member': // open add member modal
-      case 'theme': // open add theme modal
-      case 'profile': // open view profile
+      case 'member': 
+        open.modalState = true
+        open.member = true
+        break;
+
+      case 'theme':
+        open.modalState = true
+        open.theme = true
+        break;
+
+      case 'profile': 
+        open.modalState = true
+        open.profile = true
+        break;
     }
   }
 </script>

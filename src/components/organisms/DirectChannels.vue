@@ -83,7 +83,7 @@
       return unReadMessages[unReadMessages.length - 1]
     }
 
-    const messages = getLatestMessages().value.filter((m) => m.idChannel === idChannel)
+    const messages = getLatestMessages(idChannel).filter((m) => m.idChannel === idChannel)
 
     if (messages.length > 0) {
       return messages[messages.length - 1]

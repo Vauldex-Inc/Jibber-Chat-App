@@ -48,19 +48,11 @@ import { useChannelStore } from "@/stores/useChannelStore"
 import VIconButton from "@/components/molecules/VIconButton.vue"
 import NotificationListItem from "@/components/organisms/NotificationListItem.vue"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
-<<<<<<< HEAD
-import { PublicChannelSchema } from "@/types/Channel"
-
-const notificationStore = useNotificationStore()
-const notifications = notificationStore.getNotifications()
-const publicCstore = usePublicChannelStore()
-=======
 
 const notificationStore = useNotificationStore()
 const notifications = notificationStore.getNotifications()
 const channelStore = useChannelStore()
 const publicStore = usePublicChannelStore()
->>>>>>> 64fc113 (Refactor)
 const loggedUser = useUser()
 
 const displayNotification = ref<boolean>(false)
@@ -72,14 +64,8 @@ const unSeenCount = computed(() => {
 const notificationsCopy = computed(() => {
   return notifications.value
     .filter((n) => {
-<<<<<<< HEAD
-      const channel = publicCstore.channels
-      const validation = PublicChannelSchema.safeParse(channel)
-      return validation.success && n.idUser === loggedUser?.id
-=======
       const channel = publicStore.getChannelById(n.idChannel)
       return channel?.channelType !== "SNG" && n.idUser === loggedUser?.id
->>>>>>> 64fc113 (Refactor)
     })
     .reverse()
 })

@@ -26,8 +26,6 @@ const DirectChannelSchema = z.object({
 	id: z.string().uuid(),
 	title: z.string().optional(),
 	channelType: ChannelVariantEnum.optional(),
-	title: z.string().optional(),
-	channelType: ChannelVariantEnum.optional(),
 	color: z.string().optional(),
 	archivedAt: z.string().datetime().optional(),
 	idUser: z.string().uuid(),

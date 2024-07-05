@@ -58,15 +58,7 @@
         <template #messages>
           <DirectChannels />
         </template>
-        <template #messages>
-          <VChatList
-            @open="openChannel"
-            @click="publicCstore.variant = DIRECT_CHANNEL"
-            :items="directChannels"
-            class="h-3/6"
-            title="messages"
-          />
-        </template>
+  
         <template #channels>
           <PublicChannels />
         </template>
@@ -209,10 +201,6 @@ import NotificationList from "@/components/organisms/NotificationList.vue"
 import Settings from "@/components/organisms/Settings.vue"
 import AddChannel from "@/components/organisms/AddChannel.vue"
 import PublicChannels from "@/components/organisms/PublicChannels.vue"
-import TheChannelInformation from "@/components/templates/TheChannelInformation.vue"
-import TheChat from "@/components/templates/TheChat.vue"
-import TheChatList from "@/components/templates/TheChatList.vue"
-import VChatList from "../organisms/VChatList.vue"
 import type { Channel, DirectChannel, PublicChannel } from "@/types/Channel"
 import { ChannelSchema, DIRECT_CHANNEL, DirectChannelSchema, GROUP_CHANNEL, PublicChannelSchema } from "@/types/Channel"
 import type { Notification } from "@/types/Notification"
@@ -257,14 +245,6 @@ const idSender = computed(() => {
   } else {
     return channelStore.channel.idUser
   }
-})
-
-const privateChannels = computed(() => {
-  return singleChannels.value.filter((s) => {
-    const users = s.title.split("/")
-
-    return users.some((u) => u === loggedUser?.id)
-  })
 })
 
 const isChatInfoOpen = ref<boolean>(true) // switch to false after
@@ -326,7 +306,7 @@ const updateArchived = (data: { color: string; archivedAt: string }) => {
 }
 
 const sendMessage = async (message: string, img: string | undefined) => {
-  if (!channelUserStore.isMember(channelStore.channel.id, loggedUser!.id)) {
+  if (!channelStore.isMember(channelStore.channel.id, loggedUser!.id)) {
     await useFetch(`/channels/${channelStore.channel.id}/users`, {
       method: "POST",
       body: JSON.stringify({}),
@@ -433,7 +413,7 @@ onMounted(async () => {
           if (
             unreadMessage.idSender !== loggedUser!.id &&
             unreadMessage.idChannel !== validation.data.id &&
-            channelUserStore.isMember(unreadMessage.idChannel, loggedUser!.id)
+            channelStore.isMember(unreadMessage.idChannel, loggedUser!.id)
           ) {
             const channel = directCstore.getDirectChannel(unreadMessage.idChannel)
             const validation = DirectChannelSchema.safeParse(channel)

@@ -1,7 +1,7 @@
 import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
-import {z, type ZodError } from "zod"
+import {type ZodError } from "zod"
 import { 
   type ChannelType,
   type ChannelUser, 
@@ -14,8 +14,6 @@ export const useChannelStore = defineStore("channels", () => {
   // makes the state private
   const _channel = ref<ChannelType>({} as ChannelType)
   const _users = ref<[string, ChannelUser[]][]>([])
-  const profileStore = useUserProfileStore()
-  const uuid = z.string().uuid()
 
   const channel = computed(() => _channel.value) // current channel
   const channelUsers = computed(() => _users.value)
@@ -38,9 +36,7 @@ export const useChannelStore = defineStore("channels", () => {
       const response = await axios.put(`/channels/${channel.value.id}`, {
         title: channel.value.title,
         channelType: channel.value.channelType,
-        title: channel.value.title,
-        channelType: channel.value.channelType,
-        color,
+        color
       })
 
       return response.status

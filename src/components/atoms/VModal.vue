@@ -8,7 +8,6 @@
         <div class="relative" v-if="isOpen">
           <slot />
           <VIconButton
-            v-if="closeButton ? closeButton : true"
             @click="emits('close')"
             class="absolute right-0 top-0 -translate-x-1/2 translate-y-1/2"
             icon="./src/assets/images/close.svg"

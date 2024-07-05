@@ -1,12 +1,14 @@
+import { SizeSchema } from "@/types/Component"
+
 const sizeClass = (size?: string) => {
   switch (size) {
-    case "xsmall":
+    case SizeSchema.enum.xsmall:
       return "text-xs"
-    case "small":
+    case SizeSchema.enum.small:
       return "py-2 px-3 text-sm";
-    case "medium":
+    case SizeSchema.enum.medium:
       return "py-3 px-5 text-base";
-    case "large":
+      case SizeSchema.enum.large:
       return "py-4 px-6 text-lg";
     default:
       return "py-3 px-5 text-base";

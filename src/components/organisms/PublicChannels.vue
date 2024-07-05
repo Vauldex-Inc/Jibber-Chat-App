@@ -12,30 +12,30 @@
       >
       </VIconButton>
     </div>
-    <ul v-if="channels.length !== 0" class="overflow-y-scroll bg-white pb-5 dark:bg-slate-950">
+    <ul v-if="transformChannels.length !== 0" class="overflow-y-scroll bg-white pb-5 dark:bg-slate-950">
      <li 
-      v-for="channel in channels.value"
+      v-for="channel in transformChannels"
       :key="channel.id"
-      @click="channelStore.set(channel)"
+      @click="onClickChannel(channel.id)"
       class="flex cursor-pointer items-center gap-4 p-3 transition-all hover:bg-indigo-400/10"
       >
       <div
         class="flex aspect-square h-12 items-center justify-center rounded-full text-white"
         :class="channel.color"
       >
-        <p>{{ publicChannelStore.getTitle(channel.id).slice(0, 1) }}</p>
+        <p>{{ channel.title.slice(0,1) }}</p>
       </div>
       <VTextGroup
-        :is-bold="unreadMessageStore.getUnreadMessages(channel.id).length > 0"
+        :is-bold="channel.hasUnread"
         class="flex-1"
-        :title="publicChannelStore.getTitle(channel.id)"
-        :text="latestMessage(channel.id) ? latestMessage(channel.id)!.text : ''"
+        :title="channel.title"
+        :text="channel.text"
       />
       <div v-if="!channel.archivedAt" class="flex flex-col items-center gap-2">
-      <p class="text-sm">{{ latestMessage(channel.id) ? formatSentAt(latestMessage(channel.id)!.sentAt) : "" }}</p>
+      <p class="text-sm">{{ channel.sentAt }}</p>
       <VBadge
-        v-if="unreadMessageStore.getUnreadMessages(channel.id).length > 0"
-        :count="unreadMessageStore.getUnreadMessages(channel.id).length"
+        v-if="getUnreadMessages(channel.id).length > 0"
+        :count="getUnreadMessages(channel.id).length"
         :color="channel.color"
       />
       </div>
@@ -55,35 +55,61 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { formatSentAt } from "@/composables/useDateFormatter"
-import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
-import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
-import { useMessageStore } from "@/stores/useMessageStore"
-import { useChannelStore } from "@/stores/useChannelStore"
-import VIconButton from "@/components/molecules/VIconButton.vue"
-import VTextGroup from "@/components/molecules/VTextGroup.vue"
-import VBadge from "@/components/atoms/VBadge.vue"
-import VModal from "@/components/atoms/VModal.vue"
-import AddChannel from "@/components/organisms/AddChannel.vue"
-import { storeToRefs } from "pinia";
+  import { computed, ref } from "vue";
+  import { formatSentAt } from "@/composables/useDateFormatter"
+  import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+  import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
+  import { useMessageStore } from "@/stores/useMessageStore"
+  import { useChannelStore } from "@/stores/useChannelStore"
+  import VIconButton from "@/components/molecules/VIconButton.vue"
+  import VTextGroup from "@/components/molecules/VTextGroup.vue"
+  import VBadge from "@/components/atoms/VBadge.vue"
+  import VModal from "@/components/atoms/VModal.vue"
+  import AddChannel from "@/components/organisms/AddChannel.vue"
+  import { storeToRefs } from "pinia"
+  import { useUserStore } from "@/stores/useUserStore"
+  import type { UnreadMessage, Message } from "@/types/Message"
 
-const publicChannelStore = usePublicChannelStore()
-const { channels } = storeToRefs(publicChannelStore)
-const channelStore = useChannelStore()
-const unreadMessageStore = useUnreadMessageStore()
-const messageStore = useMessageStore()
+  const { getTitle, channels } = usePublicChannelStore()
+  const channel = useChannelStore()
+  const { getUnreadMessages, hasUnread } = useUnreadMessageStore()
+  const { getLatestMessages } = useMessageStore()
 
-const open = ref<boolean>(false)
+  const open = ref<boolean>(false)
 
-const latestMessage = (id: string) => {
-  const unreadMessages = unreadMessageStore.getUnreadMessages(id)
-  if (unreadMessages.length > 0) {
-    return unreadMessages[unreadMessages.length - 1]
+  const latestMessage = (idChannel: string): { text: string, sentAt: string } => {
+  let message = {} as UnreadMessage | Message
+  const unReadMessages = getUnreadMessages(idChannel)
+  if (getUnreadMessages(idChannel).length > 0) {
+    message = unReadMessages[unReadMessages.length - 1]
   }
-  const messages = messageStore.getLatestMessages(id)
+  const messages = getLatestMessages(idChannel).filter((m) => m.idChannel === idChannel)
   if (messages.length > 0) {
-    return messages[messages.length - 1]
+    message = messages[messages.length - 1]
   }
-}
+  return {
+    text: message.text || "",
+    sentAt: message.sentAt
+  }
+  }
+
+  const transformChannels = computed(() => channels.value.map((r) => {
+  const { text, sentAt } = latestMessage(r.id)
+  return {
+    id: r.id,
+    title: getTitle(r.id),
+    sentAt: sentAt ? formatSentAt(sentAt) : sentAt,
+    text,
+    color: r.color,
+    archivedAt: r.archivedAt,
+    hasUnread: hasUnread(r.id)
+  }
+  }))
+
+  const onClickChannel = (idChannel: string) => {
+  const _channel = channels.value.find((r) => r.id === idChannel)
+  if (_channel) {
+    channel.set(_channel)
+  }
+  }
 </script>

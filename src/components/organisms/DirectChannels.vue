@@ -78,22 +78,16 @@
   }
   const open = ref<boolean>(false)
 
-  function latestMessage(idChannel: string): { text: string, sentAt: string } {
-
+  const latestMessage = (idChannel: string): { text: string, sentAt: string } => {
     let message = {} as UnreadMessage | Message
-
     const unReadMessages = getUnreadMessages(idChannel)
-    
     if (getUnreadMessages(idChannel).length > 0) {
       message = unReadMessages[unReadMessages.length - 1]
     }
-
     const messages = getLatestMessages(idChannel).filter((m) => m.idChannel === idChannel)
-
     if (messages.length > 0) {
       message = messages[messages.length - 1]
     }
-
     return {
       text: message.text,
       sentAt: message.sentAt
@@ -110,11 +104,11 @@
 
     return {
       id: r.id,
-      image: getImage(id) || '...',
+      image: getImage(id),
       status: getStatus(id),
       name: getName(id) || '...',
-      sentAt: formatSentAt(sentAt),
-      text,
+      sentAt: sentAt ? formatSentAt(sentAt) : '',
+      text: text || '',
       color: r.color,
       archivedAt: r.archivedAt,
       hasUnread: hasUnread(r.id)

@@ -223,7 +223,6 @@ const multiChannels = publicCstore.channels
 const directChannels = directCstore.channels
 
 const senderId = ref<string | undefined>(undefined)
-const selectedChannel = ref<Channel | DirectChannel | undefined>(undefined)
 const activeSocket = ref<WebSocket | undefined>(undefined)
 const onlineSocket = ref<WebSocket | undefined>(undefined)
 const invitationModalOpen = ref<boolean>(false)
@@ -274,9 +273,9 @@ const closeInvitationModal = () => {
   invitationModalOpen.value = false
 }
 
-const openChannel = async (channel: PublicChannel | DirectChannel) => {
-  channelStore.set(channel)
-}
+// const openChannel = async (channel: PublicChannel | DirectChannel) => {
+//   channelStore.set(channel)
+// }
 
 // const newDirect = (channel: DirectChannel | undefined) => {
 //   if (channel) {
@@ -317,7 +316,6 @@ watch(invitationNotif, () => {
 
 watch(channel, async (channel) => {
   if (channel) {
-    const users = await channelStore.getChannelUsers(channel.id)
     await messageStore.getChannelMessages(channel.id)
     const validation = ChannelSchema.safeParse(channel)
 

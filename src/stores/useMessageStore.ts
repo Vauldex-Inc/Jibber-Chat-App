@@ -1,4 +1,4 @@
-import { ref, computed } from "vue"
+import { ref, computed, type Ref } from "vue"
 import { defineStore } from "pinia"
 import axios from "axios"
 import { useFetch } from "@/composables/useFetch"
@@ -68,13 +68,7 @@ export const useMessageStore = defineStore("messages", () => {
 		latestMessages.value.push(message)
 	}
 
-	const getLatestMessages = (idChannel: string) => {
-		return latestMessages.value.filter((m) => {
-			if (m) {
-				return m.idChannel === idChannel
-			}
-		})
-	}
+	const getLatestMessages = (idChannel: string) => latestMessages.value.filter((m) => m.idChannel === idChannel)
 
 	return {
 		getChannelMessages,

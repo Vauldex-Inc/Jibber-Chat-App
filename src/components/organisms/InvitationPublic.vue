@@ -49,11 +49,10 @@
 import { ref, computed, onMounted } from "vue"
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
-import { useChannelUserStore } from "@/stores/useChannelUserStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
-
+import { useChannelStore } from "@/stores/useChannelStore"
 
 const props = defineProps<{
   color: string
@@ -65,8 +64,8 @@ const emits = defineEmits<{
 }>()
 
 const userStore = useUserStore()
-const channelUserStore = useChannelUserStore()
 const profileStore = useUserProfileStore()
+const channelStore = useChannelStore()
 const users = userStore.getUsers
 const loggedUser = useUser()
 
@@ -86,7 +85,8 @@ const filteredUserName = computed(() => {
 })
 
 onMounted(async () => {
-  (await channelUserStore.getChannelUsers(props.idChannel))?.forEach((cu) => invitedUsers.value.push(cu.idUser))
+  const data = await channelStore.getChannelUsers(props.idChannel)
+  data?.forEach((cu: any) => invitedUsers.value.push(cu.idUser))
   users.value.forEach((u) => {
     if (!invitedUsers.value.includes(u.id)) {
       const id = u.id

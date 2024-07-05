@@ -3,6 +3,7 @@ import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
 import { useUserStore } from "@/stores/useUserStore"
 import { ProfileDataSchema, type Profile } from "@/types/Profile"
+import type { ChannelType } from '@/types/Channel'
 
 
 export const useUserProfileStore = defineStore("userProfile", () => {
@@ -35,8 +36,8 @@ export const useUserProfileStore = defineStore("userProfile", () => {
     return validation.data
   }
 
-  const getProfile = (idUser: string) => {
-    profile.value = profiles.value.find((p: Profile) => p.idUser === idUser)
+  const getProfile = (channel: ChannelType) => {
+    profile.value = profiles.value.find((p: Profile) => p.idUser === channel.idUser)
     return profile
   }
 

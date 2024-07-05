@@ -10,7 +10,7 @@ import { useChannelStore } from "./useChannelStore"
 export const useChannelUserStore = defineStore("channel-users", () => {
 	type ChannelType = Channel | DirectChannel
 	const users = ref<[string, ChannelUser[]][]>([])
-	const _channel = ref<ChannelType>({} as ChannelType) // currently opened or actived channel (direct | public)
+	const _channel = ref<ChannelType>({} as ChannelType)
 
 	const channelUsersCount = computed(() => {
 		const copy = [...users.value]
@@ -21,12 +21,6 @@ export const useChannelUserStore = defineStore("channel-users", () => {
 	})
 
 	const channel = computed(() => _channel.value)
-	// continue
-	// const opeChannel = (id: string) => {
-	// 	_channel.value = id
-	// }
-
-
 	const getChannelUsers = async (idChannel: string) => {
 		const channelUsers: [string, ChannelUser[]] | undefined = users.value.find(c => c[0] === idChannel)
 

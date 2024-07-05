@@ -36,10 +36,10 @@
         </div>
       </template>
 
-      <VModal :is-open="open.modalState">
+      <VModal @close="onClose" :is-open="open.modalState">
         <template>
           <InvitationPublic
-            :color="channel.color!"
+            :color="transformedChannel.color"
             :id-channel="channel.id"
             @action="(idUser: string) => inviteMember(channel.id, idUser)"
           />
@@ -82,12 +82,12 @@ import { storeToRefs } from "pinia"
   const { channel, channelInitials } = storeToRefs(useChannelStore())
   const { changeTheme } = useChannelStore()
   const loggedUser = useUser()
-  const open = {
+  const open = ref({
     modalState: false,
     member: false, 
     theme: false, 
     profile: false
-  }
+  })
   const options = ref([
     {
       key: 'member',
@@ -119,7 +119,7 @@ import { storeToRefs } from "pinia"
   
   const transformedChannel = computed(() => {
     return {
-      color: channel.value.color,
+      color: channel.value.color || "",
       initials: channelInitials,
       isPublic: channel.value.channelType === GROUP_CHANNEL || false,
       archivedAt: channel.value.archivedAt,
@@ -129,22 +129,33 @@ import { storeToRefs } from "pinia"
     
   })
 
+  const onClose = () => {
+    open.value = {
+      modalState: false,
+      member: false,
+      theme: false,
+      profile: false
+    }
+  }
+
   const modal = (key: string) => {
     switch(key) {
       case 'member': 
-        open.modalState = true
-        open.member = true
+        open.value.modalState = true
+        open.value.member = true
         break;
 
       case 'theme':
-        open.modalState = true
-        open.theme = true
+        open.value.modalState = true
+        open.value.theme = true
         break;
 
       case 'profile': 
-        open.modalState = true
-        open.profile = true
+        open.value.modalState = true
+        open.value.profile = true
         break;
     }
+
+    console.log(open.value)
   }
 </script>

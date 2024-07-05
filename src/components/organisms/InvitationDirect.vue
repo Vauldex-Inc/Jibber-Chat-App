@@ -71,8 +71,7 @@ const filteredUserName = computed(() => {
     const currentName = inputUserName.value.toLowerCase()
     return (
       profileStore.getName(id).toLowerCase().includes(currentName) &&
-      !isInvited(id) &&
-      id !== loggedUser?.id
+      !isInvited(id) && id !== loggedUser?.id
     )
   })
 })
@@ -80,7 +79,7 @@ const filteredUserName = computed(() => {
 const isInvited = (idUser: string) => invitedUsers.value.includes(idUser)
 
 onMounted(async () => {
-  directStore.channels.value.forEach((c) => invitedUsers.value.push(c.idUser))
+  directStore.channels.value.forEach((c) => invitedUsers.value.push(c.idReceiver))
   users.value.forEach((u) => {
     if (!invitedUsers.value.includes(u.id)) {
       const id = u.id

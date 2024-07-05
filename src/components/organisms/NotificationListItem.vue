@@ -37,7 +37,6 @@
 import { computed } from "vue"
 import { formatSentAt } from "@/composables/useDateFormatter"
 import { useDateFormatter } from "@/composables/useDateFormatter"
-import { useChannelStore } from "@/stores/useChannelStore"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { useUserProfileStore } from "@/stores/useUserProfileStore"
 import type { Invitation } from "@/types/Notification"

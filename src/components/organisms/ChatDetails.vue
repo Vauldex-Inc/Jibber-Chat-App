@@ -1,12 +1,12 @@
 <template>
-  <div class="details">
-    <header>
+  <div class="flex flex-col items-center justify-center gap-5 px-5 pb-5 pt-16">
+    <header class="text-center">
       <VAvatar :status="status" size="xlarge"  @click="modal('profile')" />
       <h4 class="font-semibold">
         {{ name }}
       </h4>
     </header>
-    <div v-if="channel.archivedAt" class="flex items-center justify-center gap-4">
+    <div v-if="!channel.archivedAt" class="flex items-center justify-center gap-4">
       <template v-for="opt, index in options" :key="opt.key">
         <div
           v-if="checkPermissions(opt.permission)"
@@ -25,7 +25,7 @@
       </template>
 
       <VModal :is-open="open.modalState">
-        <template v-if="open.member">
+        <template>
           <InvitationPublic
             :color="channel.color!"
             :id-channel="channel.id"
@@ -92,7 +92,9 @@
   const name = computed(() => channel && 'title' in channel ? channel.title : getName(channel.value.idUser))
   const status = computed(() => getStatus(channel.value.idUser))
 
-  const checkPermissions = (type: Array<string>): boolean => ChannelVariantEnum.safeParse(type).success
+  const checkPermissions = (type: Array<string>): boolean => {
+    return ChannelVariantEnum.array().safeParse(type).success
+  } 
 
   const modal = (key: string) => {
     switch(key) {

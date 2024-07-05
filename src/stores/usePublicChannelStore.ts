@@ -69,6 +69,17 @@ export const usePublicChannelStore = defineStore("public-channels", () => {
 		})
 	}
 
+  const updateChannel = (idChannel: string, color?: string, archivedAt?: string) => {
+    _channels.value.map(c => {
+      if (c.id === idChannel) {
+        c.color = color ? color : c.color
+        c.archivedAt = archivedAt ? archivedAt : c.archivedAt
+      }
+
+      return c
+    })
+  }
+
   return {
     channels,
     fetch,
@@ -77,6 +88,7 @@ export const usePublicChannelStore = defineStore("public-channels", () => {
     add,
     variant,
     getChannelById,
-    updateChannelColor
+    updateChannelColor,
+    updateChannel
   }
 })

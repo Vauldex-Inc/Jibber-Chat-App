@@ -2,7 +2,7 @@ import { computed, ref } from "vue"
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
 import { useDateFormatter } from "@/composables/useDateFormatter"
-import type { User } from "@/types/User"
+import { type User, StatusSchema } from "@/types/User"
 import type { Message } from "@/types/Message"
 
 const dateFormatter = useDateFormatter()
@@ -56,9 +56,9 @@ export const useUserStore = defineStore("users", () => {
 
 	const getStatus = (userId?: string) => {
 		if (userId && getOnlineUsers().value.includes(userId)) {
-			return "online"
+			return StatusSchema.enum.online
 		}
-		return "offline"
+		return StatusSchema.enum.offline
 	}
 
 

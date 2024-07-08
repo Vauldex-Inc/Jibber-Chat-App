@@ -7,7 +7,7 @@
       <VIconButton
         tool-tip="previous"
         size="large"
-        @click="leftMove"
+        @click="move('left')"
         icon="./src/assets/images/left-button.svg"
       />
     </div>
@@ -15,7 +15,7 @@
       <VIconButton
         tool-tip="next"
         size="large"
-        @click="rightMove"
+        @click="move('right')"
         icon="./src/assets/images/right-button.svg"
       />
     </div>
@@ -32,19 +32,8 @@ const props = defineProps<{
 
 const count = ref<number>(0)
 
-const rightMove = () => {
-  if (count.value >= props.chatImages.length - 1) {
-    count.value = 0
-  } else {
-    count.value++
-  }
-}
-
-const leftMove = () => {
-  if (count.value <= 0) {
-    count.value = props.chatImages.length - 1
-  } else {
-    count.value--
-  }
+const move = (dir: string) => {
+  const length = props.chatImages.length
+  count.value = (count.value + (dir === "left" ? -1 : 1) + length) % length
 }
 </script>

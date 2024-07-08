@@ -6,7 +6,7 @@
       </p>
       <VButton
         size="small"
-        @click="onOpen"
+        @click="open = true"
         class="rounded-md font-semibold capitalize hover:bg-indigo-100 dark:hover:bg-slate-900"
       >
         <p
@@ -24,7 +24,7 @@
         class="flex flex-wrap items-start justify-center gap-1 overflow-y-scroll"
         v-if="chatImages.length > 0"
       >
-        <template v-for="image in images">
+        <template v-for="image in displayImages">
           <li v-if="image">
             <img
               class="h-24 w-32 rounded-md border-2 border-slate-200 object-cover dark:border-slate-800"
@@ -35,9 +35,8 @@
       </ul>
       <p v-else class="text-center">No images found</p>
     </div>
-
-    <VModal :is-open="open">
-      <ViewImage :chatImages="chatImages" />
+    <VModal :is-open="open" @close="open = false">
+      <ViewImage :chatImages="allImages" />
     </VModal>
   </div>
 </template>
@@ -57,11 +56,11 @@
     title: "Images",
     action: "View All"
   }
-  const images = computed(() => {
+  const displayImages = computed(() => {
     return chatImages.value.reverse().slice(0, 4)
   })
 
-  const onOpen = () => {
-
-  }
+  const allImages = computed(() => {
+    return chatImages.value.filter((img) => img !== "")
+  })
 </script>

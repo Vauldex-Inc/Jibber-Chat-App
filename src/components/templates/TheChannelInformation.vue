@@ -15,7 +15,7 @@
       <slot name="members" />
     </div>
 
-    <div :class="divider">
+    <div>
       <slot name="images" />
     </div>
   </aside>

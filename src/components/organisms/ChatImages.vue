@@ -1,6 +1,6 @@
 <template>
   <div class="images">
-    <header class="p-5 mb-2 flex items-center justify-between">
+    <header class="p-5 pb-0 flex items-center justify-between">
       <p class="font-semibold capitalize text-gray-700 dark:text-gray-300">
         {{ header.title }}
       </p>
@@ -19,7 +19,7 @@
       </VButton>          
     </header>
 
-    <div class="p-3">
+    <div class="p-3 pb-5">
       <ul
         class="flex flex-wrap items-start justify-center gap-1 overflow-y-scroll"
         v-if="chatImages.length > 0"

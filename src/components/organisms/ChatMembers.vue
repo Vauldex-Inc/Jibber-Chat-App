@@ -1,6 +1,6 @@
 <template>
   <div class="members">
-    <header class="p-5 flex items-center justify-between">
+    <header class="p-5 pb-0 flex items-center justify-between">
       <p class="font-semibold capitalize text-gray-700 dark:text-gray-300">
         {{ header.title }}
       </p>
@@ -18,13 +18,13 @@
       </VButton>          
     </header>
     
-    <div class="flex items-center gap-3 p-3">
+    <div class="flex items-center gap-3 p-3 pb-5 px-5">
       <img
         src="@/assets/images/profile.svg"
         class="aspect-square h-8 dark:invert"
       />
       <p>
-        {{ getChannelUsersCount(channel.id) }}
+        {{ channelStore.getChannelUsersCount(channel.id) }}
       </p>
     </div>
 
@@ -43,7 +43,7 @@
   import DisplayMembers from "./DisplayMembers.vue"
 
   const { channel } = storeToRefs(useChannelStore())
-  const { getChannelUsersCount } = useChannelStore()
+  const channelStore = useChannelStore()
   const header = {
     title: "Members",
     action: "View All"

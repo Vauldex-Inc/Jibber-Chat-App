@@ -157,7 +157,5 @@ import { storeToRefs } from "pinia"
         open.value.profile = true
         break;
     }
-
-    console.log(open.value)
   }
 </script>

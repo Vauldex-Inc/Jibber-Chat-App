@@ -9,10 +9,12 @@ import {
 	type DirectChannel,
 	type Channel} from "@/types/Channel"
 import type { User } from "@/types/User"
+import { useUserStore } from "@/stores/useUserStore"
 
 export const useChannelStore = defineStore("channels", () => {
   const _channel = ref<ChannelType>({} as ChannelType)
   const _users = ref<[string, ChannelUser[]][]>([])
+	const { getUsers } = useUserStore()
 
   const channel = computed(() => _channel.value)
   const channelUsers = computed(() => _users.value)
@@ -24,7 +26,11 @@ export const useChannelStore = defineStore("channels", () => {
 			return [id, users.length]
 		})
 	})
-  const set = (channel: ChannelType) => _channel.value = channel 
+  const set = async (channel: ChannelType) => { 
+		_channel.value = channel
+		getChannelUsers(channel.id)
+	}
+
   const changeTheme = async (color: string) => {
     try {
       const response = await axios.put(`/channels/${channel.value.id}`, {
@@ -128,6 +134,7 @@ export const useChannelStore = defineStore("channels", () => {
 
   return {
     channel,
+		channelUsers,
     changeTheme,
     getChannelUsers,
     addNewChannelUser,

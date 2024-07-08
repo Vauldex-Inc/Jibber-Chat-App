@@ -19,7 +19,7 @@
           @click="selectedProfile(user.id)"
         >
           <div class="flex items-center gap-4">
-            <template v-if="userProfileStore.getProfile(user.id)">
+            <template v-if="userProfileStore.getProfile(channel)">
               <VAvatar
                 :image="userProfileStore.getImage(user.id)"
                 :status="getStatus(user.id)"
@@ -63,6 +63,7 @@ import { type User } from "@/types/User"
 import { useUserProfileStore } from "@/stores/useProfileStore"
 import type { ChannelUser } from "@/types/Channel"
 import { useChannelStore } from "@/stores/useChannelStore"
+import { storeToRefs } from "pinia"
 
 const props = defineProps<{
   idChannel: string
@@ -74,6 +75,7 @@ const emits = defineEmits<{
 
 const userStore = useUserStore()
 const channelStore = useChannelStore()
+const { channel } = storeToRefs(channelStore)
 const userProfileStore = useUserProfileStore()
 
 const channelUsers = ref<ChannelUser[] | undefined>([])

@@ -66,7 +66,7 @@
 
   <TransitionGroup name="notif" tag="ul" class="flex flex-col gap-2 absolute right-0 top-0 z-40">
     <VToast
-      v-for="n in notifications"
+      v-for="n in toastNotifications"
       :key="n.id"
       :toast-id="n.id"
       :message="n.message"
@@ -114,14 +114,14 @@ import AddChannel from "@/components/organisms/AddChannel.vue"
 import PublicChannels from "@/components/organisms/PublicChannels.vue"
 import type { Channel, DirectChannel, PublicChannel } from "@/types/Channel"
 import { ChannelSchema, DIRECT_CHANNEL, DirectChannelSchema, GROUP_CHANNEL, PublicChannelSchema } from "@/types/Channel"
-import type { Notification } from "@/types/Notification"
+import { InvitationSchema, NotificationSchema, type Notification } from "@/types/Notification"
 import { UserSchema } from "@/types/User"
 import ChatDetails from "../organisms/ChatDetails.vue"
 import { storeToRefs } from "pinia"
 
 const notifAudio = new Audio("./src/assets/slack_sound.mp3")
 
-const notifications = ref<Notification[]>([])
+const toastNotifications = ref<Notification[]>([])
 
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
@@ -172,11 +172,12 @@ const profileImage = computed(() => {
 })
 
 const viewChannel = (id: string) => {
-  const validation = PublicChannelSchema.safeParse(publicCstore.getChannelById(id))
-  if (validation.success) {
-    channelStore.set(validation.data)
+  const foundChannel = channelStore.getOnNotifChannel(id)
+
+  if (foundChannel) {
+    channelStore.set(foundChannel)
   } else {
-    channelStore.set(channelStore.channel)
+    console.error("No Channel Found")
   }
   invitationModalOpen.value = false
 }
@@ -204,7 +205,7 @@ const sendMessage = async (message: string, img: string | undefined) => {
 }
 
 const onCloseToast = (id: string) => {
-  notifications.value = [...notifications.value.filter((n) => n.id !== id)]
+  toastNotifications.value = [...toastNotifications.value.filter((n) => n.id !== id)]
 }
 
 watch(invitationNotif, () => {
@@ -248,7 +249,7 @@ onMounted(async () => {
 
   onlineSocket.value = useSocket("/sessions", (data: MessageEvent) => {
     const updates = JSON.parse(data.data)
-    
+    console.log(updates)
     switch (updates.resourceType) {
       case "CHANNEL_UPDATE": {
         const update = updates.content.channelUpdate
@@ -259,19 +260,32 @@ onMounted(async () => {
       case "CHANNEL": {
         const channel = updates.content.channel
         const channelValidation = ChannelSchema.safeParse(channel)
+
         if (channelValidation.success) {
           publicCstore.add(channelValidation.data) //change to add
           const senderName = userProfileStore.getName(channelValidation.data.idUser)
 
-          notifications.value.push({
+          toastNotifications.value.push({
             id: channel.id,
             message: `${senderName} created a new channel`,
             title: "Notification",
           })
+         
           notifAudio.play()
         } else {
           directCstore.add(channel)
         }
+        break
+      }
+
+      case "CHANNEL_INVITE": {
+        const notification = updates.content.channelInvite
+        const validation = InvitationSchema.safeParse(notification)
+        
+        if (validation.success) {
+          notificationStore.addNewNotification(validation.data)
+        }
+    
         break
       }
 
@@ -310,7 +324,7 @@ onMounted(async () => {
                   ? senderName
                   : `${channel.title} (${senderName})`
 
-              notifications.value.push({
+              toastNotifications.value.push({
                 id: unreadMessage.messageId,
                 title: title ? title : "",
                 message: unreadMessage.text,

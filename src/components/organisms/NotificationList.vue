@@ -19,7 +19,7 @@
       @mouseleave="displayNotification = false"
     >
       <ul
-        v-if="notificationsCopy?.length !== 0"
+        v-if="isNotEmpty"
         class="max-h-80 w-[28rem] divide-y overflow-y-scroll dark:divide-slate-700"
         @mouseleave="toggleNotifications"
       >
@@ -69,6 +69,8 @@ const notificationsCopy = computed(() => {
     })
     .reverse()
 })
+
+const isNotEmpty = computed(() => notificationsCopy.value.length > 0)
 
 const toggleNotifications = () => {
   displayNotification.value = !displayNotification.value

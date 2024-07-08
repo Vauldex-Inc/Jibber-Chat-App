@@ -18,16 +18,10 @@
         formattedSentAtDate
       }}</span>
     </div>
-    <p
-      v-if="invitation.notificationType === 'INV'"
-      class="text-gray-700 dark:text-gray-400"
-    >
+    <p v-if="!isNew" class="text-gray-700 dark:text-gray-400">
       Invited you to join {{ channelName }}
     </p>
-    <p
-      v-else-if="invitation.notificationType === 'NEW'"
-      class="text-gray-700 dark:text-gray-400"
-    >
+    <p v-else class="text-gray-700 dark:text-gray-400">
       Checkout this new channel!
     </p>
   </li>
@@ -67,6 +61,8 @@ const isRead = computed(() => {
   }
   return seenStatus
 })
+
+const isNew = computed(() => props.invitation.notificationType === 'NEW')
 
 const channelName = computed(() => {
   const channel = publicChannelStore.getChannelById(props.invitation.idChannel)

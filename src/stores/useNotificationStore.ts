@@ -30,7 +30,7 @@ export const useNotificationStore = defineStore("notifications", () => {
 	}
 
 	const addNewNotification = (notification?: Invitation) => {
-		notifications.value?.push(notification!)
+		notification ? notifications.value.push(notification) : ""
 	}
 
 	const updateNotification = async (id: string) => {

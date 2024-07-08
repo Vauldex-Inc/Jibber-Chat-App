@@ -10,8 +10,13 @@ import {
 	type Channel} from "@/types/Channel"
 import type { User } from "@/types/User"
 import { useUser } from "@/composables/useUser"
+import { useDirectChannelStore } from "./useDirectChannelStore"
+import { usePublicChannelStore } from "./usePublicChannelStore"
 
 export const useChannelStore = defineStore("channels", () => {
+	const directStore = useDirectChannelStore()
+	const publicStore = usePublicChannelStore()
+
   const _channel = ref<ChannelType>({} as ChannelType)
   const _users = ref<[string, ChannelUser[]][]>([])
 	const loggedUser = useUser()
@@ -34,6 +39,11 @@ export const useChannelStore = defineStore("channels", () => {
 			return [id, users.length]
 		})
 	})
+
+	const channelInitials = computed(() => {
+		return _channel.value.title?.slice(0,1)
+	})
+
   const set = async (channel: ChannelType) => { 
 		_channel.value = channel
 		getChannelUsers(channel.id)
@@ -109,7 +119,6 @@ export const useChannelStore = defineStore("channels", () => {
 		return users && users[1].find(u => u.idUser === idUser) !== undefined
 	}
 
-
 	const getNonMembers = (idChannel: string, users: User[]) => {
 		const foundChannelUser = channelUsers.value.find((channelUser) => channelUser[0] === idChannel)
 
@@ -136,9 +145,19 @@ export const useChannelStore = defineStore("channels", () => {
 		}
 	}
 
-	const channelInitials = computed(() => {
-		return _channel.value.title?.slice(0,1)
-	})
+	const getOnNotifChannel = (idChannel: string) => {
+		const foundDirect = directStore.channels.value.find((c) =>  c.id === idChannel)
+		const foundPublic = publicStore.channels.value.find((c) =>  c.id === idChannel)
+
+		if (foundDirect) {
+			return foundDirect
+		} else if (foundPublic) {
+			return foundPublic
+		} else {
+			console.error("No Channel Found")
+		}
+	}
+	
 
   return {
     channel,
@@ -152,6 +171,7 @@ export const useChannelStore = defineStore("channels", () => {
     set,
 		archiveChannel,
 		channelInitials,
-		userId
+		userId,
+		getOnNotifChannel
   }
 })

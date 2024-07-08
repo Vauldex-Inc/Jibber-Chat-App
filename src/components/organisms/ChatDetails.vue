@@ -65,6 +65,7 @@
   import { useUserStore } from "@/stores/useUserStore"
   import { useProfileStore } from "@/stores/useProfileStore"
   import { useChannelStore } from "@/stores/useChannelStore"
+  import { useUser } from "@/composables/useUser"
   import VIconButton from "@/components/molecules/VIconButton.vue"
   import VAvatar from "@/components/molecules/VAvatar.vue"
   import InvitationPublic from "@/components/organisms/InvitationPublic.vue"
@@ -82,6 +83,7 @@
   const { getName } = useProfileStore()
   const { channel, channelInitials, userId } = storeToRefs(useChannelStore())
   const { changeTheme } = useChannelStore()
+  const loggedUser = useUser()
   const open = ref({
     modalState: false,
     member: false, 

@@ -70,7 +70,7 @@ const filteredUserName = computed(() => {
   return unInvitedUsers.value.filter(([id, _]) => {
     const currentName = inputUserName.value.toLowerCase()
     return (
-      profileStore.getName(id).toLowerCase().includes(currentName) &&
+      profileStore.getName(id)?.toLowerCase().includes(currentName) &&
       !isInvited(id) && id !== loggedUser?.id
     )
   })

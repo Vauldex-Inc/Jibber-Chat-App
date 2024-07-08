@@ -1,5 +1,5 @@
 <template>
-  <aside class="w-[350px]">
+  <aside class="w-[350px] h-screen">
     <header
       :class="divider"
       class="z-40 border-b bg-white px-5 py-[30px] text-xl font-bold capitalize text-gray-700  dark:bg-slate-950 dark:text-gray-300"

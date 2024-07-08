@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-2">
-    <div class="flex items-center justify-between gap-4 p-3">
+    <div class="flex items-center justify-between gap-4 p-3 sticky top-0 z-20 dark:bg-slate-950 bg-white">
       <p class="text-2xl font-bold capitalize text-gray-700 dark:text-gray-300">
         Channels
       </p>
@@ -12,7 +12,7 @@
       >
       </VIconButton>
     </div>
-    <ul v-if="transformChannels.length !== 0" class="overflow-y-scroll bg-white pb-5 dark:bg-slate-950">
+    <ul v-if="transformChannels.length !== 0" class="overflow-y-scroll bg-white dark:bg-slate-950">
      <li 
       v-for="channel in transformChannels"
       :key="channel.id"

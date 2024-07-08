@@ -39,7 +39,7 @@
       </template>
 
       <VModal @close="onClose" :is-open="open.modalState">
-        <template>
+        <template v-if="open.member">
           <InvitationPublic
             :color="transformedChannel.color"
             :id-channel="channel.id"

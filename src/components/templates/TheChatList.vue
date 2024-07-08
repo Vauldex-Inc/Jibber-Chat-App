@@ -1,5 +1,5 @@
 <template>
-  <aside class="h-full w-[380px]">
+  <aside class="w-[380px] h-screen">
     <header :class="divider" class="flex items-center justify-between p-5 mb-2">
       <h1
         class="flex flex-1 items-center justify-center bg-gradient-to-r from-indigo-600
@@ -15,13 +15,17 @@
       </div>
     </header>
 
-    <section :class="divider" class="mb-2">
-      <slot name="messages" />
-    </section>
+    <div class="pb-2 h-2/6">
+      <section :class="divider" class="mb-2 h-full overflow-y-scroll">
+        <slot name="messages" />
+      </section>
+    </div>
 
-    <section>
-      <slot name="channels" />
-    </section>
+    <div class="h-3/6">
+      <section class="h-full overflow-y-scroll">
+        <slot name="channels" />
+      </section>
+    </div>
   </aside>
 </template>
 

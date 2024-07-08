@@ -1,11 +1,4 @@
 <template>
-  <!-- Refactor this -->
-  <!-- <VModal 
-    :is-open="publicCstore.variant === DIRECT_CHANNEL" 
-    @close="publicCstore.variant = undefined"
-  >
-    <InvitationDirect color="bg-indigo-600" @submit="newDirect" />
-  </VModal> -->
   <VModal :is-open="invitationModalOpen" @close="closeInvitationModal">
     <InvitationCard
       :notification="invitationNotif!"
@@ -14,14 +7,11 @@
       @close="closeInvitationModal"
     />
   </VModal>
-  <!-- End of Refactor this -->
-
 
   <TheChat>
     <template #chatbox="props">
       <template v-if="channelStore.channel">
         <ChatTitle
-          :collapse="isChatListOpen"
           @toggle-chat="props.toggleLeft"
           @toggle-info="props.toggleRight"
           @archive="updateArchived"
@@ -57,7 +47,6 @@
       </TheChatList>
     </template>
 
-
     <template #right>
       <TheChannelInformation>
         <template #details>
@@ -85,76 +74,6 @@
       @close="onCloseToast"
     />
   </TransitionGroup>
-
-<!--   <TheDashboard :toggle-chat="isChatListOpen" :toggle-info="isChatInfoOpen">
-    <template #messages>
-      <VChatList
-        @open="openChannel"
-        @click="publicCstore.variant = DIRECT_CHANNEL"
-        :items="directChannels"
-        class="h-3/6"
-        title="messages"
-      />
-    </template>
-    <template #channels>
-      <VChatList
-        @open="openChannel"
-        @click="publicCstore.variant = GROUP_CHANNEL"
-        :items="multiChannels"
-        class="h-2/6"
-        title="channels"
-      />
-    </template>
-    <template #chatbox>
-      <template v-if="selectedChannel">
-        <ChatTitle
-          :collapse="isChatListOpen"
-          @toggle-chat="toggleChatList"
-          @toggle-info="toggleChatInfo"
-          @archive="updateArchived"
-          :channel="selectedChannel"
-          :sender="idSender"
-        />
-        <ChatBoxArea
-          :channel="selectedChannel"
-          :messages="messageStore.chatMessages"
-          class="flex-1"
-        />
-        <ChatBox @send="sendMessage" :channel="selectedChannel" />
-      </template>
-    </template>
-    <template #actions>
-      <Settings
-        :profileImage="profileImage"
-        :username="loggedUser!.username"
-      />
-    </template>
-    <template #notification>
-      <NotificationList />
-    </template>
-    <template #chatinfo>
-      <template v-if="selectedChannel">
-        <ChatInfo
-          :images="messageStore.chatImages"
-          :channel="selectedChannel"
-          :sender="idSender"
-          title="channel information"
-        />
-      </template>
-    </template>
-    <template #toast>
-      <TransitionGroup name="notif" tag="ul" class="flex flex-col gap-2">
-        <VToast
-          v-for="notif in notifications"
-          :key="notif.id"
-          :toast-id="notif.id"
-          :message="notif.message"
-          :title="notif.title"
-          @close="onCloseToast"
-        />
-      </TransitionGroup>
-    </template>
-  </TheDashboard> -->
 </template>
 
 <script lang="ts" setup>
@@ -238,24 +157,12 @@ const idSender = computed(() => {
   }
 })
 
-const isChatInfoOpen = ref<boolean>(true) // switch to false after
-
 const isPublic = computed(() => {
   const validation = PublicChannelSchema.safeParse(channelStore.channel)
   if (validation.success) {
     return true
   }
 })
-
-const toggleChatInfo = () => {
-  isChatInfoOpen.value = !isChatInfoOpen.value
-}
-
-const isChatListOpen = ref<boolean>(true)
-
-const toggleChatList = () => {
-  isChatListOpen.value = !isChatListOpen.value
-}
 
 const profileImage = computed(() => {
   const userValidation = UserSchema.safeParse(loggedUser)
@@ -277,21 +184,6 @@ const viewChannel = (id: string) => {
 const closeInvitationModal = () => {
   invitationModalOpen.value = false
 }
-
-// const openChannel = async (channel: PublicChannel | DirectChannel) => {
-//   channelStore.set(channel)
-// }
-
-// const newDirect = (channel: DirectChannel | undefined) => {
-//   if (channel) {
-//     const channelValidation = DirectChannelSchema.safeParse(channel)
-//     if (channelValidation.success) {
-//       directCstore.add(channel)
-//     } else {
-//       throw new Error("Failed to create channel")
-//     }
-//   }
-// }
 
 const updateArchived = (data: { color: string; archivedAt: string }) => {
   if (channelStore.channel) {

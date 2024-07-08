@@ -4,7 +4,7 @@
   >
     <VIconButton
       v-if="collapse"
-      @click="emits('toggleChat')"
+      @click="handleToggle"
       class="border bg-gray-100 hover:bg-gray-200 dark:border-slate-800 dark:bg-gray-900 hover:dark:bg-slate-900"
       :invert="true"
       tool-tip="hide chats"
@@ -12,7 +12,7 @@
     />
     <VIconButton
       v-else
-      @click="emits('toggleChat')"
+      @click="handleToggle"
       class="border bg-gray-100 p-10 hover:bg-gray-200 dark:border-slate-800 dark:bg-gray-900 hover:dark:bg-slate-900"
       :invert="true"
       tool-tip="show chats"
@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue"
+import { ref, computed } from "vue"
 import { useUserStore } from "@/stores/useUserStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import { useUserProfileStore } from "@/stores/useProfileStore"
@@ -90,7 +90,6 @@ import { useChannelStore } from "@/stores/useChannelStore"
 const props = defineProps<{
   channel: Channel | DirectChannel
   sender?: string
-  collapse: boolean
 }>()
 
 const emits = defineEmits<{
@@ -103,6 +102,7 @@ const profileStore = useUserProfileStore()
 const userStore = useUserStore()
 const publicChannelStore = usePublicChannelStore()
 const channelStore = useChannelStore()
+const collapse = ref<boolean>(true)
 
 const channelAbbr = computed(() => {
   const abbrValidation = ChannelSchema.safeParse(props.channel)
@@ -129,5 +129,10 @@ const archiveChannel = async () => {
     const error = e as Error
     console.error(error.message)
   }
+}
+
+const handleToggle = () => {
+  collapse.value = !collapse.value
+  emits("toggleChat")
 }
 </script>

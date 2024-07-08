@@ -41,7 +41,7 @@ import type { Invitation } from "@/types/Notification"
 
 defineProps<{
   notification: Invitation
-  name: string
+  name?: string
 }>()
 
 const emits = defineEmits<{

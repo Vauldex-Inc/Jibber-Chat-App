@@ -4,7 +4,7 @@ const UserSchema = z.object({
 	id: z.string(),
 	username: z.string(),
 	createdAt: z.string(),
-	activeAt: z.string()
+	activeAt: z.string().optional()
 })
 
 const StatusSchema = z.enum(['online', 'offline'])

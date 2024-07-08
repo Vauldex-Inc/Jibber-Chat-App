@@ -53,22 +53,20 @@
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { z } from "zod"
-import { useFetch } from "@/composables/useFetch"
 import { useUser } from "@/composables/useUser"
 import VIconButton from "@/components/molecules/VIconButton.vue"
 import VButton from "@/components/atoms/VButton.vue"
 import ThemeSelector from "@/components/organisms/ThemeSelector.vue"
 import VModal from "@/components/atoms/VModal.vue"
 import VProfileForm from "@/components/organisms/VProfileForm.vue"
+import { useSession } from "@/composables/useSession"
 
 defineProps<{
   profileImage?: string | undefined
   username: string
 }>()
 
-const errorSchema = z.object({
-  message: z.string(),
-})
+const session = useSession()
 const router = useRouter()
 const loggedUser = useUser()
 
@@ -81,14 +79,14 @@ const newProfile = () => (formShown.value = false)
 
 const logout = async () => {
   try {
-    const response = await useFetch("/sessions", { method: "DELETE" })
-    if (response.status === 200) {
+    const response = await session.destroy()
+    if (response?.status === 200) {
       localStorage.removeItem("user")
       router.push("/")
     }
-  } catch (error) {
-    const errorMessage = errorSchema.safeParse(error).data?.message
-    throw new Error(`Error: ${errorMessage}`)
+  } catch (e) {
+    const error = e as Error
+    console.error(error.message) 
   }
 }
 </script>

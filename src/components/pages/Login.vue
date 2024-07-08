@@ -83,11 +83,14 @@
 <script setup lang="ts">
 import { ref, type Ref } from "vue"
 import { useRouter, RouterLink } from "vue-router"
-import { useFetch } from "@/composables/useFetch"
 import VButton from "@/components/atoms/VButton.vue"
 import VInput from "@/components/atoms/VInput.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
+import { useSession } from "@/composables/useSession"
 
+const session = useSession()
+
+const timerId = ref<number | undefined>(undefined)
 const error = ref<string>("")
 const errorUsername = ref<boolean>(false)
 const errorPassword = ref<boolean>(false)
@@ -95,7 +98,6 @@ const router = useRouter()
 const isLoading = ref<boolean>(false)
 const passwordType = ref<"text" | "password">("password")
 const icon = ref<string>("./src/assets/images/visibility-true.svg")
-
 const formData = ref({
   username: "",
   password: "",
@@ -111,7 +113,6 @@ const toggle = () => {
   }
 }
 
-const timerId = ref<number | undefined>(undefined)
 const displayError = (textError: string) => {
   error.value = textError
   if (timerId.value) {
@@ -168,23 +169,17 @@ const login = async () => {
 
   isLoading.value = true
   try {
-    const response = await useFetch("/sessions", {
-      method: "POST",
-      body: JSON.stringify(formData.value),
-    })
-
-    if (response.status === 200) {
-      const result = await response.json()
-
-      localStorage.setItem("user", JSON.stringify(result.user))
+    const response = await session.post(formData.value)
+    if (response) {
       resetFields(formData, "username", "password")
       router.push("/dashboard")
-    } else if (response.status === 401) {
+    } else {
       highlightErrorFields()
       displayError("Incorrect username and password combination")
     }
-  } catch (error) {
-    if (typeof error === "string") throw new Error(error)
+  } catch (e) {
+    const error = e as Error
+    console.error(error.message)
   } finally {
     isLoading.value = false
   }

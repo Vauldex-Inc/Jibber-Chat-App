@@ -1,8 +1,8 @@
 import { ref, computed, type Ref } from "vue"
 import { defineStore } from "pinia"
-import axios from "axios"
-import { useFetch } from "@/composables/useFetch"
+import axios, { AxiosError } from "axios"
 import { MessageSchema, type Message } from "@/types/Message"
+import type { ZodError } from "zod"
 
 export const useMessageStore = defineStore("messages", () => {
 	const latestMessages = ref<Array<Message>>([])
@@ -20,6 +20,8 @@ export const useMessageStore = defineStore("messages", () => {
 		await initFetch("/channels/latest-messages")
 		await initFetch("/me/channels/latest-messages")
 	}
+
+	const set = (list: Message[]) => _messages.value = list
 
 	const initFetch = async (url: string) => {
 		try {
@@ -41,9 +43,14 @@ export const useMessageStore = defineStore("messages", () => {
 	}
 
 	const getChannelMessages = async (idChannel: string) => {
-		const res = await useFetch(`/channels/${idChannel}/messages`)
-
-		_messages.value = (await res.json()).messages
+		try {
+			const { data } = await axios.get(`/channels/${idChannel}/messages`)
+			const list = data.messages.map((m: unknown) => MessageSchema.parse(m))
+			set(list)
+		} catch (e) {
+			const error = e as AxiosError | ZodError
+			console.error(error.message)
+		}
 	}
 
 	const sendMessage = async (idChannel: string, message: string, img: string | undefined) => {

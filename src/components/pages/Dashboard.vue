@@ -84,9 +84,8 @@ import {
   computed,
   onUnmounted
 } from "vue"
-
+import axios, { AxiosError } from "axios"
 import { useUser } from "@/composables/useUser"
-import { useFetch } from "@/composables/useFetch"
 import { useSocket } from "@/composables/useSocket"
 import { useUserStore } from "@/stores/useUserStore"
 import { useChannelStore } from "@/stores/useChannelStore"
@@ -110,7 +109,6 @@ import VModal from "@/components/atoms/VModal.vue"
 import InvitationCard from "@/components/organisms/InvitationCard.vue"
 import NotificationList from "@/components/organisms/NotificationList.vue"
 import Settings from "@/components/organisms/Settings.vue"
-import AddChannel from "@/components/organisms/AddChannel.vue"
 import PublicChannels from "@/components/organisms/PublicChannels.vue"
 import type { Channel, DirectChannel, PublicChannel } from "@/types/Channel"
 import { ChannelSchema, DIRECT_CHANNEL, DirectChannelSchema, GROUP_CHANNEL, PublicChannelSchema } from "@/types/Channel"
@@ -195,13 +193,15 @@ const updateArchived = (data: { color: string; archivedAt: string }) => {
 }
 
 const sendMessage = async (message: string, img: string | undefined) => {
-  if (!channelStore.isMember(channelStore.channel.id, loggedUser!.id)) {
-    await useFetch(`/channels/${channelStore.channel.id}/users`, {
-      method: "POST",
-      body: JSON.stringify({}),
-    })
+  try {
+    if (!channelStore.isMember(channelStore.channel.id, loggedUser!.id)) {
+      await axios.post(`/channels/${channelStore.channel.id}/users`, {})
+    }
+    await messageStore.sendMessage(channelStore.channel.id, message, img)
+  } catch (e) {
+    const error = e as AxiosError
+    console.error(error.message)
   }
-  await messageStore.sendMessage(channelStore.channel.id, message, img)
 }
 
 const onCloseToast = (id: string) => {

@@ -123,10 +123,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
-import { storeToRefs } from "pinia"
 import { z } from "zod"
-import { useFetch } from "@/composables/useFetch"
-import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
 import { useProfileStore } from "@/stores/useProfileStore"
 import VAvatar from "@/components/molecules/VAvatar.vue"
@@ -134,7 +131,6 @@ import VIconButton from "@/components/molecules/VIconButton.vue"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
 import type { ProfileData } from "@/types/Profile"
-import { useChannelStore } from "@/stores/useChannelStore"
 
 const props = defineProps<{
   id: string

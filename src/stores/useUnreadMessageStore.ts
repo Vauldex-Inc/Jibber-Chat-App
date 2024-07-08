@@ -1,6 +1,6 @@
 import { ref } from "vue"
 import { defineStore } from "pinia"
-import { useFetch } from "@/composables/useFetch"
+import axios from "axios"
 import { UnreadMessageSchema, type UnreadMessage } from "@/types/Message"
 import type { AxiosError } from "axios"
 import type { ZodError } from "zod"
@@ -11,9 +11,8 @@ export const useUnreadMessageStore = defineStore("unread-messages", () => {
 
 	const init = async () => {
 		try {
-			const res = await useFetch("/users/unread-messages")
-			const data = (await res.json()).unreadMessages
-			const validation = UnreadMessageSchema.array().safeParse(data)
+			const { data } = await axios.get("/users/unread-messages")
+			const validation = UnreadMessageSchema.array().safeParse(data.unreadMessages)
 			if (validation.success) {
 				unreadMessages.value = validation.data
 			}

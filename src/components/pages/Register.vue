@@ -128,16 +128,18 @@
 <script setup lang="ts">
 import { RouterLink, useRouter } from "vue-router"
 import { ref, watchEffect, computed } from "vue"
-import { useFetch } from "@/composables/useFetch"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
+import { useUserStore } from "@/stores/useUserStore"
 
 interface Validation {
   message: string
   isSuccess: boolean
   regex: RegExp
 }
+
+const userStore = useUserStore()
 
 const router = useRouter()
 const formData = ref({
@@ -194,14 +196,9 @@ const register = async () => {
     validate()
     if (!error.value) {
       loader.value = true
-      const response = await useFetch("/users", {
-        method: "POST",
-        body: JSON.stringify(formData.value),
-      })
+      const response = await userStore.post(formData.value)
 
-      if (response.status === 201) {
-        const result = await response.json()
-        localStorage.setItem("user", JSON.stringify(result.user))
+      if (response) {
         setTimeout(() => {
           router.push("/dashboard")
         }, 1000)
@@ -209,11 +206,11 @@ const register = async () => {
         loader.value = false
         error.value = "Oops! Something went wrong. Try again."
       }
+      resetInputs()
     }
   } catch (e) {
-    if (typeof e === "string") throw new Error(e)
-  } finally {
-    resetInputs()
+    const error = e as Error
+    console.error(error.message)
   }
 }
 

@@ -61,6 +61,7 @@
 
 <script setup lang="ts">
   import { computed, ref } from "vue"
+  import { storeToRefs } from "pinia"
   import { useUserStore } from "@/stores/useUserStore"
   import { useProfileStore } from "@/stores/useProfileStore"
   import { useChannelStore } from "@/stores/useChannelStore"
@@ -76,14 +77,11 @@
     DIRECT_CHANNEL,
     GROUP_CHANNEL,
   } from "@/types/Channel"
-import { useUser } from "@/composables/useUser"
-import { storeToRefs } from "pinia"
 
   const { getStatus, inviteMember } = useUserStore()
   const { getName } = useProfileStore()
-  const { channel, channelInitials } = storeToRefs(useChannelStore())
+  const { channel, channelInitials, userId } = storeToRefs(useChannelStore())
   const { changeTheme } = useChannelStore()
-  const loggedUser = useUser()
   const open = ref({
     modalState: false,
     member: false, 
@@ -110,14 +108,6 @@ import { storeToRefs } from "pinia"
   const checkPermissions = (type: Array<string>): boolean => {
     return ChannelVariantEnum.array().safeParse(type).success && type.includes(transformedChannel.value.channelType!)
   } 
-
-  const userId = computed(() => {
-    if ('idReceiver' in channel.value) {
-      return loggedUser?.id === channel.value.idUser ? channel.value.idReceiver : channel.value.idUser
-    } else {
-      return channel.value.idUser
-    }
-  }) 
   
   const transformedChannel = computed(() => {
     return {

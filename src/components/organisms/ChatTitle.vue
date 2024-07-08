@@ -92,18 +92,10 @@ const emits = defineEmits<{
 const profileStore = useProfileStore()
 const userStore = useUserStore()
 const channelStore = useChannelStore()
-const { channel, channelInitials } = storeToRefs(channelStore)
+const { channel, channelInitials, userId } = storeToRefs(channelStore)
 const loggedUser = useUser()
 
 const collapse = ref<boolean>(true)
-
-const userId = computed(() => {
-  if ('idReceiver' in channel.value) {
-    return loggedUser?.id === channel.value.idUser ? channel.value.idReceiver : channel.value.idUser
-  } else {
-    return channel.value.idUser
-  }
-})
 
 const name = computed(() => channel.value && 'title' in channel.value ? channel.value.title : profileStore.getName(userId.value))
 

@@ -8,18 +8,15 @@
       ref="fileInput"
     />
     <VIconButton
-      :disabled="channel.archivedAt !== undefined"
+      :disabled="channel.archivedAt"
       @click="openFileSelector"
       size="medium"
-      :class="[curColorTheme, { 'opacity-50': channel.archivedAt }]"
+      :class="buttonClass"
       icon="./src/assets/images/file.svg"
     />
     <div
       class="flex-1 overflow-hidden rounded-md p-0.5"
-      :class="[
-        curColorTheme,
-        isInputTextFocus ? 'bg-opacity-100' : 'bg-opacity-30',
-      ]"
+      :class="buttonClass"
     >
       <div
         v-if="imageForm.image"
@@ -54,10 +51,10 @@
       />
     </div>
     <VIconButton
-      :disabled="channel.archivedAt !== undefined"
+      :disabled="channel.archivedAt"
       @click="sendMessage"
       size="medium"
-      :class="[curColorTheme, { 'opacity-50': channel.archivedAt }]"
+      :class="buttonClass"
       icon="./src/assets/images/send.svg"
     />
   </div>
@@ -65,14 +62,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue"
+import { storeToRefs } from "pinia"
 import { z } from "zod"
 import VInput from "@/components/atoms/VInput.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
-import type { Channel, DirectChannel } from "@/types/Channel.ts"
+import { useChannelStore } from "@/stores/useChannelStore"
 
-const props = defineProps<{
-  channel: Channel | DirectChannel
-}>()
+const { channel } = storeToRefs(useChannelStore())
 
 interface ImageForm {
   image: string | ArrayBuffer | null
@@ -94,8 +90,8 @@ const imageForm = ref<ImageForm>({
 })
 const isMessageWithImage = ref<boolean>(false)
 
-const curColorTheme = computed(() => {
-  return props.channel.color ? props.channel.color : "bg-slate-800"
+const buttonClass = computed(() => {
+  return [channel.value.color || "bg-slate-800",  channel.value.archivedAt ? 'opacity-50' : '']
 })
 
 const remove = () => {
@@ -106,11 +102,11 @@ const remove = () => {
 }
 
 const sendMessage = () => {
-  if (isMessageWithImage.value && typeof imageForm.value.image == "string") {
+  if (isMessageWithImage.value) {
     emits(
       "send",
       message.value ? message.value : "Sent an image",
-      imageForm.value.image,
+      imageForm.value.image as string,
     )
   } else if (message.value) {
     emits("send", message.value)
@@ -118,23 +114,20 @@ const sendMessage = () => {
 
   message.value = ""
   imageForm.value.image = ""
-  if (fileInput.value instanceof HTMLInputElement) fileInput.value.value = ""
+  fileInput.value = undefined
   isMessageWithImage.value = false
 }
 
 const openFileSelector = () => {
-  if (fileInput.value && fileInput.value instanceof HTMLInputElement) {
-    fileInput.value.click()
+  if (fileInput.value) {
+    (fileInput.value as HTMLInputElement).click()
   }
 }
 
 const attachFile = () => {
-  if (
-    fileSchema.safeParse(fileInput.value).success &&
-    fileInput.value instanceof HTMLInputElement &&
-    fileInput.value?.files
-  ) {
-    const file = fileInput.value?.files[0]
+  let data = fileInput.value as HTMLInputElement
+  if (fileSchema.safeParse(data).success) {
+    const file = data.files![0]
     const reader = new FileReader()
     const isImage = /\.(jpe?g|png|gif)$/.test(file.name)
 

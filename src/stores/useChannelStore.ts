@@ -9,7 +9,6 @@ import {
 	type DirectChannel,
 	type Channel} from "@/types/Channel"
 import type { User } from "@/types/User"
-import { useUserStore } from "@/stores/useUserStore"
 import { useUser } from "@/composables/useUser"
 
 export const useChannelStore = defineStore("channels", () => {

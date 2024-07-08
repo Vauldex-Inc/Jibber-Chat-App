@@ -248,7 +248,7 @@ onMounted(async () => {
 
   onlineSocket.value = useSocket("/sessions", (data: MessageEvent) => {
     const updates = JSON.parse(data.data)
-
+    
     switch (updates.resourceType) {
       case "CHANNEL_UPDATE": {
         const update = updates.content.channelUpdate
@@ -260,7 +260,6 @@ onMounted(async () => {
         const channel = updates.content.channel
         const channelValidation = ChannelSchema.safeParse(channel)
         if (channelValidation.success) {
-          publicCstore.add(channelValidation.data) //change to add
           publicCstore.add(channelValidation.data) //change to add
           const senderName = userProfileStore.getName(channelValidation.data.idUser)
 
@@ -279,14 +278,14 @@ onMounted(async () => {
       case "UNREAD": {
         const unreadMessage = updates.content.unread
         const latestMessage = {
-          id: unreadMessage.messageId,
+          id: unreadMessage.idMessage,
           idChannel: unreadMessage.idChannel,
           idUser: unreadMessage.idUser,
           text: unreadMessage.text,
           sentAt: unreadMessage.sentAt,
         }
 
-        if (channelStore.channel) {
+        if (!channelStore.channel) {
           return
         }
 
@@ -295,8 +294,8 @@ onMounted(async () => {
 
         if (validation.success) {
           if (unreadMessage.idChannel !== validation.data.id) {
-          unreadMessageStore.addUnreadMessage(unreadMessage)
-        }
+            unreadMessageStore.addUnreadMessage(unreadMessage)
+          }
           if (
             unreadMessage.idSender !== loggedUser!.id &&
             unreadMessage.idChannel !== validation.data.id &&

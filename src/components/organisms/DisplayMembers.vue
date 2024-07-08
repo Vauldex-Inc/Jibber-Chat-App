@@ -12,7 +12,7 @@
       />
     </header>
     <ul class="flex max-h-96 flex-col gap-4 overflow-y-scroll scroll-auto px-5">
-      <template v-for="user in transformUsers">
+      <template v-for="user in transformUsers" :key="user?.id">
         <li
           v-if="user"
           class="flex items-center justify-between rounded-md px-4 py-2 hover:bg-gray-100 hover:dark:bg-gray-800"

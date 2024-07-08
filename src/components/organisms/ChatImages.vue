@@ -24,7 +24,7 @@
         class="flex flex-wrap items-start justify-center gap-1 overflow-y-scroll"
         v-if="chatImages.length > 0"
       >
-        <template v-for="image in displayImages">
+        <template v-for="image, index in displayImages" :key="index">
           <li v-if="image">
             <img
               class="h-24 w-32 rounded-md border-2 border-slate-200 object-cover dark:border-slate-800"

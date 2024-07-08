@@ -72,6 +72,7 @@
   const { channels } = useDirectChannelStore()
   const { getUnreadMessages, hasUnread } = useUnreadMessageStore()
   const { getLatestMessages } = useMessageStore()
+  const { removeUnreadMessages } = useUnreadMessageStore()
   const loggedUser = useUser()
   const header = {
     title: "Direct Messages"
@@ -117,9 +118,11 @@
 
   const onClickChannel = (idChannel: string) => {
     const _channel = channels.value.find((r) => r.id === idChannel)
-
+    
     if (_channel) {
       channel.set(_channel)
     }
+
+    removeUnreadMessages(idChannel)
   }
 </script>

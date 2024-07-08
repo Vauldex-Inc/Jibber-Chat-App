@@ -10,7 +10,7 @@
         class="rounded-md font-semibold capitalize hover:bg-indigo-100 dark:hover:bg-slate-900"
       >
         <p
-          :class="channel.color"
+          :class="[channel.color ? channel.color : 'text-gray-700 dark:text-gray-300']"
           class="inline-block bg-clip-text text-transparent"
           v-if="chatImages.length > 0"
         >

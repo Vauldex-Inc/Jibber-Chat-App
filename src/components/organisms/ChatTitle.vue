@@ -19,39 +19,34 @@
       icon="./src/assets/images/collapse-menu-right.svg"
     />
     <VAvatar
-      v-if="channelType === 'SNG' && typeof sender == 'string'"
-      :image="profileStore.getImage(sender)"
-      :status="userStore.getStatus(sender)"
+      v-if="!channelT.isPublic"
+      :image="channelT.image"
+      :status="channelT.status"
       size="xlarge"
     />
     <div
       v-else
       class="flex aspect-square h-12 items-center justify-center rounded-full text-white"
-      :class="curColorTheme"
+      :class="channelT.color"
     >
-      <p>{{ channelAbbr }}</p>
+      <p>{{ channelT.initials }}</p>
     </div>
     <div>
       <div>
-        <template v-if="channelType === 'SNG'">
-          <p class="font-semibold text-gray-700 dark:text-gray-300">
-            {{ sender ? profileStore.getName(sender) : "" }}
-          </p>
+        <p class="font-semibold text-gray-700 dark:text-gray-300">
+          {{ channelT.name }}
+        </p>
+        <template v-if="!channelT.isPublic">
           <p
             class="text-sm capitalize"
-            :class="{
-              'text-emerald-600': userStore.getStatus(sender) === 'online',
-            }"
+            :class="statusClass"
           >
-            {{ sender && userStore.getStatus(sender) }}
+            {{ channelT.status}}
           </p>
         </template>
         <template v-else>
-          <p class="font-semibold text-gray-700 dark:text-gray-300">
-            {{ publicChannelStore.getTitle(channel.id) }}
-          </p>
           <p class="text-sm">
-            {{ channelStore.getChannelUsersCount(channel.id) }}
+            {{ channelT.membersCount }}
           </p>
         </template>
       </div>
@@ -59,14 +54,14 @@
     <div class="ml-auto flex gap-4">
       <VIconButton
         @click="archiveChannel"
-        v-if="sender && channel.idUser === sender && !channel.archivedAt"
-        :class="curColorTheme"
+        v-if="!channel.archivedAt"
+        :class="channelT.color"
         tool-tip="archive chat"
         icon="./src/assets/images/archive.svg"
       />
       <VIconButton
         @click="emits('toggleInfo')"
-        :class="curColorTheme"
+        :class="channelT.color"
         tool-tip="show chat details"
         icon="./src/assets/images/info.svg"
       />
@@ -77,20 +72,16 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue"
 import { useUserStore } from "@/stores/useUserStore"
-import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import { useUserProfileStore } from "@/stores/useProfileStore"
 
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
 
-import type { Channel, DirectChannel } from "@/types/Channel"
-import { ChannelSchema } from "@/types/Channel"
+import { GROUP_CHANNEL } from "@/types/Channel"
 import { useChannelStore } from "@/stores/useChannelStore"
-
-const props = defineProps<{
-  channel: Channel | DirectChannel
-  sender?: string
-}>()
+import { storeToRefs } from "pinia"
+import { useUser } from "@/composables/useUser"
+import { StatusSchema } from "@/types/User"
 
 const emits = defineEmits<{
   archive: [value: { color: string; archivedAt: string }]
@@ -100,30 +91,40 @@ const emits = defineEmits<{
 
 const profileStore = useUserProfileStore()
 const userStore = useUserStore()
-const publicChannelStore = usePublicChannelStore()
 const channelStore = useChannelStore()
+const { channel, channelInitials } = storeToRefs(channelStore)
+const loggedUser = useUser()
+
 const collapse = ref<boolean>(true)
 
-const channelAbbr = computed(() => {
-  const abbrValidation = ChannelSchema.safeParse(props.channel)
-  if (abbrValidation.success) {
-    return abbrValidation.data.title.slice(0, 1)
+const userId = computed(() => {
+  if ('idReceiver' in channel.value) {
+    return loggedUser?.id === channel.value.idUser ? channel.value.idReceiver : channel.value.idUser
+  } else {
+    return channel.value.idUser
   }
 })
 
-const channelType = computed(() => {
-  const typeValidation = ChannelSchema.safeParse(props.channel)
-  return typeValidation.success ? "MPU" : "SNG"
+const name = computed(() => channel.value && 'title' in channel.value ? channel.value.title : profileStore.getName(userId.value))
+
+const channelT = computed(() => {
+  return {
+    color: channel.value.color || "bg-gray-600",
+    image: profileStore.getImage(userId.value),
+    initials: channelInitials.value,
+    status: userStore.getStatus(userId.value),
+    isPublic: channel.value.channelType === GROUP_CHANNEL || false,
+    name: name.value,
+    membersCount: channelStore.getChannelUsersCount(channel.value.id)
+  }
 })
 
-const curColorTheme = computed(() => {
-  return props.channel.color ? props.channel.color : "bg-slate-800"
-})
+const statusClass = {'text-emerald-600': channelT.value.status === StatusSchema.enum.online}
 
 const archiveChannel = async () => {
   try {
     const archivedAt = new Date().toISOString()
-    await channelStore.archiveChannel(props.channel, archivedAt)
+    await channelStore.archiveChannel(channel.value, archivedAt)
     emits("archive", { color: "", archivedAt })
   } catch (e) {
     const error = e as Error

@@ -98,7 +98,7 @@
       title: getTitle(r.id),
       sentAt: sentAt ? formatSentAt(sentAt) : sentAt,
       text,
-      color: r.color,
+      color: r.color || 'bg-gray-600',
       archivedAt: r.archivedAt,
       hasUnread: hasUnread(r.id)
     }

@@ -121,7 +121,7 @@ import { storeToRefs } from "pinia"
   
   const transformedChannel = computed(() => {
     return {
-      color: channel.value.color || "",
+      color: channel.value.color || "bg-gray-600",
       initials: channelInitials.value,
       isPublic: channel.value.channelType === GROUP_CHANNEL || false,
       archivedAt: channel.value.archivedAt,

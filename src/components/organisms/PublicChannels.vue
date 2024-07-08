@@ -66,8 +66,6 @@
   import VBadge from "@/components/atoms/VBadge.vue"
   import VModal from "@/components/atoms/VModal.vue"
   import AddChannel from "@/components/organisms/AddChannel.vue"
-  import { storeToRefs } from "pinia"
-  import { useUserStore } from "@/stores/useUserStore"
   import type { UnreadMessage, Message } from "@/types/Message"
 
   const { getTitle, channels } = usePublicChannelStore()
@@ -78,38 +76,38 @@
   const open = ref<boolean>(false)
 
   const latestMessage = (idChannel: string): { text: string, sentAt: string } => {
-  let message = {} as UnreadMessage | Message
-  const unReadMessages = getUnreadMessages(idChannel)
-  if (getUnreadMessages(idChannel).length > 0) {
-    message = unReadMessages[unReadMessages.length - 1]
-  }
-  const messages = getLatestMessages(idChannel).filter((m) => m.idChannel === idChannel)
-  if (messages.length > 0) {
-    message = messages[messages.length - 1]
-  }
-  return {
-    text: message.text || "",
-    sentAt: message.sentAt
-  }
+    let message = {} as UnreadMessage | Message
+    const unReadMessages = getUnreadMessages(idChannel)
+    if (getUnreadMessages(idChannel).length > 0) {
+      message = unReadMessages[unReadMessages.length - 1]
+    }
+    const messages = getLatestMessages(idChannel).filter((m) => m.idChannel === idChannel)
+    if (messages.length > 0) {
+      message = messages[messages.length - 1]
+    }
+    return {
+      text: message.text || "",
+      sentAt: message.sentAt
+    }
   }
 
   const transformChannels = computed(() => channels.value.map((r) => {
-  const { text, sentAt } = latestMessage(r.id)
-  return {
-    id: r.id,
-    title: getTitle(r.id),
-    sentAt: sentAt ? formatSentAt(sentAt) : sentAt,
-    text,
-    color: r.color,
-    archivedAt: r.archivedAt,
-    hasUnread: hasUnread(r.id)
-  }
+    const { text, sentAt } = latestMessage(r.id)
+    return {
+      id: r.id,
+      title: getTitle(r.id),
+      sentAt: sentAt ? formatSentAt(sentAt) : sentAt,
+      text,
+      color: r.color,
+      archivedAt: r.archivedAt,
+      hasUnread: hasUnread(r.id)
+    }
   }))
 
   const onClickChannel = (idChannel: string) => {
-  const _channel = channels.value.find((r) => r.id === idChannel)
-  if (_channel) {
-    channel.set(_channel)
-  }
+    const _channel = channels.value.find((r) => r.id === idChannel)
+    if (_channel) {
+      channel.set(_channel)
+    }
   }
 </script>

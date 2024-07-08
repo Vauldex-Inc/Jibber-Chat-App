@@ -42,7 +42,7 @@
   import VModal from "../atoms/VModal.vue"
   import DisplayMembers from "./DisplayMembers.vue"
 
-  const { channel } = useChannelStore()
+  const { channel } = storeToRefs(useChannelStore())
   const { getChannelUsersCount } = useChannelStore()
   const header = {
     title: "Members",

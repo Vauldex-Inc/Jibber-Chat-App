@@ -122,13 +122,13 @@ import { storeToRefs } from "pinia"
   const transformedChannel = computed(() => {
     return {
       color: channel.value.color || "",
-      initials: channelInitials,
+      initials: channelInitials.value,
       isPublic: channel.value.channelType === GROUP_CHANNEL || false,
       archivedAt: channel.value.archivedAt,
       channelType: channel.value.channelType,
       status: getStatus(userId.value)
     }
-    
+
   })
 
   const onClose = () => {

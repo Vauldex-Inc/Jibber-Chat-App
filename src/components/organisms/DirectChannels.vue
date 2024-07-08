@@ -89,7 +89,7 @@
       message = messages[messages.length - 1]
     }
     return {
-      text: message.text,
+      text: message.text || "",
       sentAt: message.sentAt
     }
   }

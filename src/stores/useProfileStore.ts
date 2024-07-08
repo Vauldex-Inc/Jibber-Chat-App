@@ -4,11 +4,13 @@ import axios, { AxiosError } from "axios"
 import { useUserStore } from "@/stores/useUserStore"
 import { ProfileDataSchema, type Profile } from "@/types/Profile"
 import type { ChannelType } from '@/types/Channel'
+import { useUser } from '@/composables/useUser'
 
 
-export const useUserProfileStore = defineStore("userProfile", () => {
+export const useProfileStore = defineStore("userProfile", () => {
   const profiles = ref<Profile[]>([])
   const profile = ref<Profile | undefined>()
+  const loggedUser = useUser()
 
   const init = async (): Promise<void> => {
     try {
@@ -36,8 +38,8 @@ export const useUserProfileStore = defineStore("userProfile", () => {
     return validation.data
   }
 
-  const getProfile = (channel: ChannelType) => {
-    profile.value = profiles.value.find((p: Profile) => p.idUser === channel.idUser)
+  const getProfile = (idUser: string) => {
+    profile.value = profiles.value.find((p: Profile) => p.idUser === idUser)
     return profile
   }
 

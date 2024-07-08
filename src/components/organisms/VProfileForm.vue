@@ -9,7 +9,7 @@
       @mouseleave="onAvatar = false"
     >
       <VIconButton
-        v-if="viewOnly ? false : true"
+        v-if="viewOnly"
         @click="removeImage"
         size="small"
         rounded
@@ -30,7 +30,7 @@
             : './src/assets/images/default-avatar.svg'
         "
         size="xlarge"
-        :status="userStore.getStatus(sender)"
+        :status="userStore.getStatus(id)"
       />
       <input
         @change="attachFile"
@@ -40,7 +40,7 @@
         ref="fileInput"
       />
       <VIconButton
-        v-if="viewOnly ? false : true"
+        v-if="viewOnly"
         @click="openFileSelector"
         size="xsmall"
         icon="./src/assets/images/edit.svg"
@@ -65,7 +65,7 @@
           : 'hover:border-indigo-600 focus:border-indigo-600 dark:hover:border-indigo-600 dark:focus:border-indigo-600'
       "
       v-focus
-      :disabled="viewOnly ? viewOnly : false"
+      :disabled="viewOnly"
     />
     <label for="firstname">Firstname</label>
     <VInput
@@ -77,7 +77,7 @@
           ? 'border-gray-300'
           : 'hover:border-indigo-600 focus:border-indigo-600 dark:hover:border-indigo-600 dark:focus:border-indigo-600'
       "
-      :disabled="viewOnly ? viewOnly : false"
+      :disabled="viewOnly"
     />
     <label for="lastname">Lastname</label>
     <VInput
@@ -89,7 +89,7 @@
           ? 'border-gray-300'
           : 'hover:border-indigo-600 focus:border-indigo-600 dark:hover:border-indigo-600 dark:focus:border-indigo-600'
       "
-      :disabled="viewOnly ? viewOnly : false"
+      :disabled="viewOnly"
     />
     <label for="email">Email</label>
     <VInput
@@ -102,7 +102,7 @@
           ? 'border-gray-300'
           : 'hover:border-indigo-600 focus:border-indigo-600 dark:hover:border-indigo-600 dark:focus:border-indigo-600'
       "
-      :disabled="viewOnly ? viewOnly : false"
+      :disabled="viewOnly"
     />
     <VButton
       v-if="!viewOnly && method === 'POST'"
@@ -123,19 +123,21 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
+import { storeToRefs } from "pinia"
 import { z } from "zod"
 import { useFetch } from "@/composables/useFetch"
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
-import { useUserProfileStore } from "@/stores/useProfileStore"
+import { useProfileStore } from "@/stores/useProfileStore"
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
 import type { ProfileData } from "@/types/Profile"
+import { useChannelStore } from "@/stores/useChannelStore"
 
 const props = defineProps<{
-  sender?: string
+  id: string
   viewOnly?: boolean
 }>()
 
@@ -146,7 +148,8 @@ const emits = defineEmits<{
 const fileSchema = z.coerce.string()
 const currUser = useUser()
 const userStore = useUserStore()
-const userProfileStore = useUserProfileStore()
+const profileStore = useProfileStore()
+const { channel } = storeToRefs(useChannelStore())
 const vFocus = {
   mounted: (el: HTMLInputElement) => el.focus(),
 }
@@ -217,13 +220,11 @@ const create = async () => {
 
 const doesExist = () => {
   if (currUser) {
-    const userProfile = userStore.getUser(
-      props.sender ? props.sender : currUser.id,
-    )
+    const userProfile = userStore.getUser(props.id)
     const user = userProfile?.username
 
     if (user) {
-      const profile = userProfileStore.getProfile(userProfile.id)
+      const profile = profileStore.getProfile(props.id)
       method.value = "PUT"
       formData.value = {
         nickName: profile.value?.nickName,

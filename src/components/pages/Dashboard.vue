@@ -95,7 +95,7 @@ import { useNotificationStore } from "@/stores/useNotificationStore"
 import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
 import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
-import { useUserProfileStore } from "@/stores/useProfileStore"
+import { useProfileStore } from "@/stores/useProfileStore"
 import DirectChannels from "../organisms/DirectChannels.vue"
 import TheChatList from "../templates/TheChatList.vue"
 import ChatMembers from "../organisms/ChatMembers.vue"
@@ -125,7 +125,7 @@ const notifications = ref<Notification[]>([])
 
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
-const userProfileStore = useUserProfileStore()
+const userProfileStore = useProfileStore()
 const channelStore = useChannelStore()
 const { channel } = storeToRefs(channelStore)
 const publicCstore = usePublicChannelStore()

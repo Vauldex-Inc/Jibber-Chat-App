@@ -32,7 +32,7 @@ export const useUserStore = defineStore("users", () => {
 
 	const getUsers = computed(() => users)
 
-	const getUser = (idUser: string) => users.value.find((user) => user.id == idUser)
+	const getUser = (idUser: string) => users.value.find((user) => user.id === idUser)
 
 	const updateUserOnlineAt = (users: string[], type: string) => {
 		if (type === "online") {

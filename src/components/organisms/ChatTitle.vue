@@ -72,7 +72,7 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue"
 import { useUserStore } from "@/stores/useUserStore"
-import { useUserProfileStore } from "@/stores/useProfileStore"
+import { useProfileStore } from "@/stores/useProfileStore"
 
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VIconButton from "@/components/molecules/VIconButton.vue"
@@ -89,7 +89,7 @@ const emits = defineEmits<{
   toggleChat: []
 }>()
 
-const profileStore = useUserProfileStore()
+const profileStore = useProfileStore()
 const userStore = useUserStore()
 const channelStore = useChannelStore()
 const { channel, channelInitials } = storeToRefs(channelStore)

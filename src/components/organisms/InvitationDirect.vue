@@ -52,12 +52,12 @@ import { ref, computed, onMounted } from "vue"
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
 import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
-import { useUserProfileStore } from "@/stores/useProfileStore"
+import { useProfileStore } from "@/stores/useProfileStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
 
 const directStore = useDirectChannelStore()
-const profileStore = useUserProfileStore()
+const profileStore = useProfileStore()
 const userStore = useUserStore()
 const users = userStore.getUsers
 const loggedUser = useUser()

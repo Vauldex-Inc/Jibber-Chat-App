@@ -49,7 +49,7 @@
 import { ref, computed, onMounted } from "vue"
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
-import { useUserProfileStore } from "@/stores/useProfileStore"
+import { useProfileStore } from "@/stores/useProfileStore"
 import VInput from "@/components/atoms/VInput.vue"
 import VButton from "@/components/atoms/VButton.vue"
 import { useChannelStore } from "@/stores/useChannelStore"
@@ -64,7 +64,7 @@ const emits = defineEmits<{
 }>()
 
 const userStore = useUserStore()
-const profileStore = useUserProfileStore()
+const profileStore = useProfileStore()
 const channelStore = useChannelStore()
 const users = userStore.getUsers
 const loggedUser = useUser()

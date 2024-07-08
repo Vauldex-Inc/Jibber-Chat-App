@@ -15,7 +15,7 @@
       </div>
     </header>
 
-    <div class="pb-2 h-2/6">
+    <div class="h-2/6">
       <section :class="divider" class="mb-2 h-full overflow-y-scroll">
         <slot name="messages" />
       </section>

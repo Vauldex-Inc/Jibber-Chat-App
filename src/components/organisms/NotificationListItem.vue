@@ -38,7 +38,7 @@ import { computed } from "vue"
 import { formatSentAt } from "@/composables/useDateFormatter"
 import { useDateFormatter } from "@/composables/useDateFormatter"
 import { useNotificationStore } from "@/stores/useNotificationStore"
-import { useUserProfileStore } from "@/stores/useProfileStore"
+import { useProfileStore } from "@/stores/useProfileStore"
 import type { Invitation } from "@/types/Notification"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 
@@ -50,7 +50,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const userProfileStore = useUserProfileStore()
+const userProfileStore = useProfileStore()
 const publicChannelStore = usePublicChannelStore()
 const notificationStore = useNotificationStore()
 const dateFormatter = useDateFormatter()

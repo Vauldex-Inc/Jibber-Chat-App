@@ -52,7 +52,7 @@
         </template>
 
         <template v-if="open.profile">
-          <VProfileForm />
+          <VProfileForm :id="userId" :view-only="loggedUser?.id !== userId"/>
         </template>
       </VModal>
     </div>
@@ -62,7 +62,7 @@
 <script setup lang="ts">
   import { computed, ref } from "vue"
   import { useUserStore } from "@/stores/useUserStore"
-  import { useUserProfileStore } from "@/stores/useProfileStore"
+  import { useProfileStore } from "@/stores/useProfileStore"
   import { useChannelStore } from "@/stores/useChannelStore"
   import VIconButton from "@/components/molecules/VIconButton.vue"
   import VAvatar from "@/components/molecules/VAvatar.vue"
@@ -80,7 +80,7 @@ import { useUser } from "@/composables/useUser"
 import { storeToRefs } from "pinia"
 
   const { getStatus, inviteMember } = useUserStore()
-  const { getName } = useUserProfileStore()
+  const { getName } = useProfileStore()
   const { channel, channelInitials } = storeToRefs(useChannelStore())
   const { changeTheme } = useChannelStore()
   const loggedUser = useUser()

@@ -19,7 +19,7 @@
           @click="selectedProfile(user.id)"
         >
           <div class="flex items-center gap-4">
-            <template v-if="userProfileStore.getProfile(channel)">
+            <template v-if="userProfileStore.getProfile(user.id)">
               <VAvatar
                 :image="userProfileStore.getImage(user.id)"
                 :status="getStatus(user.id)"
@@ -49,7 +49,7 @@
     </ul>
   </div>
   <VModal @close="closeDisplayProfile" :is-open="stateDisplayProfile">
-    <VProfileForm :sender="sender" :viewOnly="true" />
+    <VProfileForm :id="sender" :viewOnly="true" />
   </VModal>
 </template>
 
@@ -60,7 +60,7 @@ import VAvatar from "@/components/molecules/VAvatar.vue"
 import VProfileForm from "@/components/organisms/VProfileForm.vue"
 import VModal from "@/components/atoms/VModal.vue"
 import { type User } from "@/types/User"
-import { useUserProfileStore } from "@/stores/useProfileStore"
+import { useProfileStore } from "@/stores/useProfileStore"
 import type { ChannelUser } from "@/types/Channel"
 import { useChannelStore } from "@/stores/useChannelStore"
 import { storeToRefs } from "pinia"
@@ -76,7 +76,7 @@ const emits = defineEmits<{
 const userStore = useUserStore()
 const channelStore = useChannelStore()
 const { channel } = storeToRefs(channelStore)
-const userProfileStore = useUserProfileStore()
+const userProfileStore = useProfileStore()
 
 const channelUsers = ref<ChannelUser[] | undefined>([])
 const users = ref<(User | undefined)[]>([])

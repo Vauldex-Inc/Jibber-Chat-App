@@ -47,7 +47,7 @@
 <script lang="ts" setup>
 import { useUser } from "@/composables/useUser"
 import { useUserStore } from "@/stores/useUserStore"
-import { useUserProfileStore } from "@/stores/useProfileStore"
+import { useProfileStore } from "@/stores/useProfileStore"
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import type { Message } from "@/types/Message"
 
@@ -57,6 +57,6 @@ defineProps<{
 }>()
 
 const userStore = useUserStore()
-const profileStore = useUserProfileStore()
+const profileStore = useProfileStore()
 const loggedUser = useUser()
 </script>

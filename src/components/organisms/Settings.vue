@@ -1,6 +1,6 @@
 <template>
   <VModal :is-open="formShown" @close="formShown = false">
-    <VProfileForm @submit="newProfile" />
+    <VProfileForm :id="loggedUser!.id" @submit="newProfile" />
   </VModal>
   <div class="relative flex items-center">
     <VIconButton
@@ -54,6 +54,7 @@ import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { z } from "zod"
 import { useFetch } from "@/composables/useFetch"
+import { useUser } from "@/composables/useUser"
 import VIconButton from "@/components/molecules/VIconButton.vue"
 import VButton from "@/components/atoms/VButton.vue"
 import ThemeSelector from "@/components/organisms/ThemeSelector.vue"
@@ -69,6 +70,7 @@ const errorSchema = z.object({
   message: z.string(),
 })
 const router = useRouter()
+const loggedUser = useUser()
 
 const isOpen = ref<boolean>(false)
 const formShown = ref<boolean>(false)

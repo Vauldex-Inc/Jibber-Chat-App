@@ -50,7 +50,7 @@
 
 <script lang="ts" setup>
   import { computed, ref, type Ref } from 'vue'
-  import {useUserProfileStore} from "@/stores/useProfileStore"
+  import {useProfileStore} from "@/stores/useProfileStore"
   import {useUserStore} from "@/stores/useUserStore"
   import {useChannelStore} from "@/stores/useChannelStore"
   import {useUnreadMessageStore} from "@/stores/useUnreadMessageStore"
@@ -66,7 +66,7 @@
   import VAvatar from '../molecules/VAvatar.vue'
   import VIconButton from '@/components/molecules/VIconButton.vue'
 
-  const { getImage, getName } = useUserProfileStore()
+  const { getImage, getName } = useProfileStore()
   const { getStatus } = useUserStore()
   const channel = useChannelStore()
   const { channels } = useDirectChannelStore()

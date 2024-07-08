@@ -38,7 +38,7 @@ export const useChannelStore = defineStore("channels", () => {
         channelType: channel.value.channelType,
         color
       })
-
+			_channel.value.color = color
       return response.status
     } catch (e) {
       const error = e as AxiosError | ZodError

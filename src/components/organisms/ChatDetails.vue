@@ -48,7 +48,7 @@
         </template>
 
         <template v-if="open.theme">
-          <ChatColorSelector @color="changeTheme" />
+          <ChatColorSelector @color="onChange" />
         </template>
 
         <template v-if="open.profile">
@@ -138,6 +138,11 @@ import { storeToRefs } from "pinia"
       theme: false,
       profile: false
     }
+  }
+
+  const onChange = (color: string) => {
+    changeTheme(color)
+    onClose()
   }
 
   const modal = (key: string) => {

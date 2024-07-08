@@ -25,7 +25,7 @@
           <VTextGroup
             :is-bold="channel.hasUnread"
             class="flex-1"
-            :title="channel.name"
+            :title="channel.name!"
             :text="channel.text"
           />
           
@@ -106,7 +106,7 @@
       id: r.id,
       image: getImage(id),
       status: getStatus(id),
-      name: getName(id),
+      name: getName(id) || "",
       sentAt: formatSentAt(sentAt),
       text,
       color: r.color,

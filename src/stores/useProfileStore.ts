@@ -2,15 +2,13 @@ import { computed, ref } from 'vue'
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
 import { useUserStore } from "@/stores/useUserStore"
-import { ProfileDataSchema, type Profile } from "@/types/Profile"
-import type { ChannelType } from '@/types/Channel'
-import { useUser } from '@/composables/useUser'
-
+import { ProfileDataSchema, type Profile, type ProfileData } from "@/types/Profile"
 
 export const useProfileStore = defineStore("userProfile", () => {
   const profiles = ref<Profile[]>([])
   const profile = ref<Profile | undefined>()
-  const loggedUser = useUser()
+  const userStore = useUserStore()
+  const resource = "/profiles"
 
   const init = async (): Promise<void> => {
     try {
@@ -20,6 +18,26 @@ export const useProfileStore = defineStore("userProfile", () => {
     } catch (e) {
       const error = e as AxiosError
       console.error(error)
+    }
+  }
+
+  const post = async (form: ProfileData) => {
+    try {
+      const response = await axios.post(resource, form)
+      return response
+    } catch (e) {
+      const error = e as AxiosError
+      console.error(error.message)
+    }
+  }
+
+  const put = async (form: ProfileData) => {
+    try {
+      const response = await axios.put(resource, form)
+      return response
+    } catch (e) {
+      const error = e as AxiosError
+      console.error(error.message)
     }
   }
 
@@ -57,15 +75,18 @@ export const useProfileStore = defineStore("userProfile", () => {
     return data ? data.image : undefined
   }
 
-  const getName = (idUser: string): string => {
+  const getName = (idUser: string): string | undefined => {
     const data = validateProfile(idUser)
-    return data ? `${data.firstName} ${data.lastName}` : "Anonymous"
+    if (data) {
+      return data.firstName && data.lastName 
+        ? `${data.firstName} ${data.lastName}` 
+        : userStore.getUser(idUser)?.username
+    }
   }
 
   const getNickname = (idUser: string): string | undefined => {
-    const userStore = useUserStore()
     const data = validateProfile(idUser)
-    return data ? data.nickName : userStore.getUser(idUser)?.username
+    return data ? data.nickName : userStore.getUser(idUser)!.username
   }
 
   return { 
@@ -76,6 +97,8 @@ export const useProfileStore = defineStore("userProfile", () => {
     getName, 
     addUserProfile, 
     getNickname, 
-    updateProfile
+    updateProfile,
+    post,
+    put
   }
 })

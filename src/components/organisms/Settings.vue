@@ -1,6 +1,6 @@
 <template>
   <VModal :is-open="formShown" @close="formShown = false">
-    <VProfileForm :id="loggedUser!.id" @submit="newProfile" />
+    <VProfileForm :id="loggedUser!.id" :view-only="false" @submit="newProfile" />
   </VModal>
   <div class="relative flex items-center">
     <VIconButton

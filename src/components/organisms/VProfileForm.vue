@@ -9,7 +9,7 @@
       @mouseleave="onAvatar = false"
     >
       <VIconButton
-        v-if="viewOnly"
+        v-if="!viewOnly"
         @click="removeImage"
         size="small"
         rounded
@@ -40,7 +40,7 @@
         ref="fileInput"
       />
       <VIconButton
-        v-if="viewOnly"
+        v-if="!viewOnly"
         @click="openFileSelector"
         size="xsmall"
         icon="./src/assets/images/edit.svg"
@@ -146,10 +146,8 @@ const emits = defineEmits<{
 }>()
 
 const fileSchema = z.coerce.string()
-const currUser = useUser()
 const userStore = useUserStore()
 const profileStore = useProfileStore()
-const { channel } = storeToRefs(useChannelStore())
 const vFocus = {
   mounted: (el: HTMLInputElement) => el.focus(),
 }
@@ -199,18 +197,21 @@ const removeImage = () => {
 
 const create = async () => {
   try {
-    const response = await useFetch("/profiles", {
-      method: method.value ?? "POST",
-      body: JSON.stringify(formData.value),
-    })
+    let response
+    if (method.value === "POST") {
+      response = await profileStore.post(formData.value)
+    } else {
+      response = await profileStore.put(formData.value)
+    }
 
-    if (response.status === 200) {
+    if (response?.status === 200) {
       emits("submit")
     } else {
       error.value = "Oops, something went wrong."
     }
   } catch (e) {
-    if (typeof e === "string") throw new Error(e)
+    const error = e as Error
+    console.error(error.message)
   } finally {
     setTimeout(() => {
       error.value = ""
@@ -219,24 +220,22 @@ const create = async () => {
 }
 
 const doesExist = () => {
-  if (currUser) {
-    const userProfile = userStore.getUser(props.id)
-    const user = userProfile?.username
+  const userProfile = profileStore.getProfile(props.id)
+  const user = userProfile.value?.nickName
 
-    if (user) {
-      const profile = profileStore.getProfile(props.id)
-      method.value = "PUT"
-      formData.value = {
-        nickName: profile.value?.nickName,
-        firstName: profile.value?.firstName,
-        lastName: profile.value?.lastName,
-        image: profile.value?.image,
-        email: profile.value?.email,
-      }
-    } else {
-      method.value = "POST"
-      formData.value.nickName = user
+  if (user) {
+    const profile = profileStore.getProfile(props.id)
+    method.value = "PUT"
+    formData.value = {
+      nickName: profile.value?.nickName,
+      firstName: profile.value?.firstName,
+      lastName: profile.value?.lastName,
+      image: profile.value?.image,
+      email: profile.value?.email,
     }
+  } else {
+    method.value = "POST"
+    formData.value.nickName = user
   }
 }
 </script>

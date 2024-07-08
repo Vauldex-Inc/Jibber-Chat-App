@@ -27,7 +27,7 @@ import { z, ZodError } from "zod"
 const prop = defineProps<TextGroupProp>()
 
 const PropSchema = z.object({
-  title: z.string(),
+  title: z.string().optional(),
   text: z.string(),
   subText: z.string().optional(),
   isBold: z.boolean().optional()

@@ -12,35 +12,33 @@
       />
     </header>
     <ul class="flex max-h-96 flex-col gap-4 overflow-y-scroll scroll-auto px-5">
-      <template v-for="user in users">
+      <template v-for="user in transformUsers">
         <li
           v-if="user"
           class="flex items-center justify-between rounded-md px-4 py-2 hover:bg-gray-100 hover:dark:bg-gray-800"
           @click="selectedProfile(user.id)"
         >
           <div class="flex items-center gap-4">
-            <template v-if="userProfileStore.getProfile(user.id)">
+            <template v-if="user.hasProfile">
               <VAvatar
-                :image="userProfileStore.getImage(user.id)"
-                :status="getStatus(user.id)"
+                :image="user.image"
+                :status="user.status"
                 type="preview"
                 size="xlarge"
               />
               <div class="flex flex-col">
-                <span class="font-semibold">{{
-                  userProfileStore.getName(user.id)
-                }}</span>
+                <span class="font-semibold">{{ user.name }}</span>
                 <span
-                  v-if="userProfileStore.getNickname(user.id)"
+                  v-if="user.hasNickname"
                   class="text-xs"
-                  >({{ userProfileStore.getNickname(user.id) }})</span
+                  >({{ user.nickname }})</span
                 >
               </div>
             </template>
             <template v-else>
               <VAvatar />
               <div class="flex flex-col">
-                <span>{{ user.username }}</span>
+                <span>{{ user.nickname }}</span>
               </div>
             </template>
           </div>
@@ -54,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed } from "vue"
 import { useUserStore } from "@/stores/useUserStore"
 import VAvatar from "@/components/molecules/VAvatar.vue"
 import VProfileForm from "@/components/organisms/VProfileForm.vue"
@@ -63,7 +61,6 @@ import { type User } from "@/types/User"
 import { useProfileStore } from "@/stores/useProfileStore"
 import type { ChannelUser } from "@/types/Channel"
 import { useChannelStore } from "@/stores/useChannelStore"
-import { storeToRefs } from "pinia"
 
 const props = defineProps<{
   idChannel: string
@@ -75,7 +72,6 @@ const emits = defineEmits<{
 
 const userStore = useUserStore()
 const channelStore = useChannelStore()
-const { channel } = storeToRefs(channelStore)
 const userProfileStore = useProfileStore()
 
 const channelUsers = ref<ChannelUser[] | undefined>([])
@@ -83,7 +79,19 @@ const users = ref<(User | undefined)[]>([])
 const sender = ref<string>("")
 const stateDisplayProfile = ref<boolean>(false)
 
-const getStatus = (id: string) => {
+const transformUsers = computed(() => users.value.map((u) => {
+    return {
+      id: u!.id,
+      hasProfile: userProfileStore.getProfile(u!.id),
+      hasNickname: userProfileStore.getNickname(u!.id),
+      image: userProfileStore.getImage(u!.id),
+      status: getStatus(u!.id),
+      name: userProfileStore.getName(u!.id),
+      nickname: userProfileStore.getNickname(u!.id)
+    }
+  }))
+
+const getStatus = (id: string): "online" | "offline" | undefined => {
   return userStore.getOnlineUsers().value.indexOf(id) !== -1
     ? "online"
     : "offline"

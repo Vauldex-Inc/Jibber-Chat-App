@@ -2,6 +2,8 @@ import { ref } from "vue"
 import { defineStore } from "pinia"
 import { useFetch } from "@/composables/useFetch"
 import { UnreadMessageSchema, type UnreadMessage } from "@/types/Message"
+import type { AxiosError } from "axios"
+import type { ZodError } from "zod"
 
 export const useUnreadMessageStore = defineStore("unread-messages", () => {
 
@@ -14,14 +16,10 @@ export const useUnreadMessageStore = defineStore("unread-messages", () => {
 			const validation = UnreadMessageSchema.array().safeParse(data)
 			if (validation.success) {
 				unreadMessages.value = validation.data
-			} else {
-				throw new Error("Unknown Format")
 			}
-
-		} catch (error) {
-			if (error instanceof Error) {
-				console.error(error.message)
-			}
+		} catch (e) {
+			const error = e as AxiosError | ZodError
+			console.error(error.message)
 		}
 	}
 

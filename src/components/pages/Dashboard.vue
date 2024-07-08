@@ -17,15 +17,13 @@
   <!-- End of Refactor this -->
 
 
-
-
-  <TheChat :toggle-info="isChatInfoOpen" :toggle-chat="isChatListOpen">
-    <template #chatbox>
+  <TheChat>
+    <template #chatbox="props">
       <template v-if="channelStore.channel">
         <ChatTitle
           :collapse="isChatListOpen"
-          @toggle-chat="toggleChatList"
-          @toggle-info="toggleChatInfo"
+          @toggle-chat="props.toggleLeft"
+          @toggle-info="props.toggleRight"
           @archive="updateArchived"
           :channel="channelStore.channel"
           :sender="idSender"

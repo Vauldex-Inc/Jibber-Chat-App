@@ -10,14 +10,23 @@ import {
 	type Channel} from "@/types/Channel"
 import type { User } from "@/types/User"
 import { useUserStore } from "@/stores/useUserStore"
+import { useUser } from "@/composables/useUser"
 
 export const useChannelStore = defineStore("channels", () => {
   const _channel = ref<ChannelType>({} as ChannelType)
   const _users = ref<[string, ChannelUser[]][]>([])
-	const { getUsers } = useUserStore()
+	const loggedUser = useUser()
 
   const channel = computed(() => _channel.value)
   const channelUsers = computed(() => _users.value)
+
+	const userId = computed(() => {
+		if ('idReceiver' in channel.value) {
+			return loggedUser?.id === channel.value.idUser ? channel.value.idReceiver : channel.value.idUser
+		} else {
+			return channel.value.idUser
+		}
+	})
 
   const channelUsersCount = computed(() => {
 		const copy = [..._users.value]
@@ -143,6 +152,7 @@ export const useChannelStore = defineStore("channels", () => {
     getNonMembers,
     set,
 		archiveChannel,
-		channelInitials
+		channelInitials,
+		userId
   }
 })

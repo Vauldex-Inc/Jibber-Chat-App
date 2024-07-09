@@ -50,7 +50,7 @@
     <p v-else class="h-full pb-5 pt-10 text-center">No channels found.</p>
   </div>
   <VModal @close="open = false" :is-open="open" >
-    <AddChannel @close="open = false"/>
+    <AddChannel @onSuccess="open = false"/>
   </VModal>
 </template>
 

@@ -48,12 +48,7 @@
         class="absolute right-32 z-20 -translate-x-2 translate-y-0.5 bg-indigo-600 focus:border-indigo-600 dark:bg-slate-800 dark:focus:border-indigo-600"
       />
     </div>
-    <p
-      v-if="error"
-      class="rounded-md border border-red-600 bg-red-500/10 p-3 text-center text-sm text-red-500"
-    >
-      {{ error }}
-    </p>
+    <VFormError :error="error"/>
     <label for="nickname">Nickname</label>
     <VInput
       id="nickname"
@@ -126,10 +121,12 @@
   import { z } from "zod"
   import { useUserStore } from "@/stores/useUserStore"
   import { useProfileStore } from "@/stores/useProfileStore"
+  import { useFileValidator } from "@/composables/useFileValidator"
   import VAvatar from "@/components/molecules/VAvatar.vue"
   import VIconButton from "@/components/molecules/VIconButton.vue"
   import VInput from "@/components/atoms/VInput.vue"
   import VButton from "@/components/atoms/VButton.vue"
+  import VFormError from "@/components/atoms/VFormError.vue"
   import type { ProfileData } from "@/types/Profile"
 
   const props = defineProps<{
@@ -140,6 +137,7 @@
     submit: []
   }>()
 
+  const { checkFile } = useFileValidator()
   const fileSchema = z.coerce.string()
   const userStore = useUserStore()
   const profileStore = useProfileStore()
@@ -175,7 +173,8 @@
     ) {
       const file = fileInput.value.files[0]
       const reader = new FileReader()
-      const isImage = /\.(jpe?g|png|gif)$/.test(file.name)
+      const isImage = checkFile(file)
+
       if (isImage) {
         reader.onload = () => {
           formData.value.image = reader.result as string

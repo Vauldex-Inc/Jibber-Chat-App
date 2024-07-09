@@ -10,12 +10,7 @@
         class="flex w-[500px] max-w-full flex-col justify-center gap-3 rounded-lg bg-white p-8 shadow-md"
       >
         <p class="text-center text-3xl font-medium">Register</p>
-        <p
-          v-if="error"
-          class="rounded-md border border-red-600 bg-red-500/10 p-3 text-center text-sm text-red-500"
-        >
-          {{ error }}
-        </p>
+        <VFormError :error="error"/>
         <ul
           v-if="current === 'username'"
           class="rounded-md border bg-gray-100 p-3 text-xs text-red-500"
@@ -132,6 +127,7 @@
   import VInput from "@/components/atoms/VInput.vue"
   import VButton from "@/components/atoms/VButton.vue"
   import VIconButton from "@/components/molecules/VIconButton.vue"
+  import VFormError from "@/components/atoms/VFormError.vue"
 
   interface Validation {
     message: string

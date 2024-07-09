@@ -8,12 +8,7 @@
     >
       Create new public channel
     </h4>
-    <p
-      v-if="error"
-      class="rounded-md border border-red-600 bg-red-500/10 p-3 text-center text-sm text-red-500"
-    >
-      {{ error }}
-    </p>
+    <VFormError :error="error"/>
     <VInput
       class="w-full rounded-md border-2 border-gray-300 bg-gray-50 pr-12 outline-none hover:border-indigo-600 focus:border-indigo-600 dark:bg-slate-800 dark:placeholder:text-gray-500"
       size="medium"
@@ -35,9 +30,10 @@
   import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
   import VInput from "@/components/atoms/VInput.vue"
   import VButton from "@/components/atoms/VButton.vue"
+  import VFormError from "@/components/atoms/VFormError.vue"
   import { type ChannelData } from "@/types/Channel"
 
-  const emits = defineEmits(["close"])
+  const emits = defineEmits(["onSuccess"])
 
   const publicCstore = usePublicChannelStore()
   const vFocus = { mounted: (el: HTMLInputElement) => el.focus() }
@@ -52,7 +48,7 @@
       } else {
         throw Error("Please provide a channel name.")
       }
-      emits("close")
+      emits("onSuccess")
     } catch (e) {
       error.value = (e as Error).message
     } finally {

@@ -64,6 +64,7 @@
   import { storeToRefs } from "pinia"
   import { z } from "zod"
   import { useChannelStore } from "@/stores/useChannelStore"
+  import { useFileValidator } from "@/composables/useFileValidator"
   import VInput from "@/components/atoms/VInput.vue"
   import VIconButton from "@/components/molecules/VIconButton.vue"
 
@@ -73,6 +74,7 @@
 
   const fileSchema = z.coerce.string()
   const { channel } = storeToRefs(useChannelStore())
+  const { checkFile } = useFileValidator()
   interface ImageForm {
     image: string | ArrayBuffer | null
     title: string
@@ -143,7 +145,7 @@
     if (fileSchema.safeParse(data).success) {
       const file = data.files![0]
       const reader = new FileReader()
-      const isImage = /\.(jpe?g|png|gif)$/.test(file.name)
+      const isImage = checkFile(file)
 
       if (isImage) {
         reader.onload = () => {

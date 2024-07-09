@@ -46,8 +46,7 @@
 
   const loggedUser = useUser()
   const defaultMessage = {
-    header : `Sometimes you don't need to write a long letter. 
-      A simple 'I'm thinking of you' can brighten someone's day.' - Mitchi Albom`,
+    header : "Sometimes you don't need to write a long letter. A simple 'I'm thinking of you' can brighten someone's day.' - Mitchi Albom",
     footer : "This channel have been archived by the owner"
   }
 

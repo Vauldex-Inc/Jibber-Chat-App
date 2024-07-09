@@ -51,9 +51,7 @@
 
   const open = ref<boolean>(false)
 
-  const color = computed(() => {
-    return channel.value.color ? channel.value.color : 'dark:bg-gray-300 bg-gray-700'
-  })
+  const color = computed(() => channel.value.color ? channel.value.color : 'dark:bg-gray-300 bg-gray-700')
 
   const onOpen = () => {
     open.value = true

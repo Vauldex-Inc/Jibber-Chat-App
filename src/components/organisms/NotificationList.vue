@@ -28,7 +28,7 @@
           :key="notification.id"
           :invitation="notification"
           @close="toggleNotifications"
-          @click="onOpen"
+          @click="open = true"
         />
       </ul>
       <div
@@ -39,12 +39,12 @@
       </div>
     </div>
   </div>
-  <VModal :is-open="open" @close="onClose">
+  <VModal :is-open="open" @close="open = false">
     <InvitationCard
       :notification="invitationNotif!"
       :name="senderName"
       @view="viewChannel"
-      @close="closeInvitationModal"
+      @close="open = false"
     />
   </VModal>
 </template>
@@ -89,14 +89,6 @@
 
   const senderName = computed(() => getName(invitationNotif.value?.idSender!))
 
-  const onOpen = () => {
-    open.value = true
-  }
-
-  const onClose = () => {
-    open.value = false
-  }
-
   const toggleNotifications = () => {
     displayNotification.value = !displayNotification.value
   }
@@ -109,10 +101,6 @@
     } else {
       console.error("No Channel Found")
     }
-    open.value = false
-  }
-
-  const closeInvitationModal = () => {
     open.value = false
   }
 </script>

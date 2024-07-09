@@ -1,5 +1,5 @@
 <template>
-  <li
+  <div
     class="relative w-[380px] -translate-x-3 translate-y-3 overflow-hidden rounded-md border border-indigo-200 bg-indigo-100 p-3 shadow-lg dark:border-slate-800 dark:bg-slate-900"
   >
     <span
@@ -38,7 +38,7 @@
         />
       </div>
     </div>
-  </li>
+  </div>
 </template>
 
 <script setup lang="ts">

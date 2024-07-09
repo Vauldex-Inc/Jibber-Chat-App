@@ -42,7 +42,7 @@
   const publicCstore = usePublicChannelStore()
   const vFocus = { mounted: (el: HTMLInputElement) => el.focus() }
 
-  const error = ref<string>("")
+  const error = ref("")
   const channelForm = ref<ChannelData>({title: "", channelType: "MPU"})
 
   const create = async () => {
@@ -50,12 +50,11 @@
       if (channelForm.value.title) {
         publicCstore.post(channelForm.value)
       } else {
-        error.value = "Please provide a channel name."
+        throw Error("Please provide a channel name.")
       }
       emits("close")
     } catch (e) {
-      const error = e as Error
-      console.error(error.message)
+      error.value = (e as Error).message
     } finally {
       setTimeout(() => {
         error.value = ""

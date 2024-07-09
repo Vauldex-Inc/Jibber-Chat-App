@@ -88,13 +88,13 @@
   const isMessageWithImage = ref<boolean>(false)
 
   const buttonClass = computed(() => {
-    return [channel.value.color || "bg-slate-800",  
-      channel.value.archivedAt ? 'opacity-50' : '']
+    return [
+      channel.value.color || "bg-slate-800", 
+      channel.value.archivedAt ? 'opacity-50' : ''
+    ]
   })
 
-  const imageSrc = computed(() => {
-    return imageForm.value.image as string
-  })
+  const imageSrc = computed(() => imageForm.value.image as string)
 
   const remove = () => {
     message.value = ""
@@ -103,21 +103,33 @@
     isMessageWithImage.value = false
   }
 
-  const sendMessage = () => {
-    if (isMessageWithImage.value) {
-      emits(
-        "send",
-        message.value ? message.value : "Sent an image",
-        imageForm.value.image as string,
-      )
-    } else if (message.value) {
-      emits("send", message.value)
-    }
-
+  const sendText = () => emits("send", message.value)
+  const sendImage = () => emits("send", "Sent an image", imageSrc.value)
+  const sendTextWithImage = () => emits("send", message.value, imageSrc.value)
+  const reset = () => {
     message.value = ""
     imageForm.value.image = ""
     fileInput.value = undefined
     isMessageWithImage.value = false
+  }
+
+  const sendMessage = () => {
+    // For text only
+    if (message.value && !imageSrc.value) {
+      sendText()
+    }
+
+    // For image only
+    if (!message.value && imageSrc.value) {
+      sendImage
+    }
+
+    // For text and image only
+    if (message.value && imageSrc.value) {
+      sendTextWithImage()
+    }
+    
+    reset()
   }
 
   const openFileSelector = () => {

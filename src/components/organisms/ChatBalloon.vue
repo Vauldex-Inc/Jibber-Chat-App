@@ -37,41 +37,41 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed } from "vue"
-  import { storeToRefs } from "pinia"
-  import { useUser } from "@/composables/useUser"
-  import { useUserStore } from "@/stores/useUserStore"
-  import { useProfileStore } from "@/stores/useProfileStore"
-  import { useChannelStore } from "@/stores/useChannelStore"
-  import VAvatar from "@/components/molecules/VAvatar.vue"
-  import type { Message } from "@/types/Message"
+import { storeToRefs } from "pinia"
+import { useUser } from "@/composables/useUser"
+import { useUserStore } from "@/stores/useUserStore"
+import { useProfileStore } from "@/stores/useProfileStore"
+import VAvatar from "@/components/molecules/VAvatar.vue"
+import type { Message } from "@/types/Message"
+import { computed } from "vue"
+import { useChannelStore } from "@/stores/useChannelStore"
 
-  const prop = defineProps<{
-    message: Message
-  }>()
+const prop = defineProps<{
+  message: Message
+}>()
 
-  const userStore = useUserStore()
-  const profileStore = useProfileStore()
-  const loggedUser = useUser()
-  const { channel } = storeToRefs(useChannelStore())
+const userStore = useUserStore()
+const profileStore = useProfileStore()
+const loggedUser = useUser()
+const { channel } = storeToRefs(useChannelStore())
 
-  const messageData = computed(() => {
-    return {
-      color: channel.value.color || 'bg-gray-600',
-      alignment: prop.message.idUser === loggedUser?.id ? `self-end` : 'self-start',
-      isOwn: prop.message.idUser === loggedUser?.id,
-      senderAvatar: profileStore.getImage(prop.message.idUser),
-      senderStatus: userStore.getStatus(prop.message.idUser),
-      senderName: profileStore.getName(prop.message.idUser),
-      sentAt: userStore.sentAtFormatter(prop.message)
-    }
-  })
+const messageData = computed(() => {
+  return {
+    color: channel.value.color || 'bg-gray-600',
+    alignment: prop.message.idUser === loggedUser?.id ? `self-end` : 'self-start',
+    isOwn: prop.message.idUser === loggedUser?.id,
+    senderAvatar: profileStore.getImage(prop.message.idUser),
+    senderStatus: userStore.getStatus(prop.message.idUser),
+    senderName: profileStore.getName(prop.message.idUser),
+    sentAt: userStore.sentAtFormatter(prop.message)
+  }
+})
 
-  const messageClass = computed(() => [ 
-    messageData.value.alignment,
-    messageData.value.isOwn ?' text-gray-100' : 'text-gray-800 dark:text-gray-300',
-    channel.value.color && messageData.value.isOwn 
-      ? channel.value.color 
-      : 'bg-gray-300 text-gray-800 dark:bg-slate-800 dark:text-gray-300'
-  ])
+const messageClass = computed(() => [ 
+  messageData.value.alignment,
+  messageData.value.isOwn ?' text-gray-100' : 'text-gray-800 dark:text-gray-300',
+  channel.value.color && messageData.value.isOwn ? channel.value.color : 'bg-gray-300 text-gray-800 dark:bg-slate-800 dark:text-gray-300'
+])
+
+
 </script>

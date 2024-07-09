@@ -59,17 +59,11 @@
   const { channel } = storeToRefs(useChannelStore())
   const open = ref<boolean>(false)
 
-  const displayImages = computed(() => {
-    return chatImages.value.reverse().slice(0, 4)
-  })
+  const displayImages = computed(() => chatImages.value.reverse().slice(0, 4))
 
-  const color = computed(() => {
-    return channel.value.color ? channel.value.color : 'dark:bg-gray-300 bg-gray-700'
-  })
+  const color = computed(() => channel.value.color ? channel.value.color : 'dark:bg-gray-300 bg-gray-700')
 
-  const allImages = computed(() => {
-    return chatImages.value.filter((img) => img !== "")
-  })
+  const allImages = computed(() => chatImages.value.filter((img) => img !== ""))
 
   const onOpen = () => {
     open.value = true

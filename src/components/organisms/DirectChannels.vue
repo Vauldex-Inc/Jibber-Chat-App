@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-2">
     <div class="flex items-center justify-between gap-4 p-3 sticky top-0 z-20 dark:bg-slate-950 bg-white">
       <p class="text-2xl font-bold capitalize text-gray-700 dark:text-gray-300">
-        {{ header.title }}
+        Direct Messages
       </p>
       <VIconButton
         class="bg-slate-700 dark:bg-slate-800"
@@ -79,15 +79,10 @@
   const { getLatestMessages } = useMessageStore()
   const { removeUnreadMessages } = useUnreadMessageStore()
   const loggedUser = useUser()
-  const header = {
-    title: "Direct Messages"
-  }
 
   const open = ref<boolean>(false)
 
-  const setId = (idUser: string, idReceiver: string) => {
-    return loggedUser?.id === idUser ? idReceiver : idUser
-  }
+  const setId = (idUser: string, idReceiver: string) => loggedUser?.id === idUser ? idReceiver : idUser
 
   const transformChannels = computed(() => channels.value.map((r) => {
     const id = setId(r.idUser, r.idReceiver)

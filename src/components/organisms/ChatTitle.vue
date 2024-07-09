@@ -91,7 +91,7 @@
   const channelStore = useChannelStore()
   const { channel, channelInitials, userId } = storeToRefs(channelStore)
 
-  const collapse = ref<boolean>(true)
+  const collapse = ref(true)
 
   const name = computed(() => channel.value && 'title' in channel.value ? channel.value.title : profileStore.getName(userId.value))
 

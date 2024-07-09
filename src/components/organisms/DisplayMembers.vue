@@ -79,17 +79,18 @@
   const stateDisplayProfile = ref<boolean>(false)
 
   const transformUsers = computed(() => users.value.map((u) => {
-      return {
-        id: u!.id,
-        hasProfile: userProfileStore.getProfile(u!.id),
-        hasNickname: userProfileStore.getNickname(u!.id),
-        image: userProfileStore.getImage(u!.id),
-        status: getStatus(u!.id),
-        name: userProfileStore.getName(u!.id),
-        nickname: userProfileStore.getNickname(u!.id)
-      }
-    }))
+    return {
+      id: u!.id,
+      hasProfile: userProfileStore.getProfile(u!.id),
+      hasNickname: userProfileStore.getNickname(u!.id),
+      image: userProfileStore.getImage(u!.id),
+      status: getStatus(u!.id),
+      name: userProfileStore.getName(u!.id),
+      nickname: userProfileStore.getNickname(u!.id)
+    }
+  }))
 
+  // Update this
   const getStatus = (id: string): "online" | "offline" | undefined => {
     return userStore.getOnlineUsers().value.indexOf(id) !== -1
       ? "online"

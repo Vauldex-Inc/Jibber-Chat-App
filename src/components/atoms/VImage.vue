@@ -1,7 +1,7 @@
 <template>
   <img
     :src="getImage"
-    :class="[imageType(type), customImageSizeClass(prop.size)]"
+    :class="[imageClass, customImageSizeClass(prop.size)]"
   />
 </template>
 
@@ -24,8 +24,8 @@
     () => prop.source || "./src/assets/images/default-avatar.svg",
   )
 
-  const imageType = (ratio: string) => {
-    switch (ratio) {
+  const imageClass = computed(() => {
+    switch (prop.type) {
       case "icon":
         return [
           "aspect-square rounded-full object-cover",
@@ -47,7 +47,7 @@
       default:
         return "object-cover aspect-square p-1"
     }
-  }
+  })
 
   try {
     PropSchema.parse(prop)

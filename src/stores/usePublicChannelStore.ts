@@ -35,23 +35,23 @@ export const usePublicChannelStore = defineStore("public-channels", () => {
   }
 
   const post = async (channel: ChannelData) => {
-    try {
-      const { data } = await axios.post(resource, channel)
-      const responseValidation = PublicChannelSchema.safeParse(data.channel)
-      if (responseValidation.success) {
-        const response = await axios.post(`${resource}/${data.channel.id}/users`, {})
+    // try {
+    const { data } = await axios.post(resource, channel)
+    const responseValidation = PublicChannelSchema.safeParse(data.channel)
+    if (responseValidation.success) {
+      const response = await axios.post(`${resource}/${data.channel.id}/users`, {})
 
-        if (response.status === 200) {
-          add(responseValidation.data)
-        } else {
-          throw new Error("Failed to create channel")
-        }
+      if (response.status === 200) {
+        add(responseValidation.data)
       } else {
-        throw new Error("Uknown Format")
+        throw new Error("Failed to create channel")
       }
-    } catch (error) {
-      error instanceof Error ? console.error(error.message) : console.error("An error ocurred.")
+    } else {
+      throw new Error("Uknown Format")
     }
+    // } catch (error) {
+    //   error instanceof Error ? console.error(error.message) : console.error("An error ocurred.")
+    // }
   }
 
   const getChannelById = (idChannel: string) => {

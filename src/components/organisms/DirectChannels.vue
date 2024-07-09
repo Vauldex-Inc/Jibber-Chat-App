@@ -32,8 +32,8 @@
           <div v-if="!channel.archivedAt" class="flex flex-col items-center gap-2">
             <span class="text-sm">{{ channel.sentAt }}</span>
             <VBadge
-              v-if="getUnreadMessages.length > 0"
-              :count="getUnreadMessages.length"
+              v-if="getUnreadMessages(channel.id).length > 0"
+              :count="getUnreadMessages(channel.id).length"
               :color="channel.color"
             />
           </div>

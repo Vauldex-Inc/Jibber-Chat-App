@@ -116,7 +116,6 @@ const unreadMessageStore = useUnreadMessageStore()
 const directStore = useDirectChannelStore()
 const loggedUser = useUser()
 const notifAudio = new Audio("./src/assets/slack_sound.mp3")
-
 const multiChannels = publicCstore.channels
 const directChannels = directCstore.channels
 
@@ -194,7 +193,6 @@ watch(channel, async (channel) => {
 
     onlineSocket.value = useSocket("/sessions", (data: MessageEvent) => {
       const updates = JSON.parse(data.data)
-      
       switch (updates.resourceType) {
         case "CHANNEL_UPDATE": {
           const update = updates.content.channelUpdate

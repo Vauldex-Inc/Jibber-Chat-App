@@ -72,10 +72,12 @@ export const useProfileStore = defineStore("userProfile", () => {
 
   const getName = (idUser: string): string | undefined => {
     const data = validateProfile(idUser)
-    if (data) {
-      return data.firstName && data.lastName 
-        ? `${data.firstName} ${data.lastName}` 
-        : userStore.getUser(idUser)?.username
+    if (data?.firstName && data?.lastName) {
+      return `${data?.firstName} ${data?.lastName}`
+    } else if (data?.nickName) {
+      return data.nickName
+    } else {
+      return userStore.getUser(idUser)?.username
     }
   }
 

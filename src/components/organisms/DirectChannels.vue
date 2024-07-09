@@ -37,6 +37,11 @@
               :color="channel.color"
             />
           </div>
+          <p v-else
+          class="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1 text-xs text-red-500 dark:border-red-500/20"
+          >
+            Archived
+          </p>
         </li>
       </template>
       <li v-else class="h-full pb-5 pt-10 text-center">No channels found.</li>      

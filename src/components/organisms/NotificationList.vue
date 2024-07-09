@@ -28,6 +28,7 @@
           :key="notification.id"
           :invitation="notification"
           @close="toggleNotifications"
+          @click="onOpen"
         />
       </ul>
       <div
@@ -38,22 +39,38 @@
       </div>
     </div>
   </div>
+  <VModal :is-open="open" @close="onClose">
+    <InvitationCard
+      :notification="invitationNotif!"
+      :name="senderName"
+      @view="viewChannel"
+      @close="closeInvitationModal"
+    />
+  </VModal>
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from "vue"
-  import { useUser } from "@/composables/useUser"
-  import { useNotificationStore } from "@/stores/useNotificationStore"
-  import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
-  import VIconButton from "@/components/molecules/VIconButton.vue"
-  import NotificationListItem from "@/components/organisms/NotificationListItem.vue"
+import { ref, computed, watch } from "vue"
+import { useUser } from "@/composables/useUser"
+import { useNotificationStore } from "@/stores/useNotificationStore"
+import { useChannelStore } from "@/stores/useChannelStore"
+import VIconButton from "@/components/molecules/VIconButton.vue"
+import NotificationListItem from "@/components/organisms/NotificationListItem.vue"
+import InvitationCard from "@/components/organisms/InvitationCard.vue"
+import VModal from "@/components/atoms/VModal.vue"
+import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+import { useProfileStore } from "@/stores/useProfileStore"
 
-  const notificationStore = useNotificationStore()
-  const notifications = notificationStore.getNotifications()
-  const publicStore = usePublicChannelStore()
-  const loggedUser = useUser()
+const notificationStore = useNotificationStore()
+const notifications = notificationStore.getNotifications()
+const { getName } = useProfileStore()
+const channelStore = useChannelStore()
+const publicStore = usePublicChannelStore()
+const loggedUser = useUser()
+const invitationNotif = notificationStore.getSelectedInvitation()
 
   const displayNotification = ref<boolean>(false)
+const open = ref<boolean>(false)
 
   const unSeenCount = computed(() => {
     return notificationsCopy.value.filter((n) => n.seenAt === undefined).length
@@ -68,9 +85,34 @@
       .reverse()
   })
 
-  const isNotEmpty = computed(() => notificationsCopy.value.length > 0)
+const isNotEmpty = computed(() => notificationsCopy.value.length > 0)
 
-  const toggleNotifications = () => {
-    displayNotification.value = !displayNotification.value
+const senderName = computed(() => getName(invitationNotif.value?.idSender!))
+
+const onOpen = () => {
+  open.value = true
+}
+
+const onClose = () => {
+  open.value = false
+}
+
+const toggleNotifications = () => {
+  displayNotification.value = !displayNotification.value
+}
+
+const viewChannel = (id: string) => {
+  const foundChannel = channelStore.getOnNotifChannel(id)
+
+  if (foundChannel) {
+    channelStore.set(foundChannel)
+  } else {
+    console.error("No Channel Found")
   }
+  open.value = false
+}
+
+const closeInvitationModal = () => {
+  open.value = false
+}
 </script>

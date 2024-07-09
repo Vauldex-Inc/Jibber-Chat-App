@@ -1,25 +1,15 @@
 <template>
-  <VModal :is-open="invitationModalOpen" @close="closeInvitationModal">
-    <InvitationCard
-      :notification="invitationNotif!"
-      :name="userProfileStore.getName(invitationNotif?.idSender!)"
-      @view="viewChannel"
-      @close="closeInvitationModal"
-    />
-  </VModal>
-
   <TheChat>
     <template #chatbox="props">
-      <template v-if="channelStore.channel">
+      <template v-if="channel">
         <ChatTitle
           @toggle-chat="props.toggleLeft"
           @toggle-info="props.toggleRight"
           @archive="updateArchived"
-          :channel="channelStore.channel"
-          :sender="idSender"
+          :channel="channel"
         />
         <ChatBoxArea
-          :channel="channelStore.channel"
+          :channel="channel"
           :messages="messageStore.chatMessages"
           class="flex-1"
         />
@@ -77,93 +67,121 @@
 </template>
 
 <script lang="ts" setup>
-  import {
-    onMounted,
-    ref,
-    watch,
-    computed,
-    onUnmounted
-  } from "vue"
-  import axios, { AxiosError } from "axios"
-  import { storeToRefs } from "pinia"
-  import { useUser } from "@/composables/useUser"
-  import { useSocket } from "@/composables/useSocket"
-  import { useUserStore } from "@/stores/useUserStore"
-  import { useChannelStore } from "@/stores/useChannelStore"
-  import { useMessageStore } from "@/stores/useMessageStore"
-  import { useNotificationStore } from "@/stores/useNotificationStore"
-  import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
-  import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
-  import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
-  import { useProfileStore } from "@/stores/useProfileStore"
-  import DirectChannels from "@/components/organisms/DirectChannels.vue"
-  import TheChatList from "@/components/templates/TheChatList.vue"
-  import ChatMembers from "@/components/organisms/ChatMembers.vue"
-  import ChatImages from "@/components/organisms/ChatImages.vue"
-  import TheChannelInformation from "@/components/templates/TheChannelInformation.vue"
-  import TheChat from "@/components/templates/TheChat.vue"
-  import VToast from "@/components/molecules/VToast.vue"
-  import ChatTitle from "@/components/organisms/ChatTitle.vue"
-  import ChatBox from "@/components/organisms/ChatBox.vue"
-  import ChatBoxArea from "@/components/organisms/ChatBoxArea.vue"
-  import VModal from "@/components/atoms/VModal.vue"
-  import InvitationCard from "@/components/organisms/InvitationCard.vue"
-  import NotificationList from "@/components/organisms/NotificationList.vue"
-  import Settings from "@/components/organisms/Settings.vue"
-  import PublicChannels from "@/components/organisms/PublicChannels.vue"
-  import ChatDetails from "@/components/organisms/ChatDetails.vue"
-  import { ChannelSchema, DirectChannelSchema, PublicChannelSchema } from "@/types/Channel"
-  import { InvitationSchema, type Notification } from "@/types/Notification"
-  import { UserSchema } from "@/types/User"
+import {
+  onMounted,
+  ref,
+  watch,
+  computed,
+  onUnmounted
+} from "vue"
+import { storeToRefs } from "pinia"
+import axios, { AxiosError } from "axios"
+import { useUser } from "@/composables/useUser"
+import { useSocket } from "@/composables/useSocket"
+import { useUserStore } from "@/stores/useUserStore"
+import { useChannelStore } from "@/stores/useChannelStore"
+import { useMessageStore } from "@/stores/useMessageStore"
+import { useNotificationStore } from "@/stores/useNotificationStore"
+import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
+import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
+import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+import { useProfileStore } from "@/stores/useProfileStore"
+import DirectChannels from "@/components/organisms/DirectChannels.vue"
+import TheChatList from "@/components/templates/TheChatList.vue"
+import ChatMembers from "@/components/organisms/ChatMembers.vue"
+import ChatImages from "@/components/organisms/ChatImages.vue"
+import TheChannelInformation from "@/components/templates/TheChannelInformation.vue"
+import TheChat from "@/components/templates/TheChat.vue"
+import VToast from "@/components/molecules/VToast.vue"
+import ChatTitle from "@/components/organisms/ChatTitle.vue"
+import ChatBox from "@/components/organisms/ChatBox.vue"
+import ChatBoxArea from "@/components/organisms/ChatBoxArea.vue"
+import NotificationList from "@/components/organisms/NotificationList.vue"
+import Settings from "@/components/organisms/Settings.vue"
+import PublicChannels from "@/components/organisms/PublicChannels.vue"
+import ChatDetails from "@/components/organisms/ChatDetails.vue"
+import { ChannelSchema, DirectChannelSchema, GROUP_CHANNEL, PublicChannelSchema } from "@/types/Channel"
+import { InvitationSchema, type Notification } from "@/types/Notification"
+import { UserSchema } from "@/types/User"
 
-  const notificationStore = useNotificationStore()
-  const userStore = useUserStore()
-  const userProfileStore = useProfileStore()
-  const channelStore = useChannelStore()
-  const { channel } = storeToRefs(channelStore)
-  const publicCstore = usePublicChannelStore()
-  const directCstore = useDirectChannelStore()
-  const messageStore = useMessageStore()
-  const unreadMessageStore = useUnreadMessageStore()
-  const directStore = useDirectChannelStore()
-  const loggedUser = useUser()
-  const invitationNotif = notificationStore.getSelectedInvitation()
-  const multiChannels = publicCstore.channels
-  const directChannels = directCstore.channels
-  const notifAudio = new Audio("./src/assets/slack_sound.mp3")
+const notificationStore = useNotificationStore()
+const userStore = useUserStore()
+const userProfileStore = useProfileStore()
+const channelStore = useChannelStore()
+const { channel } = storeToRefs(channelStore)
+const publicCstore = usePublicChannelStore()
+const directCstore = useDirectChannelStore()
+const messageStore = useMessageStore()
+const unreadMessageStore = useUnreadMessageStore()
+const directStore = useDirectChannelStore()
+const loggedUser = useUser()
+const notifAudio = new Audio("./src/assets/slack_sound.mp3")
 
-  const toastNotifications = ref<Notification[]>([])
-  const senderId = ref<string | undefined>(undefined)
-  const activeSocket = ref<WebSocket | undefined>(undefined)
-  const onlineSocket = ref<WebSocket | undefined>(undefined)
-  const invitationModalOpen = ref<boolean>(false)
+const multiChannels = publicCstore.channels
+const directChannels = directCstore.channels
 
-  const idSender = computed(() => {
-    const validation = DirectChannelSchema.safeParse(channelStore.channel)
-    if (validation.success) {
-      if (loggedUser?.id === validation.data.idUser) {
-        return validation.data.idReceiver
-      } else {
-        return validation.data.idUser
-      }
-    } else {
-      return channelStore.channel.idUser
+const senderId = ref<string | undefined>(undefined)
+const activeSocket = ref<WebSocket | undefined>(undefined)
+const onlineSocket = ref<WebSocket | undefined>(undefined)
+const toastNotifications = ref<Notification[]>([])
+
+const isPublic = computed(() => channel.value.channelType === GROUP_CHANNEL)
+
+const profileImage = computed(() => {
+  const userValidation = UserSchema.safeParse(loggedUser)
+  if (userValidation.success) {
+    return userProfileStore.getImage(userValidation.data.id)
+  }
+})
+
+const updateArchived = (data: { color: string; archivedAt: string }) => {
+  if (channelStore.channel) {
+    channelStore.channel.color = data.color
+    channelStore.channel.archivedAt = data.archivedAt
+  }
+}
+
+const sendMessage = async (message: string, img: string | undefined) => {
+  try {
+    if (!channelStore.isMember(channelStore.channel.id, loggedUser!.id)) {
+      await axios.post(`/channels/${channelStore.channel.id}/users`, {})
     }
-  })
+    await messageStore.sendMessage(channelStore.channel.id, message, img)
+  } catch (e) {
+    const error = e as AxiosError
+    console.error(error.message)
+  }
+}
 
-  const isPublic = computed(() => {
-    const validation = PublicChannelSchema.safeParse(channelStore.channel)
-    if (validation.success) {
-      return true
-    }
-  })
+const onCloseToast = (id: string) => {
+  toastNotifications.value = [...toastNotifications.value.filter((n) => n.id !== id)]
+}
 
-  const profileImage = computed(() => {
-    const userValidation = UserSchema.safeParse(loggedUser)
-    if (userValidation.success) {
-      return userProfileStore.getImage(userValidation.data.id)
+watch(channel, async (channel) => {
+  if (channel) {
+    await messageStore.getChannelMessages(channel.id)
+    const validation = ChannelSchema.safeParse(channel)
+
+    if (!validation.success) {
+      senderId.value = channel.idUser
     }
-  })
+
+    if (activeSocket.value) {
+      activeSocket.value.close()
+    }
+    activeSocket.value = useSocket(
+      `/channels/${channel.id}`,
+      (data: MessageEvent) => {
+        const dataJson = JSON.parse(data.data)
+        const newMessage = dataJson.messages
+
+        if (!newMessage) return
+
+        messageStore.chatMessages.push(newMessage)
+      },
+    )
+  }
+})
 
   onMounted(async () => {
     await directStore.fetch()
@@ -322,74 +340,6 @@
 
   onUnmounted(() => {
     onlineSocket.value?.close()
-  })
-
-  const viewChannel = (id: string) => {
-    const foundChannel = channelStore.getOnNotifChannel(id)
-
-    if (foundChannel) {
-      channelStore.set(foundChannel)
-    } else {
-      console.error("No Channel Found")
-    }
-    invitationModalOpen.value = false
-  }
-
-  const closeInvitationModal = () => {
-    invitationModalOpen.value = false
-  }
-
-  const updateArchived = (data: { color: string; archivedAt: string }) => {
-    if (channelStore.channel) {
-      channelStore.channel.color = data.color
-      channelStore.channel.archivedAt = data.archivedAt
-    }
-  }
-
-  const sendMessage = async (message: string, img: string | undefined) => {
-    try {
-      if (!channelStore.isMember(channelStore.channel.id, loggedUser!.id)) {
-        await axios.post(`/channels/${channelStore.channel.id}/users`, {})
-      }
-      await messageStore.sendMessage(channelStore.channel.id, message, img)
-    } catch (e) {
-      const error = e as AxiosError
-      console.error(error.message)
-    }
-  }
-
-  const onCloseToast = (id: string) => {
-    toastNotifications.value = [...toastNotifications.value.filter((n) => n.id !== id)]
-  }
-
-  watch(invitationNotif, () => {
-    invitationModalOpen.value = true
-  })
-
-  watch(channel, async (channel) => {
-    if (channel) {
-      await messageStore.getChannelMessages(channel.id)
-      const validation = ChannelSchema.safeParse(channel)
-
-      if (!validation.success) {
-        senderId.value = channel.idUser
-      }
-
-      if (activeSocket.value) {
-        activeSocket.value.close()
-      }
-      activeSocket.value = useSocket(
-        `/channels/${channel.id}`,
-        (data: MessageEvent) => {
-          const dataJson = JSON.parse(data.data)
-          const newMessage = dataJson.messages
-
-          if (!newMessage) return
-
-          messageStore.chatMessages.push(newMessage)
-        },
-      )
-    }
   })
 </script>
 

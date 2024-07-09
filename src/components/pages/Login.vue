@@ -89,7 +89,6 @@
   import VIconButton from "@/components/molecules/VIconButton.vue"
 
   const session = useAuthStore()
-
   const timerId = ref<number | undefined>(undefined)
   const error = ref<string>("")
   const errorUsername = ref<boolean>(false)

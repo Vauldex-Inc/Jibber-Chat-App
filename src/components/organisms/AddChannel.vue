@@ -31,7 +31,7 @@
   import VInput from "@/components/atoms/VInput.vue"
   import VButton from "@/components/atoms/VButton.vue"
   import VFormError from "@/components/atoms/VFormError.vue"
-  import { type ChannelData } from "@/types/Channel"
+  import { type ChannelData, ChannelVariantEnum } from "@/types/Channel"
 
   const emits = defineEmits(["onSuccess"])
 
@@ -39,7 +39,7 @@
   const vFocus = { mounted: (el: HTMLInputElement) => el.focus() }
 
   const error = ref("")
-  const channelForm = ref<ChannelData>({title: "", channelType: "MPU"})
+  const channelForm = ref<ChannelData>({ title: "", channelType:ChannelVariantEnum.enum.GROUP_CHANNEL })
 
   const create = async () => {
     try {

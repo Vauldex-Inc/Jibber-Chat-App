@@ -76,7 +76,7 @@
   import { useProfileStore } from "@/stores/useProfileStore"
   import VAvatar from "@/components/molecules/VAvatar.vue"
   import VIconButton from "@/components/molecules/VIconButton.vue"
-  import { GROUP_CHANNEL } from "@/types/Channel"
+  import { ChannelVariantEnum } from "@/types/Channel"
   import { useChannelStore } from "@/stores/useChannelStore"
   import { StatusSchema } from "@/types/User"
 
@@ -101,7 +101,7 @@
       image: profileStore.getImage(userId.value),
       initials: channelInitials.value,
       status: userStore.getStatus(userId.value),
-      isPublic: channel.value.channelType === GROUP_CHANNEL || false,
+      isPublic: channel.value.channelType === ChannelVariantEnum.enum.GROUP_CHANNEL || false,
       name: name.value,
       membersCount: channelStore.getChannelUsersCount(channel.value.id)
     }

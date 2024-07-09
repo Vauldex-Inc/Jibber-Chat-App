@@ -53,11 +53,11 @@
   import { ref } from "vue"
   import { useRouter } from "vue-router"
   import { useUser } from "@/composables/useUser"
-  import { useSession } from "@/composables/useSession"
+  import { useAuthStore } from "@/stores/useAuthStore"
   import VIconButton from "@/components/molecules/VIconButton.vue"
   import VButton from "@/components/atoms/VButton.vue"
   import ThemeSelector from "@/components/organisms/ThemeSelector.vue"
-  import VModal from "@/components/atoms/VModal.vue"
+  import VModal from "@/components/molecules/VModal.vue"
   import VProfileForm from "@/components/organisms/VProfileForm.vue"
 
   defineProps<{
@@ -65,7 +65,7 @@
     username: string
   }>()
 
-  const session = useSession()
+  const session = useAuthStore()
   const router = useRouter()
   const loggedUser = useUser()
 

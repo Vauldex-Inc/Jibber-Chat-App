@@ -83,12 +83,12 @@
 <script setup lang="ts">
   import { ref, type Ref } from "vue"
   import { useRouter, RouterLink } from "vue-router"
-  import { useSession } from "@/composables/useSession"
+  import { useAuthStore } from "@/stores/useAuthStore"
   import VButton from "@/components/atoms/VButton.vue"
   import VInput from "@/components/atoms/VInput.vue"
   import VIconButton from "@/components/molecules/VIconButton.vue"
 
-  const session = useSession()
+  const session = useAuthStore()
 
   const timerId = ref<number | undefined>(undefined)
   const error = ref<string>("")

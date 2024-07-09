@@ -1,3 +1,4 @@
+import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
 import { ZodError, z } from "zod"
 import { UserSchema } from "@/types/User"
@@ -9,7 +10,7 @@ const UserDataSchema = z.object({
 
 type UserData = z.infer<typeof UserDataSchema>
 
-export const useSession = () => {
+export const useAuthStore = defineStore("auth-store", () => {
   const resource = "/sessions"
 
   const post = async (form: UserData) => {
@@ -40,4 +41,4 @@ export const useSession = () => {
     post,
     destroy
   }
-}
+})

@@ -10,7 +10,7 @@
         class="rounded-md font-semibold capitalize hover:bg-indigo-100 dark:hover:bg-slate-900"
       >
         <p
-          :class="[channel.color ? channel.color : 'text-gray-700 dark:text-gray-300']"
+          :class="color"
           class="inline-block bg-clip-text text-transparent"
         >
           {{ header.action }}
@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from "vue"
+  import { computed, ref } from "vue"
   import { storeToRefs } from "pinia"
   import { useChannelStore } from "@/stores/useChannelStore"
   import VButton from "@/components/atoms/VButton.vue"
@@ -47,9 +47,13 @@
     title: "Members",
     action: "View All"
   }
-
   const { channel } = storeToRefs(useChannelStore())
+
   const open = ref<boolean>(false)
+
+  const color = computed(() => {
+    return channel.value.color ? channel.value.color : 'dark:bg-gray-300 bg-gray-700'
+  })
 
   const onOpen = () => {
     open.value = true

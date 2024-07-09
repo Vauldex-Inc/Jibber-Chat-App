@@ -6,11 +6,11 @@
       </p>
       <VButton
         size="small"
-        @click="open = true"
+        @click="onOpen"
         class="rounded-md font-semibold capitalize hover:bg-indigo-100 dark:hover:bg-slate-900"
       >
         <p
-          :class="[channel.color ? channel.color : 'text-gray-700 dark:text-gray-300']"
+          :class="color"
           class="inline-block bg-clip-text text-transparent"
           v-if="chatImages.length > 0"
         >
@@ -63,7 +63,15 @@
     return chatImages.value.reverse().slice(0, 4)
   })
 
+  const color = computed(() => {
+    return channel.value.color ? channel.value.color : 'dark:bg-gray-300 bg-gray-700'
+  })
+
   const allImages = computed(() => {
     return chatImages.value.filter((img) => img !== "")
   })
+
+  const onOpen = () => {
+    open.value = true
+  }
 </script>

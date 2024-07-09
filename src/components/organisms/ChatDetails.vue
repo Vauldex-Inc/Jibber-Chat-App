@@ -52,7 +52,7 @@
         </template>
 
         <template v-if="open.profile">
-          <VProfileForm :id="userId" :view-only="loggedUser?.id !== userId"/>
+          <VProfileForm :id="userId" :view-only="isOppositeUser"/>
         </template>
       </VModal>
     </div>
@@ -122,6 +122,8 @@
     }
 
   })
+
+  const isOppositeUser = computed(() => loggedUser?.id !== userId.value)
 
   const onClose = () => {
     open.value = {

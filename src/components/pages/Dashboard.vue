@@ -249,6 +249,7 @@ onMounted(async () => {
 
   onlineSocket.value = useSocket("/sessions", (data: MessageEvent) => {
     const updates = JSON.parse(data.data)
+    
     switch (updates.resourceType) {
       case "CHANNEL_UPDATE": {
         const update = updates.content.channelUpdate

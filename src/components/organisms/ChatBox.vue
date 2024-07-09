@@ -23,9 +23,8 @@
         class="m-1 mb-1 inline-flex items-center rounded-md bg-white px-1 py-1 dark:bg-slate-700"
       >
         <img
-          v-if="typeof imageForm.image === 'string'"
           class="h-8 w-8 object-cover p-1"
-          :src="imageForm.image"
+          :src="imageSrc"
           alt="Attached image"
         />
         <p>{{ imageForm.title }}</p>
@@ -38,9 +37,9 @@
         />
       </div>
       <VInput
-        :disabled="channel.archivedAt !== undefined"
-        @focus="isInputTextFocus = true"
-        @blur="isInputTextFocus = false"
+        :disabled="channel.archivedAt"
+        @focus="isInputTextFocus"
+        @blur="!isInputTextFocus"
         @keyup.enter="sendMessage"
         v-model.trim="message"
         :placeholder="
@@ -61,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref, computed, compile } from "vue"
 import { storeToRefs } from "pinia"
 import { z } from "zod"
 import VInput from "@/components/atoms/VInput.vue"
@@ -92,6 +91,10 @@ const isMessageWithImage = ref<boolean>(false)
 
 const buttonClass = computed(() => {
   return [channel.value.color || "bg-slate-800",  channel.value.archivedAt ? 'opacity-50' : '']
+})
+
+const imageSrc = computed(() => {
+  return imageForm.value.image as string
 })
 
 const remove = () => {

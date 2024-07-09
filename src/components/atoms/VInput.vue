@@ -11,13 +11,14 @@
 import { z, ZodError } from "zod"
 import { inputSizeClass } from "@/composables/useSize"
 import type { InputProp } from "@/types/Prop"
+import { SizeSchema } from "@/types/Component";
 
 const prop = defineProps<InputProp>()
 const value = defineModel<string>()
 
 const PropSchema = z.object({
   type: z.enum(["text", "file", "password"]).optional(),
-  size: z.enum(["small", "medium", "large"]).optional(),
+  size: SizeSchema.optional(),
 })
 
 try {

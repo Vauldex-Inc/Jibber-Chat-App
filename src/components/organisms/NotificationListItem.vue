@@ -33,13 +33,12 @@ import { formatSentAt } from "@/composables/useDateFormatter"
 import { useDateFormatter } from "@/composables/useDateFormatter"
 import { useNotificationStore } from "@/stores/useNotificationStore"
 import { useProfileStore } from "@/stores/useProfileStore"
-import type { Invitation } from "@/types/Notification"
 import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+import type { Invitation } from "@/types/Notification"
 
 const props = defineProps<{
   invitation: Invitation
 }>()
-
 const emit = defineEmits<{
   close: []
 }>()

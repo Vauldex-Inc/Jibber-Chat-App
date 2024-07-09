@@ -21,36 +21,36 @@
 </template>
 
 <script setup lang="ts">
-import { z, ZodError } from "zod"
-import VIconButton from "@/components/molecules/VIconButton.vue"
-import type { ModalProp } from "@/types/Prop"
+  import { z, ZodError } from "zod"
+  import VIconButton from "@/components/molecules/VIconButton.vue"
+  import type { ModalProp } from "@/types/Prop"
 
-const prop = defineProps<ModalProp>()
-const emits = defineEmits<{ close: [] }>()
-defineOptions({
-  inheritAttrs: false,
-})
+  const prop = defineProps<ModalProp>()
+  const emits = defineEmits<{ close: [] }>()
+  defineOptions({
+    inheritAttrs: false,
+  })
 
-const PropSchema = z.object({
-  isOpen: z.boolean(),
-  closeButton: z.boolean().optional(),
-})
+  const PropSchema = z.object({
+    isOpen: z.boolean(),
+    closeButton: z.boolean().optional(),
+  })
 
-try {
-  PropSchema.parse(prop)
-} catch (e) {
-  const error = e as ZodError
-  console.error(error.message)
-}
-</script>
+  try {
+    PropSchema.parse(prop)
+  } catch (e) {
+    const error = e as ZodError
+    console.error(error.message)
+  }
+  </script>
 
-<style scoped>
-.modal-enter-active {
-  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
-}
+  <style scoped>
+  .modal-enter-active {
+    transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+  }
 
-.modal-enter-from {
-  transform: scale(0.8);
-  opacity: 0;
-}
+  .modal-enter-from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
 </style>

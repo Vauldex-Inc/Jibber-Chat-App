@@ -18,9 +18,9 @@
 </template>
 
 <script lang="ts" setup>
-import { useTheme } from "@/composables/useTheme"
-import VButton from "@/components/atoms/VButton.vue"
+  import { useTheme } from "@/composables/useTheme"
+  import VButton from "@/components/atoms/VButton.vue"
 
-const { setTheme, getTheme } = useTheme()
-const theme = getTheme()
+  const { setTheme, getTheme } = useTheme()
+  const theme = getTheme()
 </script>

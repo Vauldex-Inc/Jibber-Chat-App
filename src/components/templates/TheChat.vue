@@ -21,6 +21,7 @@
 
 <script lang="ts" setup>
   import { ref } from "vue"
+
   const openLeft = ref<boolean>(true)
   const openRight = ref<boolean>(true)
 
@@ -31,6 +32,4 @@
   const toggleLeft = () => {
     openLeft.value = !openLeft.value
   }
-
-  const divider = 'border-b border-b-indigo-200 dark:border-b-slate-800'
 </script>

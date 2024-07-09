@@ -10,7 +10,7 @@ export const useProfileStore = defineStore("userProfile", () => {
   const userStore = useUserStore()
   const resource = "/profiles"
 
-  const init = async (): Promise<void> => {
+  const fetch = async (): Promise<void> => {
     try {
       const { data } = await axios.get("/profiles")
       const result = data.profiles
@@ -90,7 +90,7 @@ export const useProfileStore = defineStore("userProfile", () => {
   }
 
   return { 
-    init, 
+    fetch, 
     getProfile, 
     getProfiles, 
     getImage, 

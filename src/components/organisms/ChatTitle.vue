@@ -70,62 +70,58 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue"
-import { useUserStore } from "@/stores/useUserStore"
-import { useProfileStore } from "@/stores/useProfileStore"
+  import { ref, computed } from "vue"
+  import { storeToRefs } from "pinia"
+  import { useUserStore } from "@/stores/useUserStore"
+  import { useProfileStore } from "@/stores/useProfileStore"
+  import VAvatar from "@/components/molecules/VAvatar.vue"
+  import VIconButton from "@/components/molecules/VIconButton.vue"
+  import { GROUP_CHANNEL } from "@/types/Channel"
+  import { useChannelStore } from "@/stores/useChannelStore"
+  import { StatusSchema } from "@/types/User"
 
-import VAvatar from "@/components/molecules/VAvatar.vue"
-import VIconButton from "@/components/molecules/VIconButton.vue"
+  const emits = defineEmits<{
+    archive: [value: { color: string; archivedAt: string }]
+    toggleInfo: []
+    toggleChat: []
+  }>()
 
-import { GROUP_CHANNEL } from "@/types/Channel"
-import { useChannelStore } from "@/stores/useChannelStore"
-import { storeToRefs } from "pinia"
-import { useUser } from "@/composables/useUser"
-import { StatusSchema } from "@/types/User"
+  const profileStore = useProfileStore()
+  const userStore = useUserStore()
+  const channelStore = useChannelStore()
+  const { channel, channelInitials, userId } = storeToRefs(channelStore)
 
-const emits = defineEmits<{
-  archive: [value: { color: string; archivedAt: string }]
-  toggleInfo: []
-  toggleChat: []
-}>()
+  const collapse = ref<boolean>(true)
 
-const profileStore = useProfileStore()
-const userStore = useUserStore()
-const channelStore = useChannelStore()
-const { channel, channelInitials, userId } = storeToRefs(channelStore)
-const loggedUser = useUser()
+  const name = computed(() => channel.value && 'title' in channel.value ? channel.value.title : profileStore.getName(userId.value))
 
-const collapse = ref<boolean>(true)
+  const channelT = computed(() => {
+    return {
+      color: channel.value.color || "bg-gray-600",
+      image: profileStore.getImage(userId.value),
+      initials: channelInitials.value,
+      status: userStore.getStatus(userId.value),
+      isPublic: channel.value.channelType === GROUP_CHANNEL || false,
+      name: name.value,
+      membersCount: channelStore.getChannelUsersCount(channel.value.id)
+    }
+  })
 
-const name = computed(() => channel.value && 'title' in channel.value ? channel.value.title : profileStore.getName(userId.value))
+  const statusClass = {'text-emerald-600': channelT.value.status === StatusSchema.enum.online}
 
-const channelT = computed(() => {
-  return {
-    color: channel.value.color || "bg-gray-600",
-    image: profileStore.getImage(userId.value),
-    initials: channelInitials.value,
-    status: userStore.getStatus(userId.value),
-    isPublic: channel.value.channelType === GROUP_CHANNEL || false,
-    name: name.value,
-    membersCount: channelStore.getChannelUsersCount(channel.value.id)
+  const archiveChannel = async () => {
+    try {
+      const archivedAt = new Date().toISOString()
+      await channelStore.archiveChannel(archivedAt)
+      emits("archive", { color: "", archivedAt })
+    } catch (e) {
+      const error = e as Error
+      console.error(error.message)
+    }
   }
-})
 
-const statusClass = {'text-emerald-600': channelT.value.status === StatusSchema.enum.online}
-
-const archiveChannel = async () => {
-  try {
-    const archivedAt = new Date().toISOString()
-    await channelStore.archiveChannel(archivedAt)
-    emits("archive", { color: "", archivedAt })
-  } catch (e) {
-    const error = e as Error
-    console.error(error.message)
+  const handleToggle = () => {
+    collapse.value = !collapse.value
+    emits("toggleChat")
   }
-}
-
-const handleToggle = () => {
-  collapse.value = !collapse.value
-  emits("toggleChat")
-}
 </script>

@@ -6,8 +6,9 @@ import { type DirectChannel, DirectChannelSchema } from "@/types/Channel"
 
 const CHANNEL_TYPE = "SNG" as const
 
-const useDirectChannelStore = defineStore("direct-channels", () => {
+export const useDirectChannelStore = defineStore("direct-channels", () => {
   const _channels = ref<Array<DirectChannel>>([])
+  const channels = computed(() => _channels)
 
   const set = (list: Array<DirectChannel>) => _channels.value = list
   const add = (channel: DirectChannel) => _channels.value.push(channel)
@@ -48,7 +49,6 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
       console.error(error)
     }
   }
-  const channels = computed(() => _channels)
   const getDirectChannel = (idChannel: string) => {
     return _channels.value.find((c: DirectChannel) => c.id === idChannel)
   }
@@ -61,5 +61,3 @@ const useDirectChannelStore = defineStore("direct-channels", () => {
     getDirectChannel
   }
 })
-
-export { useDirectChannelStore }

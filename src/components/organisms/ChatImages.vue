@@ -42,20 +42,23 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref } from "vue"
+  import { ref, computed } from "vue"
   import { storeToRefs } from "pinia"
   import { useMessageStore } from "@/stores/useMessageStore"
   import { useChannelStore } from "@/stores/useChannelStore"
   import VButton from "@/components/atoms/VButton.vue"
   import VModal from "@/components/atoms/VModal.vue"
   import ViewImage from "@/components/organisms/ViewImage.vue"
-  const { chatImages } = storeToRefs(useMessageStore())
-  const { channel } = storeToRefs(useChannelStore())
-  const open = ref<boolean>(false)
+
   const header = {
     title: "Images",
     action: "View All"
   }
+
+  const { chatImages } = storeToRefs(useMessageStore())
+  const { channel } = storeToRefs(useChannelStore())
+  const open = ref<boolean>(false)
+
   const displayImages = computed(() => {
     return chatImages.value.reverse().slice(0, 4)
   })

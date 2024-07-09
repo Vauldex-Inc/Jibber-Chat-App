@@ -41,38 +41,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"
-import { useUser } from "@/composables/useUser"
-import { useNotificationStore } from "@/stores/useNotificationStore"
-import { useChannelStore } from "@/stores/useChannelStore"
-import VIconButton from "@/components/molecules/VIconButton.vue"
-import NotificationListItem from "@/components/organisms/NotificationListItem.vue"
-import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+  import { ref, computed } from "vue"
+  import { useUser } from "@/composables/useUser"
+  import { useNotificationStore } from "@/stores/useNotificationStore"
+  import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+  import VIconButton from "@/components/molecules/VIconButton.vue"
+  import NotificationListItem from "@/components/organisms/NotificationListItem.vue"
 
-const notificationStore = useNotificationStore()
-const notifications = notificationStore.getNotifications()
-const channelStore = useChannelStore()
-const publicStore = usePublicChannelStore()
-const loggedUser = useUser()
+  const notificationStore = useNotificationStore()
+  const notifications = notificationStore.getNotifications()
+  const publicStore = usePublicChannelStore()
+  const loggedUser = useUser()
 
-const displayNotification = ref<boolean>(false)
+  const displayNotification = ref<boolean>(false)
 
-const unSeenCount = computed(() => {
-  return notificationsCopy.value.filter((n) => n.seenAt === undefined).length
-})
+  const unSeenCount = computed(() => {
+    return notificationsCopy.value.filter((n) => n.seenAt === undefined).length
+  })
 
-const notificationsCopy = computed(() => {
-  return notifications.value
-    .filter((n) => {
-      const channel = publicStore.getChannelById(n.idChannel)
-      return channel?.channelType !== "SNG" && n.idUser === loggedUser?.id
-    })
-    .reverse()
-})
+  const notificationsCopy = computed(() => {
+    return notifications.value
+      .filter((n) => {
+        const channel = publicStore.getChannelById(n.idChannel)
+        return channel?.channelType !== "SNG" && n.idUser === loggedUser?.id
+      })
+      .reverse()
+  })
 
-const isNotEmpty = computed(() => notificationsCopy.value.length > 0)
+  const isNotEmpty = computed(() => notificationsCopy.value.length > 0)
 
-const toggleNotifications = () => {
-  displayNotification.value = !displayNotification.value
-}
+  const toggleNotifications = () => {
+    displayNotification.value = !displayNotification.value
+  }
 </script>

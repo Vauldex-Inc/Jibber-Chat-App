@@ -46,60 +46,59 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue"
-import { useUser } from "@/composables/useUser"
-import { useUserStore } from "@/stores/useUserStore"
-import { useProfileStore } from "@/stores/useProfileStore"
-import VInput from "@/components/atoms/VInput.vue"
-import VButton from "@/components/atoms/VButton.vue"
-import { useChannelStore } from "@/stores/useChannelStore"
+  import { ref, computed, onMounted } from "vue"
+  import { useUser } from "@/composables/useUser"
+  import { useUserStore } from "@/stores/useUserStore"
+  import { useProfileStore } from "@/stores/useProfileStore"
+  import { useChannelStore } from "@/stores/useChannelStore"
+  import VInput from "@/components/atoms/VInput.vue"
+  import VButton from "@/components/atoms/VButton.vue"
 
-const props = defineProps<{
-  color: string
-  idChannel: string
-}>()
+  const props = defineProps<{
+    color: string
+    idChannel: string
+  }>()
+  const emits = defineEmits<{
+    action: [value: string]
+  }>()
 
-const emits = defineEmits<{
-  action: [value: string]
-}>()
+  const userStore = useUserStore()
+  const profileStore = useProfileStore()
+  const channelStore = useChannelStore()
+  const users = userStore.getUsers
+  const loggedUser = useUser()
 
-const userStore = useUserStore()
-const profileStore = useProfileStore()
-const channelStore = useChannelStore()
-const users = userStore.getUsers
-const loggedUser = useUser()
+  const invitedUsers = ref<string[]>([])
+  const unInvitedUsers = ref<[string, string | undefined][]>([])
+  const inputUserName = ref<string>("")
 
-const invitedUsers = ref<string[]>([])
-const unInvitedUsers = ref<[string, string | undefined][]>([])
-const inputUserName = ref<string>("")
-
-const filteredUserName = computed(() => {
-  return unInvitedUsers.value.filter(([id, _]) => {
-    const currentName = inputUserName.value.toLowerCase()
-    return (
-      profileStore.getName(id).toLowerCase().includes(currentName) &&
-      !isInvited(id) &&
-      id !== loggedUser?.id
-    )
+  const filteredUserName = computed(() => {
+    return unInvitedUsers.value.filter(([id, _]) => {
+      const currentName = inputUserName.value.toLowerCase()
+      return (
+        profileStore.getName(id)?.toLowerCase().includes(currentName) &&
+        !isInvited(id) &&
+        id !== loggedUser?.id
+      )
+    })
   })
-})
 
-onMounted(async () => {
-  const data = await channelStore.getChannelUsers(props.idChannel)
-  data?.forEach((cu: any) => invitedUsers.value.push(cu.idUser))
-  users.value.forEach((u) => {
-    if (!invitedUsers.value.includes(u.id)) {
-      const id = u.id
-      const name = profileStore.getName(u.id)
-      unInvitedUsers.value.push([id, name])
-    }
+  onMounted(async () => {
+    const data = await channelStore.getChannelUsers(props.idChannel)
+    data?.forEach((cu: any) => invitedUsers.value.push(cu.idUser))
+    users.value.forEach((u) => {
+      if (!invitedUsers.value.includes(u.id)) {
+        const id = u.id
+        const name = profileStore.getName(u.id)
+        unInvitedUsers.value.push([id, name])
+      }
+    })
   })
-})
 
-const isInvited = (idUser: string) => invitedUsers.value.includes(idUser)
+  const isInvited = (idUser: string) => invitedUsers.value.includes(idUser)
 
-const selectedUserName = (idUser: string) => {
-  invitedUsers.value.push(idUser)
-  emits("action", idUser)
-}
+  const selectedUserName = (idUser: string) => {
+    invitedUsers.value.push(idUser)
+    emits("action", idUser)
+  }
 </script>

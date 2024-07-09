@@ -24,34 +24,34 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
-import { z, ZodError } from "zod"
-import { sizeClass } from "@/composables/useSize"
-import VImage from "@/components/atoms/VImage.vue"
-import { type IconButtonProp } from "@/types/Prop"
-import { SizeSchema } from "@/types/Component"
+  import { computed } from "vue"
+  import { z, ZodError } from "zod"
+  import { sizeClass } from "@/composables/useSize"
+  import VImage from "@/components/atoms/VImage.vue"
+  import { type IconButtonProp } from "@/types/Prop"
+  import { SizeSchema } from "@/types/Component"
 
-const prop = defineProps<IconButtonProp>()
-const emits = defineEmits(["click"])
+  const prop = defineProps<IconButtonProp>()
+  const emits = defineEmits(["click"])
 
-const PropSchema = z.object({
-  size: SizeSchema.optional(),
-  icon: z.string(),
-  type: z.string().optional(),
-  invert: z.boolean().optional(),
-  rounded: z.boolean().optional(),
-  hasPadding: z.boolean().optional(),
-  toolTip: z.string().optional()
-})
+  const PropSchema = z.object({
+    size: SizeSchema.optional(),
+    icon: z.string(),
+    type: z.string().optional(),
+    invert: z.boolean().optional(),
+    rounded: z.boolean().optional(),
+    hasPadding: z.boolean().optional(),
+    toolTip: z.string().optional()
+  })
 
-const roundedClass = computed(() => {
-  return prop.rounded ? "rounded-full" : "rounded-md"
-})
+  const roundedClass = computed(() => {
+    return prop.rounded ? "rounded-full" : "rounded-md"
+  })
 
-try {
-  PropSchema.parse(prop)
-} catch (e) {
-  const error = e as ZodError
-  console.error(error.message)
-}
+  try {
+    PropSchema.parse(prop)
+  } catch (e) {
+    const error = e as ZodError
+    console.error(error.message)
+  }
 </script>

@@ -42,12 +42,13 @@
   import VModal from "../atoms/VModal.vue"
   import DisplayMembers from "./DisplayMembers.vue"
 
-  const { channel } = storeToRefs(useChannelStore())
   const channelStore = useChannelStore()
   const header = {
     title: "Members",
     action: "View All"
   }
+
+  const { channel } = storeToRefs(useChannelStore())
   const open = ref<boolean>(false)
 
   const onOpen = () => {

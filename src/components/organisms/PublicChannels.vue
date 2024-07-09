@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref } from "vue";
+  import { ref, computed } from "vue";
   import { formatSentAt } from "@/composables/useDateFormatter"
   import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
   import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
@@ -75,6 +75,19 @@
 
   const open = ref<boolean>(false)
 
+  const transformChannels = computed(() => channels.value.map((r) => {
+    const { text, sentAt } = latestMessage(r.id)
+    return {
+      id: r.id,
+      title: getTitle(r.id),
+      sentAt: sentAt ? formatSentAt(sentAt) : sentAt,
+      text,
+      color: r.color || 'bg-gray-600',
+      archivedAt: r.archivedAt,
+      hasUnread: hasUnread(r.id)
+    }
+  }))
+
   const latestMessage = (idChannel: string): { text: string, sentAt: string } => {
     let message = {} as UnreadMessage | Message
     const unReadMessages = getUnreadMessages(idChannel)
@@ -90,19 +103,6 @@
       sentAt: message.sentAt
     }
   }
-
-  const transformChannels = computed(() => channels.value.map((r) => {
-    const { text, sentAt } = latestMessage(r.id)
-    return {
-      id: r.id,
-      title: getTitle(r.id),
-      sentAt: sentAt ? formatSentAt(sentAt) : sentAt,
-      text,
-      color: r.color || 'bg-gray-600',
-      archivedAt: r.archivedAt,
-      hasUnread: hasUnread(r.id)
-    }
-  }))
 
   const onClickChannel = (idChannel: string) => {
     const _channel = channels.value.find((r) => r.id === idChannel)

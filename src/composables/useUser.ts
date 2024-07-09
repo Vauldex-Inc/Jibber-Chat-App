@@ -10,14 +10,11 @@ const userIsUser = (user: User): user is User => {
 
 export const useUser = () => {
 	const userLocal = localStorage.getItem("user")
-
 	if(userLocal) {
 		const user = JSON.parse(userLocal)
 		if(userIsUser(user)) {
 			return user
 		}
 	}
-
 	return undefined
-
 }

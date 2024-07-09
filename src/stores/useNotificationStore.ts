@@ -7,7 +7,7 @@ export const useNotificationStore = defineStore("notifications", () => {
 	const notifications = ref<Invitation[]>([])
 	const selectedInvitation = ref<Invitation | undefined>(undefined)
 
-	const init = async () => {
+	const fetch = async () => {
 		try {
 			const { data } = await axios.get("/notifications")
 			notifications.value = data.notifications
@@ -50,7 +50,7 @@ export const useNotificationStore = defineStore("notifications", () => {
 
 	return { 
 		notifications, 
-		init, 
+		fetch, 
 		getNotifications, 
 		setSelectedInvitation, 
 		getSelectedInvitation, 

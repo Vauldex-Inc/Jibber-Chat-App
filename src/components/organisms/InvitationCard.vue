@@ -36,16 +36,15 @@
 </template>
 
 <script setup lang="ts">
-import VButton from "@/components/atoms/VButton.vue"
-import type { Invitation } from "@/types/Notification"
+  import VButton from "@/components/atoms/VButton.vue"
+  import type { Invitation } from "@/types/Notification"
 
-defineProps<{
-  notification: Invitation
-  name?: string
-}>()
-
-const emits = defineEmits<{
-  close: []
-  view: [value: string]
-}>()
+  defineProps<{
+    notification: Invitation
+    name?: string
+  }>()
+  const emits = defineEmits<{
+    close: []
+    view: [value: string]
+  }>()
 </script>

@@ -1,15 +1,13 @@
 import { ref } from "vue"
 import { defineStore } from "pinia"
-import axios from "axios"
-import { UnreadMessageSchema, type UnreadMessage } from "@/types/Message"
-import type { AxiosError } from "axios"
 import type { ZodError } from "zod"
+import axios, { AxiosError } from "axios"
+import { UnreadMessageSchema, type UnreadMessage } from "@/types/Message"
 
 export const useUnreadMessageStore = defineStore("unread-messages", () => {
-
 	const unreadMessages = ref<UnreadMessage[]>([])
 
-	const init = async () => {
+	const fetch = async () => {
 		try {
 			const { data } = await axios.get("/users/unread-messages")
 			const validation = UnreadMessageSchema.array().safeParse(data.unreadMessages)
@@ -38,7 +36,7 @@ export const useUnreadMessageStore = defineStore("unread-messages", () => {
 
 	return { 
 		unreadMessages, 
-		init, 
+		fetch, 
 		getUnreadMessages, 
 		addUnreadMessage, 
 		removeUnreadMessages ,

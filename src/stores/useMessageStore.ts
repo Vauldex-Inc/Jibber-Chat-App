@@ -1,8 +1,8 @@
 import { ref, computed, type Ref } from "vue"
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
-import { MessageSchema, type Message } from "@/types/Message"
 import type { ZodError } from "zod"
+import { MessageSchema, type Message } from "@/types/Message"
 
 export const useMessageStore = defineStore("messages", () => {
 	const latestMessages = ref<Array<Message>>([])
@@ -16,14 +16,14 @@ export const useMessageStore = defineStore("messages", () => {
 		return _messages.value
 	})
 
-	const init = async () => {
-		await initFetch("/channels/latest-messages")
-		await initFetch("/me/channels/latest-messages")
+	const fetch = async () => {
+		await fetchLatest("/channels/latest-messages")
+		await fetchLatest("/me/channels/latest-messages")
 	}
 
 	const set = (list: Message[]) => _messages.value = list
 
-	const initFetch = async (url: string) => {
+	const fetchLatest = async (url: string) => {
 		try {
 			const { data } = await axios.get(url)
 			const validation = MessageSchema.array().safeParse(data.filter((d: Message) => d !== null))
@@ -83,7 +83,7 @@ export const useMessageStore = defineStore("messages", () => {
 		latestMessages,
 		chatImages,
 		chatMessages,
-		init,
+		fetch,
 		getLatestMessages,
 		addNewLatestMessage
 	}

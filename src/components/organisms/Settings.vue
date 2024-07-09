@@ -50,43 +50,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
-import { useRouter } from "vue-router"
-import { z } from "zod"
-import { useUser } from "@/composables/useUser"
-import VIconButton from "@/components/molecules/VIconButton.vue"
-import VButton from "@/components/atoms/VButton.vue"
-import ThemeSelector from "@/components/organisms/ThemeSelector.vue"
-import VModal from "@/components/atoms/VModal.vue"
-import VProfileForm from "@/components/organisms/VProfileForm.vue"
-import { useSession } from "@/composables/useSession"
+  import { ref } from "vue"
+  import { useRouter } from "vue-router"
+  import { useUser } from "@/composables/useUser"
+  import { useSession } from "@/composables/useSession"
+  import VIconButton from "@/components/molecules/VIconButton.vue"
+  import VButton from "@/components/atoms/VButton.vue"
+  import ThemeSelector from "@/components/organisms/ThemeSelector.vue"
+  import VModal from "@/components/atoms/VModal.vue"
+  import VProfileForm from "@/components/organisms/VProfileForm.vue"
 
-defineProps<{
-  profileImage?: string | undefined
-  username: string
-}>()
+  defineProps<{
+    profileImage?: string | undefined
+    username: string
+  }>()
 
-const session = useSession()
-const router = useRouter()
-const loggedUser = useUser()
+  const session = useSession()
+  const router = useRouter()
+  const loggedUser = useUser()
 
-const isOpen = ref<boolean>(false)
-const formShown = ref<boolean>(false)
+  const isOpen = ref<boolean>(false)
+  const formShown = ref<boolean>(false)
 
-const toggleSettings = () => (isOpen.value = !isOpen.value)
+  const toggleSettings = () => (isOpen.value = !isOpen.value)
 
-const newProfile = () => (formShown.value = false)
+  const newProfile = () => (formShown.value = false)
 
-const logout = async () => {
-  try {
-    const response = await session.destroy()
-    if (response?.status === 200) {
-      localStorage.removeItem("user")
-      router.push("/")
+  const logout = async () => {
+    try {
+      const response = await session.destroy()
+      if (response?.status === 200) {
+        localStorage.removeItem("user")
+        router.push("/")
+      }
+    } catch (e) {
+      const error = e as Error
+      console.error(error.message) 
     }
-  } catch (e) {
-    const error = e as Error
-    console.error(error.message) 
   }
-}
 </script>

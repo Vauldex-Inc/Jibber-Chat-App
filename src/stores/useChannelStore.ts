@@ -1,17 +1,16 @@
 import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 import axios, { AxiosError } from "axios"
-import {type ZodError } from "zod"
+import { type ZodError } from "zod"
+import { useUser } from "@/composables/useUser"
+import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
+import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
 import { 
   type ChannelType,
   type ChannelUser, 
-  ChannelUserSchema, 
-	type DirectChannel,
-	type Channel} from "@/types/Channel"
+  ChannelUserSchema
+} from "@/types/Channel"
 import type { User } from "@/types/User"
-import { useUser } from "@/composables/useUser"
-import { useDirectChannelStore } from "./useDirectChannelStore"
-import { usePublicChannelStore } from "./usePublicChannelStore"
 
 export const useChannelStore = defineStore("channels", () => {
 	const directStore = useDirectChannelStore()

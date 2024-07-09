@@ -126,139 +126,138 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink, useRouter } from "vue-router"
-import { ref, watchEffect, computed } from "vue"
-import VInput from "@/components/atoms/VInput.vue"
-import VButton from "@/components/atoms/VButton.vue"
-import VIconButton from "@/components/molecules/VIconButton.vue"
-import { useUserStore } from "@/stores/useUserStore"
+  import { ref, watchEffect, computed } from "vue"
+  import { useRouter, RouterLink } from "vue-router"
+  import { useUserStore } from "@/stores/useUserStore"
+  import VInput from "@/components/atoms/VInput.vue"
+  import VButton from "@/components/atoms/VButton.vue"
+  import VIconButton from "@/components/molecules/VIconButton.vue"
 
-interface Validation {
-  message: string
-  isSuccess: boolean
-  regex: RegExp
-}
+  interface Validation {
+    message: string
+    isSuccess: boolean
+    regex: RegExp
+  }
+  const userStore = useUserStore()
+  const router = useRouter()
 
-const userStore = useUserStore()
+  const formData = ref({
+    username: "",
+    password: "",
+    confirmation: "",
+  })
+  const error = ref<string>("")
+  const loader = ref<boolean>(false)
+  const icon = ref<string>("./src/assets/images/visibility-true.svg")
+  const type = ref<"text" | "password">("password")
+  const current = ref<"username" | "password">()
+  const passwordValidations = ref<Validation[]>([
+    {
+      message: "Must be at least 8 characters long",
+      isSuccess: false,
+      regex: /^.{8,20}$/,
+    },
+    {
+      message: "Must contain at least 1 uppercase letter",
+      isSuccess: false,
+      regex: /[A-Z]/,
+    },
+    { message: "Must contain at least 1 digit", isSuccess: false, regex: /\d/ },
+    {
+      message: "Must contain at least 1 special character",
+      isSuccess: false,
+      regex: /[!@#$%^&*()\\[\]{}\-_+=~|:;"'<>,.?/ ]/,
+    },
+  ])
+  const usernameValidations = ref<Validation[]>([
+    {
+      message: "Must be at least 8 characters long",
+      isSuccess: false,
+      regex: /^.{8,20}/,
+    },
+    {
+      message: "Must contain letters or numbers",
+      isSuccess: false,
+      regex: /^[a-zA-Z0-9]+$/,
+    },
+    { message: "Must not have @ character", isSuccess: false, regex: /^[^@]+$/ },
+  ])
 
-const router = useRouter()
-const formData = ref({
-  username: "",
-  password: "",
-  confirmation: "",
-})
-const error = ref<string>("")
-const loader = ref<boolean>(false)
-const icon = ref<string>("./src/assets/images/visibility-true.svg")
-const type = ref<"text" | "password">("password")
-const current = ref<"username" | "password">()
-const passwordValidations = ref<Validation[]>([
-  {
-    message: "Must be at least 8 characters long",
-    isSuccess: false,
-    regex: /^.{8,20}$/,
-  },
-  {
-    message: "Must contain at least 1 uppercase letter",
-    isSuccess: false,
-    regex: /[A-Z]/,
-  },
-  { message: "Must contain at least 1 digit", isSuccess: false, regex: /\d/ },
-  {
-    message: "Must contain at least 1 special character",
-    isSuccess: false,
-    regex: /[!@#$%^&*()\\[\]{}\-_+=~|:;"'<>,.?/ ]/,
-  },
-])
-const usernameValidations = ref<Validation[]>([
-  {
-    message: "Must be at least 8 characters long",
-    isSuccess: false,
-    regex: /^.{8,20}/,
-  },
-  {
-    message: "Must contain letters or numbers",
-    isSuccess: false,
-    regex: /^[a-zA-Z0-9]+$/,
-  },
-  { message: "Must not have @ character", isSuccess: false, regex: /^[^@]+$/ },
-])
+  const validUsername = computed(() => {
+    return usernameValidations.value.filter((u) => u.isSuccess !== true)
+  })
+  const validPassword = computed(() => {
+    return passwordValidations.value.filter((p) => p.isSuccess !== true)
+  })
 
-const validUsername = computed(() => {
-  return usernameValidations.value.filter((u) => u.isSuccess !== true)
-})
-const validPassword = computed(() => {
-  return passwordValidations.value.filter((p) => p.isSuccess !== true)
-})
+  const register = async () => {
+    try {
+      validate()
+      if (!error.value) {
+        loader.value = true
+        const response = await userStore.post(formData.value)
 
-const register = async () => {
-  try {
-    validate()
-    if (!error.value) {
-      loader.value = true
-      const response = await userStore.post(formData.value)
-
-      if (response) {
-        setTimeout(() => {
-          router.push("/dashboard")
-        }, 1000)
-      } else {
-        loader.value = false
-        error.value = "Oops! Something went wrong. Try again."
+        if (response) {
+          setTimeout(() => {
+            router.push("/dashboard")
+          }, 1000)
+        } else {
+          loader.value = false
+          error.value = "Oops! Something went wrong. Try again."
+        }
+        resetInputs()
       }
-      resetInputs()
-    }
-  } catch (e) {
-    const error = e as Error
-    console.error(error.message)
-  }
-}
-
-const validate = () => {
-  if (
-    !formData.value.username ||
-    !formData.value.password ||
-    !formData.value.confirmation
-  ) {
-    error.value = "Input fields are empty."
-  } else if (validUsername.value.length > 0 || validPassword.value.length > 0) {
-    error.value = "Invalid Credentials."
-  } else if (formData.value.password !== formData.value.confirmation) {
-    error.value = "Password does not match."
-  } else {
-    error.value = ""
-  }
-}
-
-const toggle = () => {
-  if (type.value === "text") {
-    type.value = "password"
-    icon.value = "./src/assets/images/visibility-true.svg"
-  } else {
-    type.value = "text"
-    icon.value = "./src/assets/images/visibility-false.svg"
-  }
-}
-
-const resetInputs = () => {
-  validate()
-  formData.value.username = ""
-  formData.value.password = ""
-  formData.value.confirmation = ""
-  setTimeout(() => {
-    error.value = ""
-  }, 2000)
-}
-
-watchEffect(() => {
-  if (current.value === "username") {
-    for (let validation of usernameValidations.value) {
-      validation.isSuccess = validation.regex.test(formData.value.username)
-    }
-  } else {
-    for (let validation of passwordValidations.value) {
-      validation.isSuccess = validation.regex.test(formData.value.password)
+    } catch (e) {
+      const error = e as Error
+      console.error(error.message)
     }
   }
-})
+
+  const validate = () => {
+    if (
+      !formData.value.username ||
+      !formData.value.password ||
+      !formData.value.confirmation
+    ) {
+      error.value = "Input fields are empty."
+    } else if (validUsername.value.length > 0 || validPassword.value.length > 0) {
+      error.value = "Invalid Credentials."
+    } else if (formData.value.password !== formData.value.confirmation) {
+      error.value = "Password does not match."
+    } else {
+      error.value = ""
+    }
+  }
+
+  const toggle = () => {
+    if (type.value === "text") {
+      type.value = "password"
+      icon.value = "./src/assets/images/visibility-true.svg"
+    } else {
+      type.value = "text"
+      icon.value = "./src/assets/images/visibility-false.svg"
+    }
+  }
+
+  const resetInputs = () => {
+    validate()
+    formData.value.username = ""
+    formData.value.password = ""
+    formData.value.confirmation = ""
+    setTimeout(() => {
+      error.value = ""
+    }, 2000)
+  }
+
+  watchEffect(() => {
+    if (current.value === "username") {
+      for (let validation of usernameValidations.value) {
+        validation.isSuccess = validation.regex.test(formData.value.username)
+      }
+    } else {
+      for (let validation of passwordValidations.value) {
+        validation.isSuccess = validation.regex.test(formData.value.password)
+      }
+    }
+  })
 </script>

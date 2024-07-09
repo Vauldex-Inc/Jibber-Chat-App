@@ -33,34 +33,36 @@
 </template>
 
 <script lang="ts" setup>
-import { onUpdated, ref } from "vue"
-import ChatBalloon from "@/components/organisms/ChatBalloon.vue"
-import type { Message } from "@/types/Message.ts"
-import type { PublicChannel, DirectChannel } from "@/types/Channel.ts"
-import { useUser } from "@/composables/useUser";
+  import { ref , onUpdated } from "vue"
+  import { useUser } from "@/composables/useUser"
+  import ChatBalloon from "@/components/organisms/ChatBalloon.vue"
+  import type { Message } from "@/types/Message.ts"
+  import type { PublicChannel, DirectChannel } from "@/types/Channel.ts"
 
-defineProps<{
-  messages: Message[]
-  channel: PublicChannel | DirectChannel
-}>()
+  defineProps<{
+    messages: Message[]
+    channel: PublicChannel | DirectChannel
+  }>()
 
-const loggedUser = useUser()
-const chatList = ref<HTMLElement | undefined>(undefined)
-const defaultMessage = {
-  header : "Sometimes you don't need to write a long letter. A simple 'I'm thinking of you' can brighten someone's day.' - Mitchi Albom",
-  footer : "This channel have been archived by the owner"
-}
-
-const align = (message: Message) => {
-  return message.idUser === loggedUser?.id ? `self-end` : 'self-start'
-}
-
-onUpdated(() => {
-  if (chatList.value) {
-    chatList.value.scrollTo({
-      behavior: "smooth",
-      top: chatList.value.scrollHeight,
-    })
+  const loggedUser = useUser()
+  const defaultMessage = {
+    header : `Sometimes you don't need to write a long letter. 
+      A simple 'I'm thinking of you' can brighten someone's day.' - Mitchi Albom`,
+    footer : "This channel have been archived by the owner"
   }
-})
+
+  const chatList = ref<HTMLElement | undefined>(undefined)
+
+  onUpdated(() => {
+    if (chatList.value) {
+      chatList.value.scrollTo({
+        behavior: "smooth",
+        top: chatList.value.scrollHeight,
+      })
+    }
+  })
+
+  const align = (message: Message) => {
+    return message.idUser === loggedUser?.id ? `self-end` : 'self-start'
+  }
 </script>

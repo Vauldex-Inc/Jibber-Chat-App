@@ -71,8 +71,7 @@
   import InvitationPublic from "@/components/organisms/InvitationPublic.vue"
   import ChatColorSelector from "@/components/organisms/ChatColorSelector.vue"
   import VProfileForm from "@/components/organisms/VProfileForm.vue"
-  import VModal from "../atoms/VModal.vue"
-
+  import VModal from "@/components/atoms/VModal.vue"
   import {
     ChannelVariantEnum,
     DIRECT_CHANNEL,
@@ -84,6 +83,7 @@
   const { channel, channelInitials, userId } = storeToRefs(useChannelStore())
   const { changeTheme } = useChannelStore()
   const loggedUser = useUser()
+
   const open = ref({
     modalState: false,
     member: false, 
@@ -105,12 +105,11 @@
     }
   ])
 
-  const name = computed(() => channel.value && 'title' in channel.value ? channel.value.title : getName(userId.value))
+  const name = computed(() => channel.value && 'title' in channel.value 
+    ? channel.value.title : getName(userId.value))
 
-  const checkPermissions = (type: Array<string>): boolean => {
-    return ChannelVariantEnum.array().safeParse(type).success && type.includes(transformedChannel.value.channelType!)
-  } 
-  
+  const isOppositeUser = computed(() => loggedUser?.id !== userId.value)
+
   const transformedChannel = computed(() => {
     return {
       color: channel.value.color || "bg-gray-600",
@@ -120,10 +119,12 @@
       channelType: channel.value.channelType,
       status: getStatus(userId.value)
     }
-
   })
 
-  const isOppositeUser = computed(() => loggedUser?.id !== userId.value)
+  const checkPermissions = (type: Array<string>): boolean => {
+    return ChannelVariantEnum.array().safeParse(type).success 
+      && type.includes(transformedChannel.value.channelType!)
+  }
 
   const onClose = () => {
     open.value = {

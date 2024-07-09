@@ -54,22 +54,22 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, type Ref } from 'vue'
-  import {useProfileStore} from "@/stores/useProfileStore"
-  import {useUserStore} from "@/stores/useUserStore"
-  import {useChannelStore} from "@/stores/useChannelStore"
-  import {useUnreadMessageStore} from "@/stores/useUnreadMessageStore"
-  import {useDirectChannelStore} from "@/stores/useDirectChannelStore"
-  import { useMessageStore } from '@/stores/useMessageStore'
+  import { computed, ref } from 'vue'
   import { formatSentAt } from '@/composables/useDateFormatter'
   import { useUser } from '@/composables/useUser'
-  import type { UnreadMessage, Message } from '@/types/Message'
-  import VModal from '../atoms/VModal.vue'
-  import InvitationDirect from './InvitationDirect.vue'
-  import VBadge from '../atoms/VBadge.vue'
-  import VTextGroup from '../molecules/VTextGroup.vue'
-  import VAvatar from '../molecules/VAvatar.vue'
+  import { useProfileStore } from "@/stores/useProfileStore"
+  import { useUserStore } from "@/stores/useUserStore"
+  import { useChannelStore } from "@/stores/useChannelStore"
+  import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
+  import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
+  import { useMessageStore } from '@/stores/useMessageStore'
+  import VModal from '@/components/atoms/VModal.vue'
+  import InvitationDirect from '@/components/organisms/InvitationDirect.vue'
+  import VBadge from '@/components/atoms/VBadge.vue'
+  import VTextGroup from '@/components/molecules/VTextGroup.vue'
+  import VAvatar from '@/components/molecules/VAvatar.vue'
   import VIconButton from '@/components/molecules/VIconButton.vue'
+  import type { UnreadMessage, Message } from '@/types/Message'
 
   const { getImage, getName } = useProfileStore()
   const { getStatus } = useUserStore()
@@ -82,7 +82,28 @@
   const header = {
     title: "Direct Messages"
   }
+
   const open = ref<boolean>(false)
+
+  const setId = (idUser: string, idReceiver: string) => {
+    return loggedUser?.id === idUser ? idReceiver : idUser
+  }
+
+  const transformChannels = computed(() => channels.value.map((r) => {
+    const id = setId(r.idUser, r.idReceiver)
+    const { text, sentAt } = latestMessage(r.id)
+    return {
+      id: r.id,
+      image: getImage(id),
+      status: getStatus(id),
+      name: getName(id) || "",
+      sentAt: formatSentAt(sentAt),
+      text,
+      color: r.color,
+      archivedAt: r.archivedAt,
+      hasUnread: hasUnread(r.id)
+    }
+  }))
 
   const latestMessage = (idChannel: string): { text: string, sentAt: string } => {
     let message = {} as UnreadMessage | Message
@@ -100,34 +121,11 @@
     }
   }
 
-  const setId = (idUser: string, idReceiver: string) => {
-    return loggedUser?.id === idUser ? idReceiver : idUser
-  }
-
-  const transformChannels = computed(() => channels.value.map((r) => {
-    const id = setId(r.idUser, r.idReceiver)
-    const { text, sentAt } = latestMessage(r.id)
-
-    return {
-      id: r.id,
-      image: getImage(id),
-      status: getStatus(id),
-      name: getName(id) || "",
-      sentAt: formatSentAt(sentAt),
-      text,
-      color: r.color,
-      archivedAt: r.archivedAt,
-      hasUnread: hasUnread(r.id)
-    }
-  }))
-
   const onClickChannel = (idChannel: string) => {
     const _channel = channels.value.find((r) => r.id === idChannel)
-    
     if (_channel) {
       channel.set(_channel)
     }
-
     removeUnreadMessages(idChannel)
   }
 </script>

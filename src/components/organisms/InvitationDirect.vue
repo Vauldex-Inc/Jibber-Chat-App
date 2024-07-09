@@ -48,63 +48,63 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue"
-import { useUser } from "@/composables/useUser"
-import { useUserStore } from "@/stores/useUserStore"
-import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
-import { useProfileStore } from "@/stores/useProfileStore"
-import VInput from "@/components/atoms/VInput.vue"
-import VButton from "@/components/atoms/VButton.vue"
+  import { ref, computed, onMounted } from "vue"
+  import { useUser } from "@/composables/useUser"
+  import { useUserStore } from "@/stores/useUserStore"
+  import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
+  import { useProfileStore } from "@/stores/useProfileStore"
+  import VInput from "@/components/atoms/VInput.vue"
+  import VButton from "@/components/atoms/VButton.vue"
 
-const directStore = useDirectChannelStore()
-const profileStore = useProfileStore()
-const userStore = useUserStore()
-const users = userStore.getUsers
-const loggedUser = useUser()
+  const directStore = useDirectChannelStore()
+  const profileStore = useProfileStore()
+  const userStore = useUserStore()
+  const users = userStore.getUsers
+  const loggedUser = useUser()
 
-const inputUserName = ref<string>("")
-const unInvitedUsers = ref<[string, string | undefined][]>([])
-const invitedUsers = ref<string[]>([])
+  const inputUserName = ref<string>("")
+  const unInvitedUsers = ref<[string, string | undefined][]>([])
+  const invitedUsers = ref<string[]>([])
 
-const filteredUserName = computed(() => {
-  return unInvitedUsers.value.filter(([id, _]) => {
-    const currentName = inputUserName.value.toLowerCase()
-    return (
-      profileStore.getName(id)?.toLowerCase().includes(currentName) &&
-      !isInvited(id) && id !== loggedUser?.id
-    )
+  const filteredUserName = computed(() => {
+    return unInvitedUsers.value.filter(([id, _]) => {
+      const currentName = inputUserName.value.toLowerCase()
+      return (
+        profileStore.getName(id)?.toLowerCase().includes(currentName) &&
+        !isInvited(id) && id !== loggedUser?.id
+      )
+    })
   })
-})
 
-const isInvited = (idUser: string) => invitedUsers.value.includes(idUser)
-
-onMounted(async () => {
-  directStore.channels.value.forEach((c) => invitedUsers.value.push(c.idReceiver))
-  users.value.forEach((u) => {
-    if (!invitedUsers.value.includes(u.id)) {
-      const id = u.id
-      const name = profileStore.getName(u.id)
-      unInvitedUsers.value.push([id, name])
-    }
-  })
-})
-
-const create = async (idUser?: string, name?: string) => {
-  try {
-    if (idUser) {
-      const response = await directStore.post(idUser)
-
-      if (response === 200) {
-        const index = unInvitedUsers.value.indexOf([idUser, name])
-        unInvitedUsers.value.splice(index, 1)
-        invitedUsers.value.push(idUser)
-      } else {
-        throw new Error("Invite Failed")
+  onMounted(async () => {
+    directStore.channels.value.forEach((c) => invitedUsers.value.push(c.idReceiver))
+    users.value.forEach((u) => {
+      if (!invitedUsers.value.includes(u.id)) {
+        const id = u.id
+        const name = profileStore.getName(u.id)
+        unInvitedUsers.value.push([id, name])
       }
+    })
+  })
+
+  const isInvited = (idUser: string) => invitedUsers.value.includes(idUser)
+
+  const create = async (idUser?: string, name?: string) => {
+    try {
+      if (idUser) {
+        const response = await directStore.post(idUser)
+
+        if (response === 200) {
+          const index = unInvitedUsers.value.indexOf([idUser, name])
+          unInvitedUsers.value.splice(index, 1)
+          invitedUsers.value.push(idUser)
+        } else {
+          throw new Error("Invite Failed")
+        }
+      }
+    } catch (e) {
+      const error = e as Error
+      console.error(error.message)
     }
-  } catch (e) {
-    const error = e as Error
-    console.error(error.message)
   }
-}
 </script>

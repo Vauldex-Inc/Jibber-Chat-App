@@ -7,20 +7,21 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+  import { computed } from 'vue'
+  import type { Status } from '@/types/User'
 
-const prop = defineProps<{
-  status?: "offline" | "online" | undefined
-}>()
+  const prop = defineProps<{
+    status?: Status
+  }>()
 
-const statusClass = computed(() => {
-  switch (prop.status) {
-    case "online":
-      return "bg-emerald-500"
-    case "offline":
-      return "bg-slate-400 dark:bg-slate-600"
-    default:
-      return "bg-slate-400 dark:bg-slate-600"
-  }
-})
+  const statusClass = computed(() => {
+    switch (prop.status) {
+      case "online":
+        return "bg-emerald-500"
+      case "offline":
+        return "bg-slate-400 dark:bg-slate-600"
+      default:
+        return "bg-slate-400 dark:bg-slate-600"
+    }
+  })
 </script>

@@ -8,24 +8,24 @@
 </template>
 
 <script lang="ts" setup>
-import { z, ZodError } from "zod"
-import { type BadgeProp } from "@/types/Prop";
+  import { z, ZodError } from "zod"
+  import { type BadgeProp } from "@/types/Prop"
 
-const prop = defineProps<BadgeProp>()
+  const prop = defineProps<BadgeProp>()
 
-defineOptions({
-  inheritAttrs: false,
-})
+  defineOptions({
+    inheritAttrs: false,
+  })
 
-const PropSchema = z.object({
-  color: z.string().optional(),
-  count: z.number()
-})
+  const PropSchema = z.object({
+    color: z.string().optional(),
+    count: z.number()
+  })
 
-try {
-  PropSchema.parse(prop)
-} catch (e) {
-  const error = e as ZodError
-  console.error(error.message)
-}
+  try {
+    PropSchema.parse(prop)
+  } catch (e) {
+    const error = e as ZodError
+    console.error(error.message)
+  }
 </script>

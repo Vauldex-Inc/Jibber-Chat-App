@@ -1,6 +1,6 @@
-import { computed, ref } from "vue"
+import { ref, computed } from "vue"
 import { defineStore } from "pinia"
-import { ZodError, z } from "zod"
+import { z, ZodError } from "zod"
 import axios, { AxiosError } from "axios"
 import { useDateFormatter } from "@/composables/useDateFormatter"
 import { type User, StatusSchema, UserSchema } from "@/types/User"
@@ -26,9 +26,10 @@ type UserData = z.infer<typeof UserDataSchema>
 export const useUserStore = defineStore("users", () => {
 	const users = ref<User[]>([])
 	const onlineUsers = ref<string[]>([])
+
 	const resource = "/users"
 
-	const init = async () => {
+	const fetch = async () => {
 		try {
 			const { data } = await axios.get(resource)
 			const result = data.users
@@ -98,7 +99,7 @@ export const useUserStore = defineStore("users", () => {
 
 	return {
 		users, 
-		init,
+		fetch,
 		post, 
 		getUser, 
 		getUsers, 

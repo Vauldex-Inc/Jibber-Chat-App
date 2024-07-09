@@ -1,6 +1,6 @@
-import { UserSchema } from "@/types/User"
 import axios, { AxiosError } from "axios"
 import { ZodError, z } from "zod"
+import { UserSchema } from "@/types/User"
 
 const UserDataSchema = z.object({
   username: z.string(),

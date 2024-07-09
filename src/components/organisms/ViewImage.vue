@@ -23,17 +23,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
-import VIconButton from "@/components/molecules/VIconButton.vue"
+  import { ref } from "vue"
+  import VIconButton from "@/components/molecules/VIconButton.vue"
 
-const props = defineProps<{
-  chatImages: string[]
-}>()
+  const props = defineProps<{
+    chatImages: string[]
+  }>()
 
-const count = ref<number>(0)
+  const count = ref<number>(0)
 
-const move = (dir: string) => {
-  const length = props.chatImages.length
-  count.value = (count.value + (dir === "left" ? -1 : 1) + length) % length
-}
+  const move = (dir: string) => {
+    const length = props.chatImages.length
+    count.value = (count.value + (dir === "left" ? -1 : 1) + length) % length
+  }
 </script>

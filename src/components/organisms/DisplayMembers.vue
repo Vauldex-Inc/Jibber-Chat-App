@@ -52,67 +52,66 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue"
-import { useUserStore } from "@/stores/useUserStore"
-import VAvatar from "@/components/molecules/VAvatar.vue"
-import VProfileForm from "@/components/organisms/VProfileForm.vue"
-import VModal from "@/components/atoms/VModal.vue"
-import { type User } from "@/types/User"
-import { useProfileStore } from "@/stores/useProfileStore"
-import type { ChannelUser } from "@/types/Channel"
-import { useChannelStore } from "@/stores/useChannelStore"
+  import { ref, onMounted, computed } from "vue"
+  import { useUserStore } from "@/stores/useUserStore"
+  import { useProfileStore } from "@/stores/useProfileStore"
+  import { useChannelStore } from "@/stores/useChannelStore"
+  import VAvatar from "@/components/molecules/VAvatar.vue"
+  import VProfileForm from "@/components/organisms/VProfileForm.vue"
+  import VModal from "@/components/atoms/VModal.vue"
+  import { type User } from "@/types/User"
+  import type { ChannelUser } from "@/types/Channel"
 
-const props = defineProps<{
-  idChannel: string
-}>()
+  const props = defineProps<{
+    idChannel: string
+  }>()
+  const emits = defineEmits<{
+    close: [value: boolean]
+  }>()
 
-const emits = defineEmits<{
-  close: [value: boolean]
-}>()
+  const userStore = useUserStore()
+  const channelStore = useChannelStore()
+  const userProfileStore = useProfileStore()
 
-const userStore = useUserStore()
-const channelStore = useChannelStore()
-const userProfileStore = useProfileStore()
+  const channelUsers = ref<ChannelUser[] | undefined>([])
+  const users = ref<(User | undefined)[]>([])
+  const sender = ref<string>("")
+  const stateDisplayProfile = ref<boolean>(false)
 
-const channelUsers = ref<ChannelUser[] | undefined>([])
-const users = ref<(User | undefined)[]>([])
-const sender = ref<string>("")
-const stateDisplayProfile = ref<boolean>(false)
+  const transformUsers = computed(() => users.value.map((u) => {
+      return {
+        id: u!.id,
+        hasProfile: userProfileStore.getProfile(u!.id),
+        hasNickname: userProfileStore.getNickname(u!.id),
+        image: userProfileStore.getImage(u!.id),
+        status: getStatus(u!.id),
+        name: userProfileStore.getName(u!.id),
+        nickname: userProfileStore.getNickname(u!.id)
+      }
+    }))
 
-const transformUsers = computed(() => users.value.map((u) => {
-    return {
-      id: u!.id,
-      hasProfile: userProfileStore.getProfile(u!.id),
-      hasNickname: userProfileStore.getNickname(u!.id),
-      image: userProfileStore.getImage(u!.id),
-      status: getStatus(u!.id),
-      name: userProfileStore.getName(u!.id),
-      nickname: userProfileStore.getNickname(u!.id)
-    }
-  }))
-
-const getStatus = (id: string): "online" | "offline" | undefined => {
-  return userStore.getOnlineUsers().value.indexOf(id) !== -1
-    ? "online"
-    : "offline"
-}
-
-onMounted(async () => {
-  channelUsers.value = await channelStore.getChannelUsers(props.idChannel)
-  if (channelUsers.value) {
-    users.value = channelUsers.value.map((channelUser) => {
-      return userStore.getUser(channelUser.idUser)
-    })
+  const getStatus = (id: string): "online" | "offline" | undefined => {
+    return userStore.getOnlineUsers().value.indexOf(id) !== -1
+      ? "online"
+      : "offline"
   }
-})
 
-const closeDisplayProfile = () => {
-  stateDisplayProfile.value = false
-  emits("close", false)
-}
+  onMounted(async () => {
+    channelUsers.value = await channelStore.getChannelUsers(props.idChannel)
+    if (channelUsers.value) {
+      users.value = channelUsers.value.map((channelUser) => {
+        return userStore.getUser(channelUser.idUser)
+      })
+    }
+  })
 
-const selectedProfile = (id: string) => {
-  stateDisplayProfile.value = !stateDisplayProfile.value
-  sender.value = id
-}
+  const closeDisplayProfile = () => {
+    stateDisplayProfile.value = false
+    emits("close", false)
+  }
+
+  const selectedProfile = (id: string) => {
+    stateDisplayProfile.value = !stateDisplayProfile.value
+    sender.value = id
+  }
 </script>

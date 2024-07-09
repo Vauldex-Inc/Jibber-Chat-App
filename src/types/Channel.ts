@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { ProfileSchema } from './Profile'
 
 const GROUP_CHANNEL = "MPU"
 const DIRECT_CHANNEL = "SNG"

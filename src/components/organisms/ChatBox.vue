@@ -60,88 +60,87 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, compile } from "vue"
-import { storeToRefs } from "pinia"
-import { z } from "zod"
-import VInput from "@/components/atoms/VInput.vue"
-import VIconButton from "@/components/molecules/VIconButton.vue"
-import { useChannelStore } from "@/stores/useChannelStore"
+  import { ref, computed } from "vue"
+  import { storeToRefs } from "pinia"
+  import { z } from "zod"
+  import { useChannelStore } from "@/stores/useChannelStore"
+  import VInput from "@/components/atoms/VInput.vue"
+  import VIconButton from "@/components/molecules/VIconButton.vue"
 
-const { channel } = storeToRefs(useChannelStore())
+  const emits = defineEmits<{
+    send: [message: string, image?: string]
+  }>()
 
-interface ImageForm {
-  image: string | ArrayBuffer | null
-  title: string
-}
-
-const emits = defineEmits<{
-  send: [message: string, image?: string]
-}>()
-
-const fileSchema = z.coerce.string()
-
-const isInputTextFocus = ref<boolean>(false)
-const fileInput = ref<HTMLInputElement | string | undefined>(undefined)
-const message = ref<string>("")
-const imageForm = ref<ImageForm>({
-  image: "",
-  title: "",
-})
-const isMessageWithImage = ref<boolean>(false)
-
-const buttonClass = computed(() => {
-  return [channel.value.color || "bg-slate-800",  channel.value.archivedAt ? 'opacity-50' : '']
-})
-
-const imageSrc = computed(() => {
-  return imageForm.value.image as string
-})
-
-const remove = () => {
-  message.value = ""
-  imageForm.value.image = ""
-  fileInput.value = ""
-  isMessageWithImage.value = false
-}
-
-const sendMessage = () => {
-  if (isMessageWithImage.value) {
-    emits(
-      "send",
-      message.value ? message.value : "Sent an image",
-      imageForm.value.image as string,
-    )
-  } else if (message.value) {
-    emits("send", message.value)
+  const fileSchema = z.coerce.string()
+  const { channel } = storeToRefs(useChannelStore())
+  interface ImageForm {
+    image: string | ArrayBuffer | null
+    title: string
   }
 
-  message.value = ""
-  imageForm.value.image = ""
-  fileInput.value = undefined
-  isMessageWithImage.value = false
-}
+  const isInputTextFocus = ref<boolean>(false)
+  const fileInput = ref<HTMLInputElement | string | undefined>(undefined)
+  const message = ref<string>("")
+  const imageForm = ref<ImageForm>({
+    image: "",
+    title: "",
+  })
+  const isMessageWithImage = ref<boolean>(false)
 
-const openFileSelector = () => {
-  if (fileInput.value) {
-    (fileInput.value as HTMLInputElement).click()
+  const buttonClass = computed(() => {
+    return [channel.value.color || "bg-slate-800",  
+      channel.value.archivedAt ? 'opacity-50' : '']
+  })
+
+  const imageSrc = computed(() => {
+    return imageForm.value.image as string
+  })
+
+  const remove = () => {
+    message.value = ""
+    imageForm.value.image = ""
+    fileInput.value = ""
+    isMessageWithImage.value = false
   }
-}
 
-const attachFile = () => {
-  let data = fileInput.value as HTMLInputElement
-  if (fileSchema.safeParse(data).success) {
-    const file = data.files![0]
-    const reader = new FileReader()
-    const isImage = /\.(jpe?g|png|gif)$/.test(file.name)
+  const sendMessage = () => {
+    if (isMessageWithImage.value) {
+      emits(
+        "send",
+        message.value ? message.value : "Sent an image",
+        imageForm.value.image as string,
+      )
+    } else if (message.value) {
+      emits("send", message.value)
+    }
 
-    if (isImage) {
-      reader.onload = () => {
-        imageForm.value.image = reader.result
-        imageForm.value.title = file.name
-        isMessageWithImage.value = true
-      }
-      reader.readAsDataURL(file)
+    message.value = ""
+    imageForm.value.image = ""
+    fileInput.value = undefined
+    isMessageWithImage.value = false
+  }
+
+  const openFileSelector = () => {
+    if (fileInput.value) {
+      (fileInput.value as HTMLInputElement).click()
     }
   }
-}
+
+  const attachFile = () => {
+    let data = fileInput.value as HTMLInputElement
+    if (fileSchema.safeParse(data).success) {
+      const file = data.files![0]
+      const reader = new FileReader()
+      const isImage = /\.(jpe?g|png|gif)$/.test(file.name)
+
+      if (isImage) {
+        reader.onload = () => {
+          imageForm.value.image = reader.result
+          imageForm.value.title = file.name
+          isMessageWithImage.value = true
+        }
+        reader.readAsDataURL(file)
+      }
+    }
+  }
 </script>

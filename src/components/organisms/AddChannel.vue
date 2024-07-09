@@ -31,36 +31,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
-import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
-import VInput from "@/components/atoms/VInput.vue"
-import VButton from "@/components/atoms/VButton.vue"
-import { type ChannelData } from "@/types/Channel"
+  import { ref } from "vue"
+  import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
+  import VInput from "@/components/atoms/VInput.vue"
+  import VButton from "@/components/atoms/VButton.vue"
+  import { type ChannelData } from "@/types/Channel"
 
-const emits = defineEmits(["close"])
+  const emits = defineEmits(["close"])
 
-const publicCstore = usePublicChannelStore()
+  const publicCstore = usePublicChannelStore()
+  const vFocus = { mounted: (el: HTMLInputElement) => el.focus() }
 
-const error = ref<string>("")
-const channelForm = ref<ChannelData>({title: "", channelType: "MPU"})
+  const error = ref<string>("")
+  const channelForm = ref<ChannelData>({title: "", channelType: "MPU"})
 
-const vFocus = { mounted: (el: HTMLInputElement) => el.focus() }
-
-const create = async () => {
-  try {
-    if (channelForm.value.title) {
-      publicCstore.post(channelForm.value)
-    } else {
-      error.value = "Please provide a channel name."
+  const create = async () => {
+    try {
+      if (channelForm.value.title) {
+        publicCstore.post(channelForm.value)
+      } else {
+        error.value = "Please provide a channel name."
+      }
+      emits("close")
+    } catch (e) {
+      const error = e as Error
+      console.error(error.message)
+    } finally {
+      setTimeout(() => {
+        error.value = ""
+      }, 1500)
     }
-    emits("close")
-  } catch (e) {
-    const error = e as Error
-    console.error(error.message)
-  } finally {
-    setTimeout(() => {
-      error.value = ""
-    }, 1500)
   }
-}
 </script>

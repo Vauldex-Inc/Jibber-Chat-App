@@ -42,50 +42,50 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue"
-import { z, ZodError } from "zod"
-import VIconButton from "@/components/molecules/VIconButton.vue"
-import type { ToastProp } from "@/types/Prop"
+  import { ref, onMounted, onUnmounted } from "vue"
+  import { z, ZodError } from "zod"
+  import VIconButton from "@/components/molecules/VIconButton.vue"
+  import type { ToastProp } from "@/types/Prop"
 
-const prop = defineProps<ToastProp>()
-const emits = defineEmits<{
-  close: [value: string]
-}>()
+  const prop = defineProps<ToastProp>()
+  const emits = defineEmits<{
+    close: [value: string]
+  }>()
 
-const PropSchema = z.object({
-  toastId: z.string(),
-  message: z.string(),
-  title: z.string()
-})
+  const PropSchema = z.object({
+    toastId: z.string(),
+    message: z.string(),
+    title: z.string()
+  })
 
-const loadingPercentage = ref<number>(0)
-const timerId = ref<number | undefined>(undefined)
+  const loadingPercentage = ref<number>(0)
+  const timerId = ref<number | undefined>(undefined)
 
-onMounted(() => {
-  setLoading()
-})
+  onMounted(() => {
+    setLoading()
+  })
 
-onUnmounted(() => {
-  clearInterval(timerId.value)
-})
-
-const setLoading = () => {
-  loadingPercentage.value = 0
-
-  timerId.value = setInterval(() => {
-    loadingPercentage.value += (0.74 / 380) * 100
-  }, 10)
-
-  setTimeout(() => {
+  onUnmounted(() => {
     clearInterval(timerId.value)
-    emits("close", prop.toastId)
-  }, 5_000)
-}
+  })
 
-try {
-  PropSchema.parse(prop)
-} catch (e) {
-  const error = e as ZodError
-  console.error(error.message)
-}
+  const setLoading = () => {
+    loadingPercentage.value = 0
+
+    timerId.value = setInterval(() => {
+      loadingPercentage.value += (0.74 / 380) * 100
+    }, 10)
+
+    setTimeout(() => {
+      clearInterval(timerId.value)
+      emits("close", prop.toastId)
+    }, 5_000)
+  }
+
+  try {
+    PropSchema.parse(prop)
+  } catch (e) {
+    const error = e as ZodError
+    console.error(error.message)
+  }
 </script>

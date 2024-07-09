@@ -20,23 +20,22 @@
 </template>
 
 <script lang="ts" setup>
-import type { TextGroupProp } from "@/types/Prop"
-import { z, ZodError } from "zod"
+  import { z, ZodError } from "zod"
+  import type { TextGroupProp } from "@/types/Prop"
 
+  const prop = defineProps<TextGroupProp>()
 
-const prop = defineProps<TextGroupProp>()
+  const PropSchema = z.object({
+    title: z.string().optional(),
+    text: z.string(),
+    subText: z.string().optional(),
+    isBold: z.boolean().optional()
+  })
 
-const PropSchema = z.object({
-  title: z.string().optional(),
-  text: z.string(),
-  subText: z.string().optional(),
-  isBold: z.boolean().optional()
-})
-
-try {
-  PropSchema.parse(prop)
-} catch (e) {
-  const error = e as ZodError
-  console.error(error.message)
-}
+  try {
+    PropSchema.parse(prop)
+  } catch (e) {
+    const error = e as ZodError
+    console.error(error.message)
+  }
 </script>

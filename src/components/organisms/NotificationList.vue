@@ -57,7 +57,7 @@
   import VIconButton from "@/components/molecules/VIconButton.vue"
   import NotificationListItem from "@/components/organisms/NotificationListItem.vue"
   import InvitationCard from "@/components/organisms/InvitationCard.vue"
-  import VModal from "@/components/atoms/VModal.vue"
+  import VModal from "@/components/molecules/VModal.vue"
   import { usePublicChannelStore } from "@/stores/usePublicChannelStore"
   import { useProfileStore } from "@/stores/useProfileStore"
 

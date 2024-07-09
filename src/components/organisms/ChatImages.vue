@@ -47,7 +47,7 @@
   import { useMessageStore } from "@/stores/useMessageStore"
   import { useChannelStore } from "@/stores/useChannelStore"
   import VButton from "@/components/atoms/VButton.vue"
-  import VModal from "@/components/atoms/VModal.vue"
+  import VModal from "@/components/molecules/VModal.vue"
   import ViewImage from "@/components/organisms/ViewImage.vue"
 
   const header = {

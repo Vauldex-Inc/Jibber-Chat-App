@@ -64,7 +64,7 @@
   import VIconButton from "@/components/molecules/VIconButton.vue"
   import VTextGroup from "@/components/molecules/VTextGroup.vue"
   import VBadge from "@/components/atoms/VBadge.vue"
-  import VModal from "@/components/atoms/VModal.vue"
+  import VModal from "@/components/molecules/VModal.vue"
   import AddChannel from "@/components/organisms/AddChannel.vue"
   import type { UnreadMessage, Message } from "@/types/Message"
 

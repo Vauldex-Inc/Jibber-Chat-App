@@ -39,7 +39,7 @@
   import { storeToRefs } from "pinia"
   import { useChannelStore } from "@/stores/useChannelStore"
   import VButton from "@/components/atoms/VButton.vue"
-  import VModal from "../atoms/VModal.vue"
+  import VModal from "@/components/molecules/VModal.vue"
   import DisplayMembers from "./DisplayMembers.vue"
 
   const channelStore = useChannelStore()

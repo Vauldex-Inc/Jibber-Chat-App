@@ -63,7 +63,7 @@
   import { useUnreadMessageStore } from "@/stores/useUnreadMessageStore"
   import { useDirectChannelStore } from "@/stores/useDirectChannelStore"
   import { useMessageStore } from '@/stores/useMessageStore'
-  import VModal from '@/components/atoms/VModal.vue'
+  import VModal from '@/components/molecules/VModal.vue'
   import InvitationDirect from '@/components/organisms/InvitationDirect.vue'
   import VBadge from '@/components/atoms/VBadge.vue'
   import VTextGroup from '@/components/molecules/VTextGroup.vue'

@@ -71,7 +71,7 @@
   import InvitationPublic from "@/components/organisms/InvitationPublic.vue"
   import ChatColorSelector from "@/components/organisms/ChatColorSelector.vue"
   import VProfileForm from "@/components/organisms/VProfileForm.vue"
-  import VModal from "@/components/atoms/VModal.vue"
+  import VModal from "@/components/molecules/VModal.vue"
   import {
     ChannelVariantEnum,
     DIRECT_CHANNEL,

@@ -58,7 +58,7 @@
   import { useChannelStore } from "@/stores/useChannelStore"
   import VAvatar from "@/components/molecules/VAvatar.vue"
   import VProfileForm from "@/components/organisms/VProfileForm.vue"
-  import VModal from "@/components/atoms/VModal.vue"
+  import VModal from "@/components/molecules/VModal.vue"
   import { type User } from "@/types/User"
   import type { ChannelUser } from "@/types/Channel"
 

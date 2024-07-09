@@ -14,27 +14,19 @@ export const useAuthStore = defineStore("auth-store", () => {
   const resource = "/sessions"
 
   const post = async (form: UserData) => {
-    try {
-      const { data } = await axios.post(resource, form)
-      const validation = UserSchema.safeParse(data.user)
-      if (validation.success) {
-        localStorage.setItem("user", JSON.stringify(validation.data))
-      }
-      return validation.success
-    } catch (e) {
-      const error = e as AxiosError | ZodError
-      console.error(error.message)
+    const { data } = await axios.post(resource, form)
+    const validation = UserSchema.safeParse(data.user)
+
+    if (validation.success) {
+      localStorage.setItem("user", JSON.stringify(validation.data))
     }
+
+    return validation.success
   }
 
   const destroy = async () => {
-    try {
-      const response = await axios.delete(resource)
-      return response
-    } catch (e) {
-      const error = e as AxiosError
-      console.error(error.message)
-    }
+    const response = await axios.delete(resource)
+    return response.status
   }
 
   return {

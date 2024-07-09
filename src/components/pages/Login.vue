@@ -174,12 +174,13 @@
         resetFields(formData, "username", "password")
         router.push("/dashboard")
       } else {
-        highlightErrorFields()
-        displayError("Incorrect username and password combination")
+        throw Error("Incorrect username and password combination")
       }
     } catch (e) {
       const error = e as Error
-      console.error(error.message)
+      
+      highlightErrorFields()
+      displayError(error.message)
     } finally {
       isLoading.value = false
     }

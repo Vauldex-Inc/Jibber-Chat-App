@@ -59,7 +59,7 @@
   import VAvatar from "@/components/molecules/VAvatar.vue"
   import VProfileForm from "@/components/organisms/VProfileForm.vue"
   import VModal from "@/components/molecules/VModal.vue"
-  import { type User } from "@/types/User"
+  import { StatusSchema, type Status, type User } from "@/types/User"
   import type { ChannelUser } from "@/types/Channel"
 
   const props = defineProps<{
@@ -90,11 +90,10 @@
     }
   }))
 
-  // Update this
-  const getStatus = (id: string): "online" | "offline" | undefined => {
+  const getStatus = (id: string): Status | undefined => {
     return userStore.getOnlineUsers().value.indexOf(id) !== -1
-      ? "online"
-      : "offline"
+      ? StatusSchema.enum.online
+      :  StatusSchema.enum.offline
   }
 
   onMounted(async () => {

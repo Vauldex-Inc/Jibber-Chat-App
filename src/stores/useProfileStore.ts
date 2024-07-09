@@ -22,13 +22,8 @@ export const useProfileStore = defineStore("userProfile", () => {
   }
 
   const post = async (form: ProfileData) => {
-    try {
-      const response = await axios.post(resource, form)
-      return response
-    } catch (e) {
-      const error = e as AxiosError
-      console.error(error.message)
-    }
+    const response = await axios.post(resource, form)
+    return response.status
   }
 
   const put = async (form: ProfileData) => {

@@ -35,7 +35,6 @@ export const usePublicChannelStore = defineStore("public-channels", () => {
   }
 
   const post = async (channel: ChannelData) => {
-    // try {
     const { data } = await axios.post(resource, channel)
     const responseValidation = PublicChannelSchema.safeParse(data.channel)
     if (responseValidation.success) {
@@ -49,9 +48,6 @@ export const usePublicChannelStore = defineStore("public-channels", () => {
     } else {
       throw new Error("Uknown Format")
     }
-    // } catch (error) {
-    //   error instanceof Error ? console.error(error.message) : console.error("An error ocurred.")
-    // }
   }
 
   const getChannelById = (idChannel: string) => {

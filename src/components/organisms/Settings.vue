@@ -79,9 +79,11 @@
   const logout = async () => {
     try {
       const response = await session.destroy()
-      if (response?.status === 200) {
+      if (response === 200) {
         localStorage.removeItem("user")
         router.push("/")
+      } else {
+        throw Error("Something went wrong.")
       }
     } catch (e) {
       const error = e as Error

@@ -54,20 +54,16 @@ export const useMessageStore = defineStore("messages", () => {
 	}
 
 	const sendMessage = async (idChannel: string, message: string, img: string | undefined) => {
-		try {
-			const { data } = await axios.post(`/channels/${idChannel}/messages`, {
-				text: message,
-				image: img
-			})
-			const messageValidation = MessageSchema.safeParse(data.messages)
+		const { data } = await axios.post(`/channels/${idChannel}/messages`, {
+			text: message,
+			image: img
+		})
+		const messageValidation = MessageSchema.safeParse(data.messages)
 
-			if (messageValidation.success) {
-				latestMessages.value.push(messageValidation.data)
-			} else {
-				throw new Error("Unknown Format")
-			}
-		} catch (error) {
-			error instanceof Error ? console.error(error.message) : ""
+		if (messageValidation.success) {
+			latestMessages.value.push(messageValidation.data)
+		} else {
+			throw Error("Unknown Format")
 		}
 	}
 

@@ -198,14 +198,13 @@
         response = await profileStore.put(formData.value)
       }
 
-      if (response?.status === 200) {
+      if (response === 200) {
         emits("submit")
       } else {
-        error.value = "Oops, something went wrong."
+        throw Error("Oops, something went wrong.")
       }
     } catch (e) {
-      const error = e as Error
-      console.error(error.message)
+      error.value = (e as Error).message
     } finally {
       setTimeout(() => {
         error.value = ""

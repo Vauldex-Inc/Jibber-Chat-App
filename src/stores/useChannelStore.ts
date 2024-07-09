@@ -131,11 +131,11 @@ export const useChannelStore = defineStore("channels", () => {
 		}
 	}
 
-	const archiveChannel = async (channel: Channel | DirectChannel, archivedAt: string) => {
+	const archiveChannel = async (archivedAt: string) => {
 		try {
-			await axios.put(`/channels/${channel.id}`, {
-				title: channel.title,
-				channelType: channel.channelType,
+			await axios.put(`/channels/${_channel.value.id}`, {
+				title: _channel.value.title,
+				channelType: _channel.value.channelType,
 				color: undefined,
 				archivedAt: archivedAt,
 			})

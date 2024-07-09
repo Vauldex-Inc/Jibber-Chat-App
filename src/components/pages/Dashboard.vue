@@ -188,7 +188,6 @@ const updateArchived = (data: { color: string; archivedAt: string }) => {
   if (channelStore.channel) {
     channelStore.channel.color = data.color
     channelStore.channel.archivedAt = data.archivedAt
-    channelStore.changeTheme(data.color)
   }
 }
 

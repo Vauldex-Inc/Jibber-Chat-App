@@ -116,7 +116,7 @@ const statusClass = {'text-emerald-600': channelT.value.status === StatusSchema.
 const archiveChannel = async () => {
   try {
     const archivedAt = new Date().toISOString()
-    await channelStore.archiveChannel(channel.value, archivedAt)
+    await channelStore.archiveChannel(archivedAt)
     emits("archive", { color: "", archivedAt })
   } catch (e) {
     const error = e as Error

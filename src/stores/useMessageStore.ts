@@ -53,7 +53,11 @@ export const useMessageStore = defineStore("messages", () => {
 		}
 	}
 
-	const sendMessage = async (idChannel: string, message: string, img: string | undefined) => {
+	const sendMessage = async (
+		idChannel: string,
+		message: string, 
+		img: string | undefined
+	) => {
 		const { data } = await axios.post(`/channels/${idChannel}/messages`, {
 			text: message,
 			image: img

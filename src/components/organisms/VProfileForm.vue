@@ -146,9 +146,9 @@
   }
 
   const method = ref<"POST" | "PUT">()
-  const error = ref<string>("")
+  const error = ref("")
   const fileInput = ref<HTMLInputElement>()
-  const onAvatar = ref<boolean>(false)
+  const onAvatar = ref(false)
   const formData = ref<ProfileData>({
     nickName: "",
     firstName: "",

@@ -69,8 +69,8 @@
   const loggedUser = useUser()
   const invitationNotif = notificationStore.getSelectedInvitation()
 
-  const displayNotification = ref<boolean>(false)
-  const open = ref<boolean>(false)
+  const displayNotification = ref(false)
+  const open = ref(false)
 
   const unSeenCount = computed(() => {
     return notificationsCopy.value.filter((n) => n.seenAt === undefined).length

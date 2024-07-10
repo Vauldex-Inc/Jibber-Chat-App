@@ -48,6 +48,12 @@ export const useChannelStore = defineStore("channels", () => {
 		getChannelUsers(channel.id)
 	}
 
+	const checkMembership = async () => {
+		if (!isMember(_channel.value.id, loggedUser!.id)) {
+      await axios.post(`/channels/${_channel.value.id}/users`, {})
+    }
+	}
+
   const changeTheme = async (color: string) => {
     try {
       const response = await axios.put(`/channels/${channel.value.id}`, {
@@ -171,6 +177,7 @@ export const useChannelStore = defineStore("channels", () => {
 		archiveChannel,
 		channelInitials,
 		userId,
-		getOnNotifChannel
+		getOnNotifChannel,
+		checkMembership
   }
 })

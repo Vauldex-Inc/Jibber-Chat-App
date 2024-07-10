@@ -62,7 +62,7 @@
   const users = userStore.getUsers
   const loggedUser = useUser()
 
-  const inputUserName = ref<string>("")
+  const inputUserName = ref("")
   const unInvitedUsers = ref<[string, string | undefined][]>([])
   const invitedUsers = ref<string[]>([])
 

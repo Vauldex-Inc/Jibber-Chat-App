@@ -49,7 +49,7 @@
   }
   const { channel } = storeToRefs(useChannelStore())
 
-  const open = ref<boolean>(false)
+  const open = ref(false)
 
   const color = computed(() => channel.value.color ? channel.value.color : 'dark:bg-gray-300 bg-gray-700')
 

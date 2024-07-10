@@ -142,9 +142,7 @@ const updateArchived = (data: { color: string; archivedAt: string }) => {
 
 const sendMessage = async (message: string, img: string | undefined) => {
   try {
-    if (!channelStore.isMember(channelStore.channel.id, loggedUser!.id)) {
-      await axios.post(`/channels/${channelStore.channel.id}/users`, {})
-    }
+    await channelStore.checkMembership()
     await messageStore.sendMessage(channelStore.channel.id, message, img)
   } catch (e) {
     const error = e as AxiosError

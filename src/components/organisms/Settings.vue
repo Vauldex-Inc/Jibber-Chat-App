@@ -69,8 +69,8 @@
   const router = useRouter()
   const loggedUser = useUser()
 
-  const isOpen = ref<boolean>(false)
-  const formShown = ref<boolean>(false)
+  const isOpen = ref(false)
+  const formShown = ref(false)
 
   const toggleSettings = () => (isOpen.value = !isOpen.value)
 

@@ -73,7 +73,7 @@
   const { getUnreadMessages, hasUnread } = useUnreadMessageStore()
   const { getLatestMessages } = useMessageStore()
 
-  const open = ref<boolean>(false)
+  const open = ref(false)
 
   const transformChannels = computed(() => channels.value.map((r) => {
     const { text, sentAt } = latestMessage(r.id)

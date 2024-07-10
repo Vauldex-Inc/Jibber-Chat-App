@@ -70,7 +70,7 @@
 
   const invitedUsers = ref<string[]>([])
   const unInvitedUsers = ref<[string, string | undefined][]>([])
-  const inputUserName = ref<string>("")
+  const inputUserName = ref("")
 
   const filteredUserName = computed(() => {
     return unInvitedUsers.value.filter(([id, _]) => {

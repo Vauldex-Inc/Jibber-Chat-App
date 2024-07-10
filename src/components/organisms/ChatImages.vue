@@ -36,7 +36,7 @@
       <p v-else class="text-center">No images found</p>
     </div>
     <VModal :is-open="open" @close="open = false">
-      <ViewImage :chatImages="allImages" />
+      <ImageGallery :chatImages="allImages" />
     </VModal>
   </div>
 </template>
@@ -48,7 +48,7 @@
   import { useChannelStore } from "@/stores/useChannelStore"
   import VButton from "@/components/atoms/VButton.vue"
   import VModal from "@/components/molecules/VModal.vue"
-  import ViewImage from "@/components/organisms/ViewImage.vue"
+  import ImageGallery from "@/components/organisms/ImageGallery.vue"
 
   const header = {
     title: "Images",
@@ -57,7 +57,7 @@
 
   const { chatImages } = storeToRefs(useMessageStore())
   const { channel } = storeToRefs(useChannelStore())
-  const open = ref<boolean>(false)
+  const open = ref(false)
 
   const displayImages = computed(() => chatImages.value.reverse().slice(0, 4))
 

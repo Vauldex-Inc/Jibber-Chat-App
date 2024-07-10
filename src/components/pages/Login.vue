@@ -82,32 +82,38 @@
 
 <script setup lang="ts">
   import { ref, type Ref } from "vue"
+  import { z } from "zod"
   import { useRouter, RouterLink } from "vue-router"
   import { useAuthStore } from "@/stores/useAuthStore"
   import VButton from "@/components/atoms/VButton.vue"
   import VInput from "@/components/atoms/VInput.vue"
   import VIconButton from "@/components/molecules/VIconButton.vue"
+  import { 
+    FormDataSchema, 
+    PasswordTypeEnum, 
+    baseForm, 
+    type LoginForm, 
+    type PasswordType 
+  } from "@/types/Login"
 
   const session = useAuthStore()
-  const timerId = ref<number | undefined>(undefined)
-  const error = ref<string>("")
-  const errorUsername = ref<boolean>(false)
-  const errorPassword = ref<boolean>(false)
   const router = useRouter()
-  const isLoading = ref<boolean>(false)
-  const passwordType = ref<"text" | "password">("password")
-  const icon = ref<string>("./src/assets/images/visibility-true.svg")
-  const formData = ref({
-    username: "",
-    password: "",
-  })
+
+  const timerId = ref<number | undefined>(undefined)
+  const error = ref("")
+  const errorUsername = ref(false)
+  const errorPassword = ref(false)
+  const isLoading = ref(false)
+  const passwordType = ref<PasswordType>("password")
+  const icon = ref("./src/assets/images/visibility-true.svg")
+  const formData = ref<LoginForm>({...baseForm})
 
   const toggle = () => {
     if (passwordType.value === "text") {
-      passwordType.value = "password"
+      passwordType.value = PasswordTypeEnum.enum.password
       icon.value = "./src/assets/images/visibility-true.svg"
     } else {
-      passwordType.value = "text"
+      passwordType.value = PasswordTypeEnum.enum.text
       icon.value = "./src/assets/images/visibility-false.svg"
     }
   }
@@ -139,27 +145,31 @@
     })
   }
 
+  const setError = (message: string, fieldReset: string[], ...fields: Ref<boolean>[]) => {
+    displayError(message)
+    highlightErrorFields(...fields)
+    resetFields(formData, ...fieldReset)
+  }
+
   const checkInputFields = () => {
-    if (
-      formData.value.username.trim() === "" &&
-      formData.value.password.trim() === ""
-    ) {
-      displayError("Fill up required fields.")
-      highlightErrorFields(errorUsername, errorPassword)
-      resetFields(formData, "username", "password")
-      return false
-    } else if (formData.value.username.trim() === "") {
-      displayError("Username is required.")
-      highlightErrorFields(errorUsername)
-      resetFields(formData, "username")
+    const formValidation = FormDataSchema.safeParse(formData.value)
+
+    if (formValidation.success) {
+      return true
+    } else if (formData.value?.username.trim() === "") {
+      setError("Username is required.", ["username"], errorUsername)
       return false
     } else if (formData.value.password.trim() === "") {
-      displayError("Password is required.")
-      highlightErrorFields(errorPassword)
-      resetFields(formData, "password")
+      setError("Password is required.", ["password"], errorPassword)
       return false
     } else {
-      return true
+      setError(
+        "Fill up required fields.", 
+        ["username", "password"], 
+        errorUsername, 
+        errorPassword
+      )
+      return false
     }
   }
 
@@ -170,7 +180,7 @@
     try {
       const response = await session.post(formData.value)
       if (response) {
-        resetFields(formData, "username", "password")
+        formData.value = {...baseForm}
         router.push("/dashboard")
       } else {
         throw Error("Incorrect username and password combination")

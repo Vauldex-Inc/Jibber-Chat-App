@@ -75,8 +75,8 @@
 
   const channelUsers = ref<ChannelUser[] | undefined>([])
   const users = ref<(User | undefined)[]>([])
-  const sender = ref<string>("")
-  const stateDisplayProfile = ref<boolean>(false)
+  const sender = ref("")
+  const stateDisplayProfile = ref(false)
 
   const transformUsers = computed(() => users.value.map((u) => {
     return {

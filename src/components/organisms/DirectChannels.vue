@@ -80,7 +80,7 @@
   const { removeUnreadMessages } = useUnreadMessageStore()
   const loggedUser = useUser()
 
-  const open = ref<boolean>(false)
+  const open = ref(false)
 
   const setId = (idUser: string, idReceiver: string) => loggedUser?.id === idUser ? idReceiver : idUser
 

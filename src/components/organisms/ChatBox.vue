@@ -80,14 +80,14 @@
     title: string
   }
 
-  const isInputTextFocus = ref<boolean>(false)
+  const isInputTextFocus = ref(false)
   const fileInput = ref<HTMLInputElement | string | undefined>(undefined)
-  const message = ref<string>("")
+  const message = ref("")
   const imageForm = ref<ImageForm>({
     image: "",
     title: "",
   })
-  const isMessageWithImage = ref<boolean>(false)
+  const isMessageWithImage = ref(false)
 
   const buttonClass = computed(() => {
     return [

@@ -1,87 +1,68 @@
-import {ref} from "vue"
-import {defineStore} from "pinia"
-import type {User} from "@/types/User.ts"
-import type {Profile} from "@/types/Profile.ts"
-import {useFetch} from "@/composables/useFetch.ts"
+import { ref, computed } from "vue"
+import { defineStore } from "pinia"
+import { z, ZodError } from "zod"
+import axios, { AxiosError } from "axios"
+import { useDateFormatter } from "@/composables/useDateFormatter"
+import { type User, StatusSchema, UserSchema } from "@/types/User"
+import type { Message } from "@/types/Message"
 
+const dateFormatter = useDateFormatter()
+const defaultOptions: Intl.DateTimeFormatOptions = {
+	month: "long",
+	day: "numeric",
+	weekday: "long",
+	hour: "numeric",
+	minute: "numeric",
+	hour12: true,
+}
+
+const UserDataSchema = z.object({
+	username: z.string(),
+	password: z.string()
+})
+
+type UserData = z.infer<typeof UserDataSchema>
 
 export const useUserStore = defineStore("users", () => {
-	const users = ref<[User,Profile][]>([])
-
+	const users = ref<User[]>([])
 	const onlineUsers = ref<string[]>([])
 
+	const resource = "/users"
 
-	const init = async () => {
-		const res = await useFetch("/users")
-		const data = (await res.json()).users
-
-		users.value = data
+	const fetch = async () => {
+		try {
+			const { data } = await axios.get(resource)
+			const result = data.users
+			users.value = result
+		} catch (e) {
+			const error = e as AxiosError
+			console.error(error)
+		}
 	}
 
-	const getUserById = (id: string) => {
-		return users.value.find(u => u[0].id === id)
+	const post = async (form: UserData) => {
+		try {
+			const { data } = await axios.post(resource, form)
+			const validation = UserSchema.safeParse(data.user)
+
+			if (validation.success) {
+				localStorage.setItem("user", JSON.stringify(validation.data))
+			}
+			return validation.success
+		} catch (e) {
+			throw new Error("Username already exist.")
+		}
 	}
 
-	const getUsers = () => {
-		return users
-	}
+	const getUsers = computed(() => users)
 
-	const getUserNameById = (id: string) => {
-		const userProfile = getUserById(id)
+	const getUser = (idUser: string) => users.value.find((user) => user.id == idUser)
 
-		if(!userProfile) {
-			return "Anonymous"
-		}
-
-		const [user,profile] = userProfile
-
-		if(!profile) {
-			return user.username
-		}
-
-		if(!profile.firstName && !profile.lastName) {
-			return user.username
-		}
-
-
-		if(profile.firstName.trim() === "" || profile.lastName.trim() === "") {
-			return user.username
-		}
-
-		return `${profile.firstName} ${profile.lastName}`
-	}
-
-	const getUserImageById = (id: string) => {
-		const userProfile = getUserById(id)
-
-		if(!userProfile) {
-			return undefined
-		}
-
-		const [user,profile] = userProfile
-		
-		if(!profile) {
-			return undefined
-		}
-
-		return profile.image
-	}
-
-	const addUserProfile = (id: string, newProfile: Profile) => {
-		users.value = [...users.value.map(u => {
-				const [user, profile] = u
-				if(user.id === id) {
-					return [user,newProfile]
-				}
-				return [user, profile]
-		})]
-	}
-
-	const updateUserOnlineAt = (users: User[], type: string) => {
-		if(type === "online") {
+	const updateUserOnlineAt = (users: string[], type: string) => {
+		if (type === "online") {
 			onlineUsers.value = users
 		} else {
-			onlineUsers.value = [...onlineUsers.value.filter(ol => users.indexOf(ol) === -1 )]
+			onlineUsers.value = [...onlineUsers.value.filter(ol => users.indexOf(ol) === -1)]
 		}
 	}
 
@@ -90,9 +71,43 @@ export const useUserStore = defineStore("users", () => {
 	}
 
 	const addNewUser = (user: User) => {
-		users.value.push([user,undefined])
+		users.value.push(user)
 	}
 
-	return {users,init,getUserById,getUsers,getUserNameById,
-	getUserImageById,addUserProfile,updateUserOnlineAt,onlineUsers,getOnlineUsers, addNewUser}
+	const sentAtFormatter = (message: Message, options: Intl.DateTimeFormatOptions = defaultOptions) => {
+		return dateFormatter.format(message.sentAt, options)
+	}
+
+	const getStatus = (userId?: string) => {
+		if (userId && getOnlineUsers().value.includes(userId)) {
+			return StatusSchema.enum.online
+		}
+		return StatusSchema.enum.offline
+	}
+
+
+	const inviteMember = async (idChannel: string, idSender: string) => {
+		try {
+			await axios.post(`/channels/${idChannel}/users`, {
+				idUser: idSender,
+			})
+		} catch (e) {
+			throw new Error(`Error: ${e}`)
+		}
+	}
+
+	return {
+		users, 
+		fetch,
+		post, 
+		getUser, 
+		getUsers, 
+		getStatus, 
+		updateUserOnlineAt, 
+		onlineUsers,
+		getOnlineUsers, 
+		addNewUser, 
+		sentAtFormatter, 
+		inviteMember
+	}
 })

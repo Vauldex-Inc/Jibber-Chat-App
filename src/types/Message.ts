@@ -1,19 +1,30 @@
-export interface Message {
-	id: string,
-	channelId: string,
-	userId: string,
-	text: string,
-	image?: string,
-	sentAt: string
-}
+import { z } from 'zod'
 
+const MessageSchema = z.object({
+	id: z.string(),
+	idChannel: z.string(),
+	idUser: z.string(),
+	text: z.string(),
+	image: z.string().optional(),
+	sentAt: z.string().datetime()
+})
 
-export interface UnreadMessage {
-	messageId: string
-	channelId: string
-	userId: string
-	unreads: string
-	senderId: string
-	sentAt: string
-	text: string
+const UnreadMessageSchema = z.object({
+	idMessage: z.string(),
+	idChannel: z.string().uuid(),
+	idUser: z.string().uuid(),
+	unreads: z.string(),
+	idSender: z.string().uuid(),
+	sentAt: z.string().datetime(),
+	text: z.string()
+})
+
+type Message = z.infer<typeof MessageSchema>
+type UnreadMessage = z.infer<typeof UnreadMessageSchema>
+
+export {
+	type Message,
+	type UnreadMessage,
+	MessageSchema,
+	UnreadMessageSchema
 }

@@ -1,32 +1,46 @@
-import {defineStore} from "pinia"
-import {ref} from "vue"
-import {useFetch} from "@/composables/useFetch.ts"
-import type {UnreadMessage} from "@/types/Message"
-
+import { ref } from "vue"
+import { defineStore } from "pinia"
+import type { ZodError } from "zod"
+import axios, { AxiosError } from "axios"
+import { UnreadMessageSchema, type UnreadMessage } from "@/types/Message"
 
 export const useUnreadMessageStore = defineStore("unread-messages", () => {
-
 	const unreadMessages = ref<UnreadMessage[]>([])
 
-	const init = async () => {
-		const res = await useFetch("/users/unread-messages")
-		const data = (await res.json()).unreadMessages
-
-		unreadMessages.value = data
+	const fetch = async () => {
+		try {
+			const { data } = await axios.get("/users/unread-messages")
+			const validation = UnreadMessageSchema.array().safeParse(data.unreadMessages)
+			if (validation.success) {
+				unreadMessages.value = validation.data
+			}
+		} catch (e) {
+			const error = e as AxiosError | ZodError
+			console.error(error.message)
+		}
 	}
 
 	const addUnreadMessage = (message: UnreadMessage) => {
 		unreadMessages.value.push(message)
 	}
 
-	const getUnreadMessages = () => {
-		return unreadMessages
+	const getUnreadMessages = (idChannel: string) => {
+		return unreadMessages.value.filter((ur) => ur.idChannel === idChannel)
 	}
 
-	const removeUnreadMessages = (channelId: string) => {
-		unreadMessages.value = [...unreadMessages.value.filter(um => um.channelId !== channelId)]
+	const removeUnreadMessages = (idChannel: string) => {
+		unreadMessages.value = [...unreadMessages.value.filter(um => um.idChannel !== idChannel)]
 	}
 
-	return {unreadMessages,init,getUnreadMessages,addUnreadMessage,removeUnreadMessages}
+	const hasUnread = (idChannel: string) => getUnreadMessages(idChannel).length > 0
+
+	return { 
+		unreadMessages, 
+		fetch, 
+		getUnreadMessages, 
+		addUnreadMessage, 
+		removeUnreadMessages ,
+		hasUnread
+	}
 })
 

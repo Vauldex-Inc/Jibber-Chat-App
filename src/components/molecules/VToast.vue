@@ -1,14 +1,14 @@
 <template>
-  <li
-    class="p-3 shadow-lg -translate-x-3 translate-y-3 border border-indigo-200 dark:border-slate-800 bg-indigo-100 dark:bg-slate-900 rounded-md overflow-hidden w-[380px] relative"
+  <div
+    class="relative w-[380px] -translate-x-3 translate-y-3 overflow-hidden rounded-md border border-indigo-200 bg-indigo-100 p-3 shadow-lg dark:border-slate-800 dark:bg-slate-900"
   >
     <span
-      class="bg-indigo-600 w-0 h-1 absolute bottom-0 left-0 transition-all"
+      class="absolute bottom-0 left-0 h-1 w-0 bg-indigo-600 transition-all"
       :style="'width:' + loadingPercentage + '%'"
     ></span>
     <div class="flex items-center justify-start gap-4">
       <span
-        class="p-1 rounded-full bg-blue-50 text-red-500 dark:text-slate-700"
+        class="rounded-full bg-blue-50 p-1 text-red-500 dark:text-slate-700"
       >
         <img
           src="@/assets/images/check-svgrepo-com.svg"
@@ -16,57 +16,76 @@
           class="h-5 w-5"
         />
       </span>
-      <div class="flex items-center justify-between flex-1">
+      <div class="flex flex-1 items-center justify-between">
         <div>
-          <p class="text-indigo-950 dark:text-gray-200 text-xs font-semibold w-[260px] truncate capitalize">{{title }}:</p>
-          <p class="text-indigo-950 dark:text-gray-200 my-2 line-clamp-2 w-[260px] break-words">{{ message }}</p>
+          <p
+            class="w-[260px] truncate text-xs font-semibold capitalize text-indigo-950 dark:text-gray-200"
+          >
+            {{ title }}:
+          </p>
+          <p
+            class="my-2 line-clamp-2 w-[260px] break-words text-indigo-950 dark:text-gray-200"
+          >
+            {{ message }}
+          </p>
         </div>
         <VIconButton
-            @click="emits('close',toastId)"
-            :invert="true"
-            class="rounded-full ml-4 p-1 flex-1"
-            icon="./src/assets/images/close.svg"
-            size="sm"
-          />
+          @click="emits('close', toastId)"
+          :invert="true"
+          class="ml-4 flex-1 rounded-full p-1"
+          icon="./src/assets/images/close.svg"
+          size="small"
+        />
       </div>
     </div>
-  </li>  
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted ,onUnmounted } from "vue"
-import VIconButton from "@/components/atoms/VIconButton.vue"
+  import { ref, onMounted, onUnmounted } from "vue"
+  import { z, ZodError } from "zod"
+  import VIconButton from "@/components/molecules/VIconButton.vue"
+  import type { ToastProp } from "@/types/Prop"
 
-const loadingPercentage = ref<number>(0)
-const timerId = ref<number | undefined>(undefined);
+  const prop = defineProps<ToastProp>()
+  const emits = defineEmits<{
+    close: [value: string]
+  }>()
 
-const setLoading = () => {
-  loadingPercentage.value = 0
+  const PropSchema = z.object({
+    toastId: z.string(),
+    message: z.string(),
+    title: z.string()
+  })
 
-  timerId.value = setInterval(() => {
-    loadingPercentage.value += (0.74/380) * 100
-  }, 10)
+  const loadingPercentage = ref(0)
+  const timerId = ref<number | undefined>(undefined)
 
-  setTimeout(() => {
+  onMounted(() => {
+    setLoading()
+  })
+
+  onUnmounted(() => {
     clearInterval(timerId.value)
-    emits('close', props.toastId)
-  }, 5_000)
-}
+  })
 
-const props = defineProps<{
-  toastId: string
-  message: string
-  title: string
-}>()
+  const setLoading = () => {
+    loadingPercentage.value = 0
 
-const emits = defineEmits<{
-  close: [value: string]
-}>()
+    timerId.value = setInterval(() => {
+      loadingPercentage.value += (0.74 / 380) * 100
+    }, 10)
 
-onMounted(() => {
-  setLoading()
-})  
-onUnmounted(() => {
-  clearInterval(timerId.value)
-})
+    setTimeout(() => {
+      clearInterval(timerId.value)
+      emits("close", prop.toastId)
+    }, 5_000)
+  }
+
+  try {
+    PropSchema.parse(prop)
+  } catch (e) {
+    const error = e as ZodError
+    console.error(error.message)
+  }
 </script>

@@ -1,37 +1,41 @@
-type Theme = "dark" | "light"
-import {ref} from "vue"
+import { ref } from "vue"
+import { z } from 'zod'
 
-const curTheme = ref<Theme>("light")
+const ThemeValue = z.enum(["dark", "light"])
 
+type Theme = z.infer<typeof ThemeValue>
+
+const current = ref<Theme>("light")
 
 export const useTheme = () => {
-
 	const init = () => {
-		const theme = localStorage.getItem("theme")
-		if(theme) {
+		const theme = localStorage.getItem("theme") as Theme
+		if (theme) {
 			setTheme(theme)
 		} else {
-			setTheme("light")
+			setTheme(ThemeValue.enum.light)
 		}
 	}
 
-	const getTheme = () => {
-		return curTheme
-	}
+	const getTheme = () => current
 
 	const setTheme = (theme: Theme) => {
-		if(theme === "dark"){
-			document.body.classList.remove("light")
+		if (theme === ThemeValue.enum.dark) {
+			document.body.classList.remove(ThemeValue.enum.light)
 			document.body.classList.add(theme)
 		} else {
-			document.body.classList.remove("dark")
+			document.body.classList.remove(ThemeValue.enum.dark)
 			document.body.classList.add(theme)
 		}
-		
-		curTheme.value = theme
-		localStorage.setItem("theme",theme)
+
+		current.value = theme
+		localStorage.setItem("theme", theme)
 	}
 
 
-	return {setTheme,init,getTheme}
+	return { 
+		setTheme, 
+		init, 
+		getTheme
+	}
 }

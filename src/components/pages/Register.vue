@@ -148,6 +148,7 @@
     }
   })
 
+  const router = useRouter()
   const userStore = useUserStore()
   const message = ref<string | undefined>()
   const loader = ref(false)
@@ -185,7 +186,7 @@
     try {
       RegisterSchema.parse(form.value)
       await userStore.post(form.value)
-      useRouter().push("/dashboard")
+      router.push("/dashboard")
     } catch (e) {
       const error = e as ZodError | Error
       loader.value = false

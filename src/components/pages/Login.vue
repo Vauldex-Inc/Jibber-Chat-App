@@ -48,6 +48,7 @@
             class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 p-1"
           />
         </div>
+
         <VButton
           v-if="!isLoading"
           type="submit"
@@ -55,18 +56,13 @@
         >
           Login
         </VButton>
-        <VButton
-          v-else
-          type="submit"
-          class="text-md mt-4 flex justify-center rounded-md bg-indigo-600 px-5 py-3 font-semibold text-white"
-        >
-          <div
-            class="mr-3 h-4 w-4 animate-spin rounded-full border-2 border-indigo-700/50 border-b-indigo-200 p-2"
-          >
+
+        <div v-else class="text-md mt-4 flex justify-center rounded-md bg-indigo-600 px-5 py-3 font-semibold text-white">
+          <div class="mr-3 h-4 w-4 animate-spin rounded-full border-2 border-indigo-700/50 border-b-indigo-200 p-2">
             <p class="sr-only">Loading</p>
           </div>
           Processing...
-        </VButton>
+        </div>
       </form>
       <p class="mt-1.5">
         Don't have an account?

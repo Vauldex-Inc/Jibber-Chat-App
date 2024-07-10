@@ -123,11 +123,13 @@
 <script setup lang="ts">
   import { ref, watchEffect, computed } from "vue"
   import { useRouter, RouterLink } from "vue-router"
+  import { ZodError, z } from "zod"
   import { useUserStore } from "@/stores/useUserStore"
   import VInput from "@/components/atoms/VInput.vue"
   import VButton from "@/components/atoms/VButton.vue"
   import VIconButton from "@/components/molecules/VIconButton.vue"
   import VFormError from "@/components/atoms/VFormError.vue"
+import type { AxiosError } from "axios"
 
   interface Validation {
     message: string
@@ -140,43 +142,43 @@
   const formData = ref({
     username: "",
     password: "",
-    confirmation: "",
+    confirmation: ""
   })
-  const error = ref<string>("")
-  const loader = ref<boolean>(false)
-  const icon = ref<string>("./src/assets/images/visibility-true.svg")
+  const error = ref("")
+  const loader = ref(false)
+  const icon = ref("./src/assets/images/visibility-true.svg")
   const type = ref<"text" | "password">("password")
-  const current = ref<"username" | "password">()
+  const current = ref<"username" | "password" | undefined>()
   const passwordValidations = ref<Validation[]>([
     {
       message: "Must be at least 8 characters long",
       isSuccess: false,
-      regex: /^.{8,20}$/,
+      regex: /^.{8,20}$/
     },
     {
       message: "Must contain at least 1 uppercase letter",
       isSuccess: false,
-      regex: /[A-Z]/,
+      regex: /[A-Z]/
     },
     { message: "Must contain at least 1 digit", isSuccess: false, regex: /\d/ },
     {
       message: "Must contain at least 1 special character",
       isSuccess: false,
-      regex: /[!@#$%^&*()\\[\]{}\-_+=~|:;"'<>,.?/ ]/,
-    },
+      regex: /[!@#$%^&*()\\[\]{}\-_+=~|:;"'<>,.?/ ]/
+    }
   ])
   const usernameValidations = ref<Validation[]>([
     {
       message: "Must be at least 8 characters long",
       isSuccess: false,
-      regex: /^.{8,20}/,
+      regex: /^.{8,20}/
     },
     {
       message: "Must contain letters or numbers",
       isSuccess: false,
-      regex: /^[a-zA-Z0-9]+$/,
+      regex: /^[a-zA-Z0-9]+$/
     },
-    { message: "Must not have @ character", isSuccess: false, regex: /^[^@]+$/ },
+    { message: "Must not have @ character", isSuccess: false, regex: /^[^@]+$/ }
   ])
 
   const validUsername = computed(() => {
@@ -198,14 +200,11 @@
             router.push("/dashboard")
           }, 1000)
         } else {
-          loader.value = false
-          error.value = "Oops! Something went wrong. Try again."
+          resetInputs()
         }
-        resetInputs()
       }
     } catch (e) {
-      const error = e as Error
-      console.error(error.message)
+      error.value = (e as Error).message
     }
   }
 
@@ -226,12 +225,15 @@
   }
 
   const toggle = () => {
-    if (type.value === "text") {
-      type.value = "password"
-      icon.value = "./src/assets/images/visibility-true.svg"
-    } else {
-      type.value = "text"
-      icon.value = "./src/assets/images/visibility-false.svg"
+    switch (type.value) {
+      case "text":
+        type.value = "password"
+        icon.value = "./src/assets/images/visibility-true.svg"
+        break
+      case "password":
+        type.value = "text"
+        icon.value = "./src/assets/images/visibility-false.svg"
+        break
     }
   }
 
@@ -240,20 +242,26 @@
     formData.value.username = ""
     formData.value.password = ""
     formData.value.confirmation = ""
+    loader.value = false
     setTimeout(() => {
       error.value = ""
     }, 2000)
   }
 
   watchEffect(() => {
-    if (current.value === "username") {
-      for (let validation of usernameValidations.value) {
-        validation.isSuccess = validation.regex.test(formData.value.username)
-      }
-    } else {
-      for (let validation of passwordValidations.value) {
-        validation.isSuccess = validation.regex.test(formData.value.password)
-      }
+    switch (current.value) {
+      case "username":
+        for (let validation of usernameValidations.value) {
+          validation.isSuccess = z.string().regex(validation.regex)
+          .safeParse(formData.value.username).success
+        }
+        break
+      case "password":
+        for (let validation of passwordValidations.value) {
+          validation.isSuccess = z.string().regex(validation.regex)
+          .safeParse(formData.value.password).success
+        }
+        break
     }
   })
 </script>

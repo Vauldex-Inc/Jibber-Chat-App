@@ -50,8 +50,7 @@ export const useUserStore = defineStore("users", () => {
 			}
 			return validation.success
 		} catch (e) {
-			const error = e as AxiosError | ZodError
-			console.error(error.message)
+			throw new Error("Username already exist.")
 		}
 	}
 

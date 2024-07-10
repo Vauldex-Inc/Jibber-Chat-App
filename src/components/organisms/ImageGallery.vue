@@ -30,7 +30,7 @@
     chatImages: string[]
   }>()
 
-  const count = ref<number>(0)
+  const count = ref(0)
 
   const move = (dir: string) => {
     const length = props.chatImages.length

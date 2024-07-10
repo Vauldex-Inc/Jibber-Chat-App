@@ -123,13 +123,12 @@
 <script setup lang="ts">
   import { ref, watchEffect, computed } from "vue"
   import { useRouter, RouterLink } from "vue-router"
-  import { ZodError, z } from "zod"
+  import { z } from "zod"
   import { useUserStore } from "@/stores/useUserStore"
   import VInput from "@/components/atoms/VInput.vue"
   import VButton from "@/components/atoms/VButton.vue"
   import VIconButton from "@/components/molecules/VIconButton.vue"
   import VFormError from "@/components/atoms/VFormError.vue"
-import type { AxiosError } from "axios"
 
   interface Validation {
     message: string

@@ -22,8 +22,8 @@
 <script lang="ts" setup>
   import { ref } from "vue"
 
-  const openLeft = ref<boolean>(true)
-  const openRight = ref<boolean>(true)
+  const openLeft = ref(true)
+  const openRight = ref(true)
 
   const toggleRight = () => {
     openRight.value = !openRight.value

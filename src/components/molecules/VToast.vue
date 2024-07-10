@@ -58,7 +58,7 @@
     title: z.string()
   })
 
-  const loadingPercentage = ref<number>(0)
+  const loadingPercentage = ref(0)
   const timerId = ref<number | undefined>(undefined)
 
   onMounted(() => {

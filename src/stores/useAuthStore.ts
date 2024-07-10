@@ -8,12 +8,12 @@ const UserDataSchema = z.object({
   password: z.string()
 })
 
-type UserData = z.infer<typeof UserDataSchema>
+type User = z.infer<typeof UserDataSchema>
 
 export const useAuthStore = defineStore("auth-store", () => {
   const resource = "/sessions"
 
-  const post = async (form: UserData) => {
+  const post = async (form: User) => {
     const { data } = await axios.post(resource, form)
     const validation = UserSchema.safeParse(data.user)
 

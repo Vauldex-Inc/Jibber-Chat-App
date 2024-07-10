@@ -6,79 +6,79 @@
         <p>It's quick and easy</p>
       </div>
       <form
-        @submit.prevent
+        name="registerForm"
+        method="POST"
+        @submit.prevent="onSubmit"
         class="flex w-[500px] max-w-full flex-col justify-center gap-3 rounded-lg bg-white p-8 shadow-md"
       >
         <p class="text-center text-3xl font-medium">Register</p>
         <VFormError :error="error"/>
         <ul
-          v-if="current === 'username'"
+          v-if="current === 'username' && requirements.length !== 0"
           class="rounded-md border bg-gray-100 p-3 text-xs text-red-500"
         >
-          <li v-for="validation in usernameValidations">
-            <p :class="{ 'text-green-500': validation.isSuccess }">
-              • {{ validation.message }}
+          <li v-for="validation in requirements">
+            <p :class="{ 'text-green-500': requirements }">
+              • {{ validation }}
             </p>
           </li>
         </ul>
         <ul
-          v-if="current === 'password'"
+          v-if="current === 'password' && requirements.length !== 0"
           class="rounded-md border bg-gray-100 p-3 text-xs text-red-500"
         >
-          <li v-for="validation in passwordValidations">
-            <p :class="{ 'text-green-500': validation.isSuccess }">
-              • {{ validation.message }}
+          <li v-for="validation in requirements">
+            <p :class="{ 'text-green-500': requirements }">
+              • {{ validation }}
             </p>
           </li>
         </ul>
         <label for="username" class="font-semibold">Username</label>
         <VInput
           id="username"
+          v-model="form.username"
           type="text"
           size="large"
-          v-model="formData.username"
           maxlength="20"
           class="rounded-md border-2 border-gray-300 bg-gray-50 outline-none hover:border-indigo-600 focus:border-indigo-600"
-          @focus="current = 'username'"
-          @blur="current = undefined"
-          required
+          @focus="onFocus('username')"
+          @update:model-value="onInput(UsernameSchema, form.username)"
         />
         <label for="password" class="font-semibold">Password</label>
         <div class="relative">
           <VInput
             id="password"
-            :type="type"
+            v-model="form.password"
+            :type="showPassword ? 'text' : 'password'"
             size="large"
-            v-model="formData.password"
             class="w-full rounded-md border-2 border-gray-300 bg-gray-50 pr-12 outline-none hover:border-indigo-600 focus:border-indigo-600"
-            @focus="current = 'password'"
-            @blur="current = undefined"
-            required
+            @focus="onFocus('password')"
+            @update:model-value="onInput(PasswordSchema, form.password)"
           />
           <VIconButton
             size="xsmall"
-            :icon="icon"
+            :icon="showPasswordIcon"
             tabindex="20"
             class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 p-1"
-            @click="toggle"
+            @click="showPassword = !showPassword"
           />
         </div>
         <label for="confirm" class="font-semibold">Confirm Password</label>
         <div class="relative">
           <VInput
             id="confirm"
-            :type="type"
+            :type="showPassword ? 'text' : 'password'"
             size="large"
-            v-model="formData.confirmation"
+            v-model="form.confirmation"
             class="w-full rounded-md border-2 border-gray-300 bg-gray-50 pr-12 outline-none hover:border-indigo-600 focus:border-indigo-600"
-            required
+            @focus="onFocus(undefined)"
           />
           <VIconButton
             size="xsmall"
-            :icon="icon"
+            :icon="showPasswordIcon"
             tabindex="21"
             class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 p-1"
-            @click="toggle"
+            @click="showPassword = !showPassword"
           />
         </div>
         <VButton
@@ -86,7 +86,6 @@
           action="submit"
           size="medium"
           class="text-md mt-4 rounded-md bg-indigo-600 text-white"
-          @click="register"
         >
           Register
         </VButton>
@@ -115,146 +114,91 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, watchEffect, computed } from "vue"
+  import { ref, watch, computed } from "vue"
   import { useRouter, RouterLink } from "vue-router"
-  import { z } from "zod"
+  import { z, ZodError, ZodSchema } from "zod"
   import { useUserStore } from "@/stores/useUserStore"
   import VInput from "@/components/atoms/VInput.vue"
   import VButton from "@/components/atoms/VButton.vue"
   import VIconButton from "@/components/molecules/VIconButton.vue"
   import VFormError from "@/components/atoms/VFormError.vue"
 
-  interface Validation {
-    message: string
-    isSuccess: boolean
-    regex: RegExp
-  }
   const userStore = useUserStore()
   const router = useRouter()
+  const UsernameSchema = z.string({
+    required_error: "Username is required",
+    invalid_type_error: "Invalid type of username",
+  })
+  .min(8, { message: "Must be at least 8 characters long" })
+  .regex(/^[^@]+$/, { message: "Must not have @ character" })
+  const PasswordSchema = z.string({
+    required_error: "Password is required",
+    invalid_type_error: "Invalid type of password",
+  })
+  .min(8, { message: "Must be at least 8 characters long"})
+  .regex(/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).*$/, 
+    { message: "Must contain at least one uppercase, one digit, and one special character." })
 
-  const formData = ref({
+  const error = ref("")
+  const loader = ref(false)
+  const requirements = ref<string[]>([])
+  const showPassword = ref(false)
+  const current = ref<"username" | "password" | undefined>()
+  const form = ref({
     username: "",
     password: "",
     confirmation: ""
   })
-  const error = ref("")
-  const loader = ref(false)
-  const icon = ref("./src/assets/images/visibility-true.svg")
-  const type = ref<"text" | "password">("password")
-  const current = ref<"username" | "password" | undefined>()
-  const passwordValidations = ref<Validation[]>([
-    {
-      message: "Must be at least 8 characters long",
-      isSuccess: false,
-      regex: /^.{8,20}$/
-    },
-    {
-      message: "Must contain at least 1 uppercase letter",
-      isSuccess: false,
-      regex: /[A-Z]/
-    },
-    { message: "Must contain at least 1 digit", isSuccess: false, regex: /\d/ },
-    {
-      message: "Must contain at least 1 special character",
-      isSuccess: false,
-      regex: /[!@#$%^&*()\\[\]{}\-_+=~|:;"'<>,.?/ ]/
+
+  const showPasswordIcon = computed(() => showPassword.value 
+    ? './src/assets/images/visibility-true.svg' 
+    : './src/assets/images/visibility-false.svg'
+  )
+
+  const onInput = <T extends ZodSchema>(schema: T, value: string) => {
+    try {
+      schema.parse(value)
+      requirements.value = []
+    } catch (e) {
+      const error = e as ZodError
+      requirements.value = error.errors.map((e) => e.message)
     }
-  ])
-  const usernameValidations = ref<Validation[]>([
-    {
-      message: "Must be at least 8 characters long",
-      isSuccess: false,
-      regex: /^.{8,20}/
-    },
-    {
-      message: "Must contain letters or numbers",
-      isSuccess: false,
-      regex: /^[a-zA-Z0-9]+$/
-    },
-    { message: "Must not have @ character", isSuccess: false, regex: /^[^@]+$/ }
-  ])
+  }
 
-  const validUsername = computed(() => {
-    return usernameValidations.value.filter((u) => u.isSuccess !== true)
-  })
-  const validPassword = computed(() => {
-    return passwordValidations.value.filter((p) => p.isSuccess !== true)
-  })
+  const onFocus = (type: "username" | "password" | undefined) => {
+    current.value = type
+    requirements.value = []
+  }
 
-  const register = async () => {
+  const onSubmit = async () => {
     try {
       validate()
       if (!error.value) {
         loader.value = true
-        const response = await userStore.post(formData.value)
-
-        if (response) {
-          setTimeout(() => {
-            router.push("/dashboard")
-          }, 1000)
-        } else {
-          resetInputs()
-        }
+        await userStore.post(form.value)
+        router.push("/dashboard")
       }
     } catch (e) {
+      loader.value = false
       error.value = (e as Error).message
     }
   }
 
   const validate = () => {
-    if (
-      !formData.value.username ||
-      !formData.value.password ||
-      !formData.value.confirmation
-    ) {
+    if (!form.value.username || !form.value.password || !form.value.confirmation) {
       error.value = "Input fields are empty."
-    } else if (validUsername.value.length > 0 || validPassword.value.length > 0) {
-      error.value = "Invalid Credentials."
-    } else if (formData.value.password !== formData.value.confirmation) {
+      return
+    } 
+    if (form.value.confirmation !== form.value.password) {
       error.value = "Password does not match."
-    } else {
-      error.value = ""
+      return
     }
+    error.value = ""
   }
 
-  const toggle = () => {
-    switch (type.value) {
-      case "text":
-        type.value = "password"
-        icon.value = "./src/assets/images/visibility-true.svg"
-        break
-      case "password":
-        type.value = "text"
-        icon.value = "./src/assets/images/visibility-false.svg"
-        break
-    }
-  }
-
-  const resetInputs = () => {
-    validate()
-    formData.value.username = ""
-    formData.value.password = ""
-    formData.value.confirmation = ""
-    loader.value = false
+  watch(error, () => {
     setTimeout(() => {
       error.value = ""
-    }, 2000)
-  }
-
-  watchEffect(() => {
-    switch (current.value) {
-      case "username":
-        for (let validation of usernameValidations.value) {
-          validation.isSuccess = z.string().regex(validation.regex)
-          .safeParse(formData.value.username).success
-        }
-        break
-      case "password":
-        for (let validation of passwordValidations.value) {
-          validation.isSuccess = z.string().regex(validation.regex)
-          .safeParse(formData.value.password).success
-        }
-        break
-    }
+    }, 3000)
   })
 </script>

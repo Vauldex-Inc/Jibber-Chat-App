@@ -12,7 +12,7 @@
         class="flex w-[500px] max-w-full flex-col justify-center gap-3 rounded-lg bg-white p-8 shadow-md"
       >
         <p class="text-center text-3xl font-medium">Register</p>
-        <VFormError :error="error"/>
+        <VFormError :error="message"/>
         <ul
           v-if="current === 'username' && requirements.length !== 0"
           class="rounded-md border bg-gray-100 p-3 text-xs text-red-500"
@@ -123,23 +123,33 @@
   import VIconButton from "@/components/molecules/VIconButton.vue"
   import VFormError from "@/components/atoms/VFormError.vue"
 
-  const userStore = useUserStore()
-  const router = useRouter()
-  const UsernameSchema = z.string({
-    required_error: "Username is required",
-    invalid_type_error: "Invalid type of username",
-  })
-  .min(8, { message: "Must be at least 8 characters long" })
-  .regex(/^[^@]+$/, { message: "Must not have @ character" })
-  const PasswordSchema = z.string({
-    required_error: "Password is required",
-    invalid_type_error: "Invalid type of password",
-  })
-  .min(8, { message: "Must be at least 8 characters long"})
-  .regex(/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).*$/, 
-    { message: "Must contain at least one uppercase, one digit, and one special character." })
+  const UsernameSchema = z
+    .string({ required_error: "Username is required" })
+    .min(8, { message: "Must be at least 8 characters long" })
+    .regex(/^[^@]+$/, { message: "Must not have @ character" })
 
-  const error = ref("")
+  const PasswordSchema = z
+    .string({ required_error: "Password is required" })
+    .min(8, { message: "Must be at least 8 characters long"})
+    .regex(/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).*$/, { 
+      message: "Must contain at least one uppercase, one digit, and one special character." 
+    })
+  
+  const RegisterSchema = z.object({
+    username: UsernameSchema,
+    password: PasswordSchema,
+    confirmation: PasswordSchema
+  }).superRefine((form, ctx) => {
+    if (form.password !== form.confirmation) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Password does not match"
+      })
+    }
+  })
+
+  const userStore = useUserStore()
+  const message = ref<string | undefined>()
   const loader = ref(false)
   const requirements = ref<string[]>([])
   const showPassword = ref(false)
@@ -171,34 +181,25 @@
   }
 
   const onSubmit = async () => {
+    loader.value = true
     try {
-      validate()
-      if (!error.value) {
-        loader.value = true
-        await userStore.post(form.value)
-        router.push("/dashboard")
-      }
+      RegisterSchema.parse(form.value)
+      await userStore.post(form.value)
+      useRouter().push("/dashboard")
     } catch (e) {
+      const error = e as ZodError | Error
       loader.value = false
-      error.value = (e as Error).message
+      if (error instanceof ZodError) {
+        message.value = error.errors.find((e) => e.code === "custom")?.message
+      } else if (error instanceof Error) {
+        message.value = error.message
+      }
     }
   }
 
-  const validate = () => {
-    if (!form.value.username || !form.value.password || !form.value.confirmation) {
-      error.value = "Input fields are empty."
-      return
-    } 
-    if (form.value.confirmation !== form.value.password) {
-      error.value = "Password does not match."
-      return
-    }
-    error.value = ""
-  }
-
-  watch(error, () => {
+  watch(message, () => {
     setTimeout(() => {
-      error.value = ""
+      message.value = ""
     }, 3000)
   })
 </script>
